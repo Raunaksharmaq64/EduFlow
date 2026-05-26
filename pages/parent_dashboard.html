@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EduFlow AI — Parent Dashboard">
+    <title>Parent Dashboard — EduFlow AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-top">
+            <a href="../index.html" class="sidebar-brand">
+                <i class='bx bxs-graduation'></i>
+                <span>EduFlow</span>
+            </a>
+            <nav class="sidebar-menu">
+                <div class="menu-item active" data-panel="overview-panel">
+                    <i class='bx bx-grid-alt'></i>
+                    <span>Overview</span>
+                </div>
+                <div class="menu-item" data-panel="progress-panel">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Child Progress</span>
+                </div>
+                <div class="menu-item" data-panel="alerts-panel">
+                    <i class='bx bx-bell'></i>
+                    <span>Notifications</span>
+                </div>
+                <div class="menu-item" data-panel="tips-panel">
+                    <i class='bx bx-bulb'></i>
+                    <span>AI Parenting Tips</span>
+                </div>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="profile-avatar" style="background-color: var(--parent);">P</div>
+                <div class="user-info">
+                    <span class="user-name" id="profile-name">Parent Name</span>
+                    <span class="user-role-badge" style="color: #FFA38F;">Parent</span>
+                </div>
+            </div>
+            <button class="btn-logout" id="logout-button">
+                <i class='bx bx-log-out'></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1 id="panel-title">Parent Dashboard</h1>
+                <p id="panel-subtitle">Monitor your child's academic journey in real time.</p>
+            </div>
+            <div class="header-date">
+                <span id="current-date-string" style="font-weight: 500; color: var(--text-secondary);"></span>
+            </div>
+        </header>
+
+        <!-- ============================================
+             PANEL 1: OVERVIEW
+             ============================================ -->
+        <section id="overview-panel" class="dashboard-panel active">
+            <div class="stat-group" style="margin-bottom: 2rem;">
+                <div class="dashboard-stat-card">
+                    <div class="stat-icon-wrapper parent-theme"><i class='bx bx-user'></i></div>
+                    <div class="stat-details">
+                        <h3>Rahul Sharma</h3>
+                        <p>Child · Class 10-B</p>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="stat-icon-wrapper student-theme"><i class='bx bx-trending-up'></i></div>
+                    <div class="stat-details">
+                        <h3>74%</h3>
+                        <p>Overall Score</p>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="stat-icon-wrapper ai-theme"><i class='bx bx-bell'></i></div>
+                    <div class="stat-details">
+                        <h3>3</h3>
+                        <p>New Alerts</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card" style="grid-column: span 2;">
+                    <h3 class="card-title"><i class='bx bx-line-chart'></i> Subject-wise Performance</h3>
+                    <div class="db-table-container">
+                        <table class="db-table">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Last Test Score</th>
+                                    <th>Average Score</th>
+                                    <th>Trend</th>
+                                    <th>Progress</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Mathematics</td>
+                                    <td>58%</td>
+                                    <td>62%</td>
+                                    <td><i class='bx bx-down-arrow-alt' style="color: var(--parent); font-size: 1.2rem;"></i> Declining</td>
+                                    <td>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: 62%; background-color: var(--parent);"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Science</td>
+                                    <td>78%</td>
+                                    <td>75%</td>
+                                    <td><i class='bx bx-up-arrow-alt' style="color: var(--secondary); font-size: 1.2rem;"></i> Improving</td>
+                                    <td>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: 75%; background-color: var(--secondary);"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>English</td>
+                                    <td>85%</td>
+                                    <td>88%</td>
+                                    <td><i class='bx bx-minus' style="color: var(--text-secondary); font-size: 1.2rem;"></i> Stable</td>
+                                    <td>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: 88%; background-color: var(--secondary);"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>History</td>
+                                    <td>60%</td>
+                                    <td>66%</td>
+                                    <td><i class='bx bx-down-arrow-alt' style="color: var(--parent); font-size: 1.2rem;"></i> Declining</td>
+                                    <td>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: 66%; background-color: var(--parent);"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-target-lock'></i> Key Weak Areas</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <div class="stat-icon-wrapper parent-theme" style="width: 38px; height: 38px; font-size: 1.1rem; flex-shrink: 0;">
+                                <i class='bx bx-math'></i>
+                            </div>
+                            <div>
+                                <p style="font-weight: 600; color: var(--primary); font-size: 0.95rem;">Quadratic Equations</p>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary);">Mathematics · Consistently low</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <div class="stat-icon-wrapper parent-theme" style="width: 38px; height: 38px; font-size: 1.1rem; flex-shrink: 0;">
+                                <i class='bx bx-book'></i>
+                            </div>
+                            <div>
+                                <p style="font-weight: 600; color: var(--primary); font-size: 0.95rem;">Indian Freedom Movement</p>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary);">History · Dropped 12% last test</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <div class="stat-icon-wrapper student-theme" style="width: 38px; height: 38px; font-size: 1.1rem; flex-shrink: 0;">
+                                <i class='bx bx-atom'></i>
+                            </div>
+                            <div>
+                                <p style="font-weight: 600; color: var(--primary); font-size: 0.95rem;">Chemical Reactions</p>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary);">Science · Improving gradually</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             PANEL 2: CHILD PROGRESS DETAILS
+             ============================================ -->
+        <section id="progress-panel" class="dashboard-panel">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-calendar-check'></i> Attendance & Activity</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-top: 0.5rem;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                                <span style="font-weight: 600; font-size: 0.9rem;">Attendance Rate</span>
+                                <span style="font-weight: 700; color: var(--secondary);">92%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 92%; background-color: var(--secondary);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                                <span style="font-weight: 600; font-size: 0.9rem;">Tests Attempted</span>
+                                <span style="font-weight: 700; color: var(--secondary);">18 / 20</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 90%; background-color: var(--secondary);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                                <span style="font-weight: 600; font-size: 0.9rem;">AI Practice Completion</span>
+                                <span style="font-weight: 700; color: var(--parent);">45%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 45%; background-color: var(--parent);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-award'></i> Achievements</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
+                        <div class="feed-item" style="border: none; padding: 0;">
+                            <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
+                                <i class='bx bx-trophy'></i>
+                            </div>
+                            <div class="feed-item-details">
+                                <span class="feed-item-title">Top 5 in English</span>
+                                <span class="feed-item-body">Ranked 3rd in class — May 2026</span>
+                            </div>
+                        </div>
+                        <div class="feed-item" style="border: none; padding: 0;">
+                            <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
+                                <i class='bx bx-star'></i>
+                            </div>
+                            <div class="feed-item-details">
+                                <span class="feed-item-title">Science Quiz Champion</span>
+                                <span class="feed-item-body">Scored 95% in Chapter 3 Quiz</span>
+                            </div>
+                        </div>
+                        <div class="feed-item" style="border: none; padding: 0;">
+                            <div class="feed-item-icon" style="background-color: rgba(108,52,131,0.1); color: var(--ai-accent);">
+                                <i class='bx bx-brain'></i>
+                            </div>
+                            <div class="feed-item-details">
+                                <span class="feed-item-title">AI Learner Badge</span>
+                                <span class="feed-item-body">Completed 5 AI study plans</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="grid-column: span 2;">
+                    <h3 class="card-title"><i class='bx bx-history'></i> Recent Test Results</h3>
+                    <div class="db-table-container">
+                        <table class="db-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Subject</th>
+                                    <th>Test Title</th>
+                                    <th>Score</th>
+                                    <th>Class Average</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>25 May 2026</td>
+                                    <td>Mathematics</td>
+                                    <td>Ch. 4 — Quadratic Equations</td>
+                                    <td><strong style="color: var(--parent);">58%</strong></td>
+                                    <td>72%</td>
+                                </tr>
+                                <tr>
+                                    <td>22 May 2026</td>
+                                    <td>Science</td>
+                                    <td>Ch. 3 — Chemical Reactions</td>
+                                    <td><strong style="color: var(--secondary);">78%</strong></td>
+                                    <td>74%</td>
+                                </tr>
+                                <tr>
+                                    <td>18 May 2026</td>
+                                    <td>English</td>
+                                    <td>Essay Writing — Practice Test</td>
+                                    <td><strong style="color: var(--secondary);">85%</strong></td>
+                                    <td>80%</td>
+                                </tr>
+                                <tr>
+                                    <td>15 May 2026</td>
+                                    <td>History</td>
+                                    <td>Ch. 5 — Freedom Movement</td>
+                                    <td><strong style="color: var(--parent);">60%</strong></td>
+                                    <td>68%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             PANEL 3: NOTIFICATIONS
+             ============================================ -->
+        <section id="alerts-panel" class="dashboard-panel">
+            <div class="card">
+                <h3 class="card-title"><i class='bx bx-bell'></i> Recent Notifications</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Automated alerts from teachers and the AI system about your child's learning journey.</p>
+
+                <div class="alerts-feed">
+                    <div class="feed-item">
+                        <div class="feed-item-icon" style="background-color: rgba(231,111,81,0.1); color: var(--parent);">
+                            <i class='bx bx-error-circle'></i>
+                        </div>
+                        <div class="feed-item-details">
+                            <div class="feed-item-header">
+                                <span class="feed-item-title">Score Drop Alert — Mathematics</span>
+                                <span class="feed-item-time">2 hours ago</span>
+                            </div>
+                            <p class="feed-item-body">Rahul scored 58% in today's Mathematics test (Ch.4 — Quadratic Equations), which is 14% below the class average. Please help him review this topic at home.</p>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-item-icon" style="background-color: rgba(108,52,131,0.1); color: var(--ai-accent);">
+                            <i class='bx bx-brain'></i>
+                        </div>
+                        <div class="feed-item-details">
+                            <div class="feed-item-header">
+                                <span class="feed-item-title">AI Study Plan Assigned</span>
+                                <span class="feed-item-time">3 hours ago</span>
+                            </div>
+                            <p class="feed-item-body">A personalized study plan for "Quadratic Equations" has been created for Rahul by the AI Mentor. Encourage him to follow the weekly revision schedule.</p>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
+                            <i class='bx bx-trophy'></i>
+                        </div>
+                        <div class="feed-item-details">
+                            <div class="feed-item-header">
+                                <span class="feed-item-title">Great Performance — Science</span>
+                                <span class="feed-item-time">Yesterday</span>
+                            </div>
+                            <p class="feed-item-body">Rahul scored 78% in Science (Ch.3 — Chemical Reactions), which is above the class average. His performance in Science is improving steadily!</p>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-item-icon" style="background-color: rgba(231,111,81,0.1); color: var(--parent);">
+                            <i class='bx bx-calendar-x'></i>
+                        </div>
+                        <div class="feed-item-details">
+                            <div class="feed-item-header">
+                                <span class="feed-item-title">Practice Incomplete</span>
+                                <span class="feed-item-time">2 days ago</span>
+                            </div>
+                            <p class="feed-item-body">Rahul has only completed 45% of the AI-assigned practice exercises this week. Motivate him to finish the remaining tasks for better preparation.</p>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
+                            <i class='bx bx-message-dots'></i>
+                        </div>
+                        <div class="feed-item-details">
+                            <div class="feed-item-header">
+                                <span class="feed-item-title">Teacher Note — Mrs. Sharma</span>
+                                <span class="feed-item-time">3 days ago</span>
+                            </div>
+                            <p class="feed-item-body">"Rahul is a bright student but needs extra focus on Mathematics. I recommend daily 30-minute practice sessions on algebraic concepts."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             PANEL 4: AI PARENTING TIPS
+             ============================================ -->
+        <section id="tips-panel" class="dashboard-panel">
+            <div class="card form-card">
+                <h3 class="card-title"><i class='bx bx-bulb'></i> Get AI-Powered Parenting Advice</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                    Based on your child's performance data, our AI will give you actionable advice on how you can support their learning at home. Describe a concern or just click generate.
+                </p>
+
+                <form id="tips-form">
+                    <div class="form-group-db">
+                        <label for="parent-concern">Your Concern (Optional)</label>
+                        <textarea id="parent-concern" class="form-input-db" rows="3" placeholder="e.g., My child is struggling with Maths and losing motivation. How can I help at home?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i class='bx bx-magic-wand'></i> Get AI Parenting Tips
+                    </button>
+                </form>
+            </div>
+
+            <!-- Loader -->
+            <div class="spinner-wrapper" id="tips-loader">
+                <div class="db-spinner"></div>
+                <p class="spinner-text">AI is analyzing your child's data and preparing advice...</p>
+            </div>
+
+            <!-- AI Output -->
+            <div class="ai-output-container" id="tips-output-box">
+                <div class="ai-output-header">
+                    <span class="ai-badge"><i class='bx bx-bot'></i> AI Parenting Advisor</span>
+                </div>
+                <div class="ai-output-content" id="tips-markdown-content">
+                    <!-- Parsed HTML will load here -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Parent Dashboard JS -->
+    <script src="../js/parent_dashboard.js"></script>
+</body>
+
+</html>

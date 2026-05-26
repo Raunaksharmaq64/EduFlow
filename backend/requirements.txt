@@ -1,0 +1,12 @@
+fastapi>=0.110.0
+uvicorn>=0.28.0
+motor>=3.3.2
+pydantic[email]>=2.6.4
+bcrypt>=4.1.2
+pyjwt>=2.8.0
+python-dotenv>=1.0.1
+google-generativeai>=0.8.3
+pillow>=10.2.0
+python-multipart>=0.0.9
+
+

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="EduFlow AI — AI-powered learning platform connecting teachers, students, and parents through intelligent assessments, personalized study plans, and real-time alerts.">
+    <meta name="keywords" content="EdTech, AI Learning, Education Platform, Adaptive Testing, Student Performance">
+    <meta name="author" content="EduFlow AI">
+    <title>EduFlow AI — AI-Powered Learning Platform</title>
+
+    <!-- ============================================
+         EXTERNAL RESOURCES (CDN)
+         ============================================ -->
+
+    <!-- Google Fonts — Inter (clean, modern font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Boxicons — Lightweight icon library -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- ============================================
+         NAVBAR — Fixed navigation bar
+         ============================================ -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <!-- Logo -->
+            <a href="#home" class="nav-logo" id="nav-logo">
+                <i class='bx bxs-graduation'></i>
+                <span>EduFlow</span>
+            </a>
+
+            <!-- Navigation Links -->
+            <div class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#roles" class="nav-link">Roles</a>
+                <a href="#workflow" class="nav-link">How It Works</a>
+                <a href="#features" class="nav-link">AI Features</a>
+                <a href="#alerts" class="nav-link">Alerts</a>
+                <a href="#stats" class="nav-link">Impact</a>
+                <!-- Mobile-only auth links -->
+                <div class="nav-menu-auth">
+                    <a href="pages/login.html" class="btn btn-outline nav-menu-login">Login</a>
+                    <a href="pages/signup.html" class="btn btn-primary nav-menu-signup">Sign Up</a>
+                </div>
+            </div>
+
+            <!-- Auth Buttons (Desktop) -->
+            <div class="nav-auth" id="nav-auth">
+                <a href="pages/login.html" class="nav-login" id="nav-login">Login</a>
+                <a href="pages/signup.html" class="btn btn-primary nav-cta" id="nav-signup">Sign Up</a>
+            </div>
+
+            <!-- Hamburger Menu (Mobile) -->
+            <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+
+    <!-- ============================================
+         HERO SECTION — Main headline + dashboard visual
+         ============================================ -->
+    <section class="hero" id="home">
+        <div class="container hero-container">
+
+            <!-- Left Side — Text Content -->
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class='bx bx-rocket'></i>
+                    <span>AI-Powered Education Platform</span>
+                </div>
+
+                <h1 class="hero-title">
+                    Smart Learning.<br>
+                    <span class="highlight">Personalized</span> for Every Student.
+                </h1>
+
+                <p class="hero-subtitle">
+                    EduFlow AI connects teachers, students, and parents through intelligent
+                    assessments, personalized study plans, and real-time alerts — all powered by AI.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="#workflow" class="btn btn-primary btn-lg">
+                        <i class='bx bx-play-circle'></i>
+                        Explore Features
+                    </a>
+                    <a href="#features" class="btn btn-outline btn-lg">
+                        <i class='bx bx-brain'></i>
+                        AI Features
+                    </a>
+                </div>
+
+                <!-- Mini Stats Row -->
+                <div class="hero-stats-mini">
+                    <div class="hero-stat-item">
+                        <strong>10K+</strong>
+                        <span>Students</span>
+                    </div>
+                    <div class="hero-stat-divider"></div>
+                    <div class="hero-stat-item">
+                        <strong>500+</strong>
+                        <span>Teachers</span>
+                    </div>
+                    <div class="hero-stat-divider"></div>
+                    <div class="hero-stat-item">
+                        <strong>95%</strong>
+                        <span>Improvement</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side — Animated Dashboard Visual -->
+            <div class="hero-visual">
+                <!-- Floating Dashboard Card -->
+                <div class="dashboard-card" id="dashboard-card">
+                    <div class="dashboard-header">
+                        <div class="dashboard-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span class="dashboard-title">Student Dashboard</span>
+                    </div>
+                    <div class="dashboard-body">
+                        <!-- Student Profile -->
+                        <div class="dashboard-profile">
+                            <div class="avatar">RS</div>
+                            <div>
+                                <h4>Rahul Sharma</h4>
+                                <p>Class 10 · Science</p>
+                            </div>
+                        </div>
+
+                        <!-- Performance Chart (CSS bars) -->
+                        <div class="dashboard-chart">
+                            <div class="chart-bar" data-height="40%" style="--bar-color: var(--parent);">
+                                <span class="chart-label">Mon</span>
+                            </div>
+                            <div class="chart-bar" data-height="65%" style="--bar-color: var(--secondary);">
+                                <span class="chart-label">Tue</span>
+                            </div>
+                            <div class="chart-bar" data-height="45%" style="--bar-color: var(--teacher);">
+                                <span class="chart-label">Wed</span>
+                            </div>
+                            <div class="chart-bar" data-height="80%" style="--bar-color: var(--secondary);">
+                                <span class="chart-label">Thu</span>
+                            </div>
+                            <div class="chart-bar" data-height="60%" style="--bar-color: var(--secondary);">
+                                <span class="chart-label">Fri</span>
+                            </div>
+                        </div>
+
+                        <!-- AI Tip -->
+                        <div class="dashboard-ai-tip">
+                            <i class='bx bx-bulb'></i>
+                            <span>AI: Focus on Algebra — weak area detected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Badges (animated) -->
+                <div class="float-badge float-badge-1" id="float-1">
+                    <i class='bx bx-trending-up'></i>
+                    <span>+23% This Week</span>
+                </div>
+                <div class="float-badge float-badge-2" id="float-2">
+                    <i class='bx bx-brain'></i>
+                    <span>AI Analyzing...</span>
+                </div>
+                <div class="float-badge float-badge-3" id="float-3">
+                    <i class='bx bx-bell'></i>
+                    <span>3 New Alerts</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================
+         ROLES SECTION — Teacher, Student, Parent cards
+         ============================================ -->
+    <section class="roles" id="roles">
+        <div class="container">
+            <!-- Section Header -->
+            <div class="section-header">
+                <span class="section-tag">User Roles</span>
+                <h2 class="section-title">Built for Everyone</h2>
+                <p class="section-subtitle">
+                    Three roles, one powerful platform — designed to serve every stakeholder in education.
+                </p>
+            </div>
+
+            <!-- Role Cards Grid -->
+            <div class="roles-grid">
+                <!-- Teacher Card -->
+                <div class="role-card role-teacher">
+                    <div class="role-icon">
+                        <i class='bx bxs-user-badge'></i>
+                    </div>
+                    <h3>Teacher</h3>
+                    <p>
+                        Assign tests, evaluate answers, and provide detailed feedback.
+                        Track every student's progress and get AI-powered insights on class performance.
+                    </p>
+                    <ul class="role-features">
+                        <li><i class='bx bx-check'></i> Create assignments & tests</li>
+                        <li><i class='bx bx-check'></i> Evaluate & grade responses</li>
+                        <li><i class='bx bx-check'></i> Get class performance insights</li>
+                    </ul>
+                </div>
+
+                <!-- Student Card -->
+                <div class="role-card role-student">
+                    <div class="role-icon">
+                        <i class='bx bxs-book-reader'></i>
+                    </div>
+                    <h3>Student</h3>
+                    <p>
+                        Attempt quizzes, practice problems, and learn at your own pace.
+                        Get personalized study plans and instant doubt resolution powered by AI.
+                    </p>
+                    <ul class="role-features">
+                        <li><i class='bx bx-check'></i> Attempt quizzes & assignments</li>
+                        <li><i class='bx bx-check'></i> Practice with AI-generated plans</li>
+                        <li><i class='bx bx-check'></i> Get instant doubt solving</li>
+                    </ul>
+                </div>
+
+                <!-- Parent Card -->
+                <div class="role-card role-parent">
+                    <div class="role-icon">
+                        <i class='bx bxs-group'></i>
+                    </div>
+                    <h3>Parent</h3>
+                    <p>
+                        Track your child's academic progress, receive timely alerts,
+                        and stay informed about areas that need improvement — all in real time.
+                    </p>
+                    <ul class="role-features">
+                        <li><i class='bx bx-check'></i> Monitor child's performance</li>
+                        <li><i class='bx bx-check'></i> Receive real-time alerts</li>
+                        <li><i class='bx bx-check'></i> Track improvement over time</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================
+         WORKFLOW SECTION — Interactive vertical timeline
+         ============================================ -->
+    <section class="workflow" id="workflow">
+        <div class="container">
+            <!-- Section Header -->
+            <div class="section-header">
+                <span class="section-tag">How It Works</span>
+                <h2 class="section-title">Complete Workflow Cycle</h2>
+                <p class="section-subtitle">
+                    From assignment to improvement — see how the entire system works together seamlessly.
+                </p>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline">
+                <!-- Vertical Line (animated via GSAP) -->
+                <div class="timeline-line" id="timeline-line"></div>
+
+                <!-- Step 1 — Teacher Assigns -->
+                <div class="timeline-item timeline-left">
+                    <div class="timeline-dot"><span>1</span></div>
+                    <div class="timeline-content">
+                        <div class="timeline-icon" style="--accent: var(--teacher);">
+                            <i class='bx bx-edit'></i>
+                        </div>
+                        <h3>Teacher Assigns Test</h3>
+                        <p>Creates questions, sets deadlines, and shares assignments with students through the platform.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 2 — Student Completes -->
+                <div class="timeline-item timeline-right">
+                    <div class="timeline-dot"><span>2</span></div>
+                    <div class="timeline-content">
+                        <div class="timeline-icon" style="--accent: var(--student);">
+                            <i class='bx bx-pencil'></i>
+                        </div>
+                        <h3>Student Completes Assignment</h3>
+                        <p>Submits answers, attempts quizzes, and practices problems at their own pace and comfort.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 — Teacher Evaluates -->
+                <div class="timeline-item timeline-left">
+                    <div class="timeline-dot"><span>3</span></div>
+                    <div class="timeline-content">
+                        <div class="timeline-icon" style="--accent: var(--teacher);">
+                            <i class='bx bx-check-double'></i>
+                        </div>
+                        <h3>Teacher Evaluates & Marks</h3>
+                        <p>Scores student responses, provides detailed feedback, and assigns grades for each submission.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 4 — AI Analyzes -->
+                <div class="timeline-item timeline-right">
+                    <div class="timeline-dot"><span>4</span></div>
+                    <div class="timeline-content">
+                        <div class="timeline-icon" style="--accent: var(--ai-accent);">
+                            <i class='bx bx-brain'></i>
+                        </div>
+                        <h3>AI Mentor Analyzes</h3>
+                        <p>AI engine analyzes marks, detects weak topics, and generates a personalized improvement plan.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 5 — Plan Generated -->
+                <div class="timeline-item timeline-left">
+                    <div class="timeline-dot"><span>5</span></div>
+                    <div class="timeline-content">
+                        <div class="timeline-icon" style="--accent: var(--secondary);">
+                            <i class='bx bx-book-open'></i>
+                        </div>
+                        <h3>Personalized Plan Generated</h3>
+                        <p>Practice questions and revision schedules are tailored to each student's weak areas and
+                            learning pace.</p>
+                    </div>
+                </div>
+
+                <!-- Step 6 — Alerts Sent -->
+                <div class="timeline-item timeline-right">
+                    <div class="timeline-dot"><span>6</span></div>
+                    <div class="timeline-content">
+                        <div class="timeline-icon" style="--accent: var(--parent);">
+                            <i class='bx bx-bell'></i>
+                        </div>
+                        <h3>Smart Alerts Sent</h3>
+                        <p>Real-time notifications sent to students, teachers, and parents about progress and areas of
+                            concern.</p>
+                    </div>
+                </div>
+
+                <!-- Step 7 — Continuous Improvement (Center) -->
+                <div class="timeline-item timeline-center">
+                    <div class="timeline-dot timeline-dot-final"><span>∞</span></div>
+                    <div class="timeline-content timeline-content-final">
+                        <div class="timeline-icon" style="--accent: var(--secondary);">
+                            <i class='bx bx-refresh'></i>
+                        </div>
+                        <h3>Continuous Improvement</h3>
+                        <p>Performance improves and the cycle repeats — creating a never-ending loop of growth and
+                            learning.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================
+         AI FEATURES SECTION — Dark background, 3 cards
+         ============================================ -->
+    <section class="features" id="features">
+        <div class="container">
+            <!-- Section Header (light text on dark bg) -->
+            <div class="section-header section-header-light">
+                <span class="section-tag section-tag-light">AI Capabilities</span>
+                <h2 class="section-title">AI Mentor Engine</h2>
+                <p class="section-subtitle">
+                    Intelligent features that make learning smarter, faster, and more effective.
+                </p>
+            </div>
+
+            <!-- Feature Cards Grid -->
+            <div class="features-grid">
+                <!-- Performance Analysis -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class='bx bx-bar-chart-alt-2'></i>
+                    </div>
+                    <h3>Performance Analysis</h3>
+                    <p>
+                        Tracks marks, test history, and automatically identifies weak topics.
+                        Get detailed performance reports and trend analysis for every student.
+                    </p>
+                    <div class="feature-tags">
+                        <span>Marks Tracking</span>
+                        <span>Weak Topics</span>
+                        <span>History</span>
+                    </div>
+                </div>
+
+                <!-- Adaptive Testing -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class='bx bx-layer'></i>
+                    </div>
+                    <h3>Adaptive Testing</h3>
+                    <p>
+                        Difficulty auto-adjusts from Easy → Medium → Hard based on student
+                        performance. Every test is uniquely calibrated for the learner.
+                    </p>
+                    <div class="feature-tags">
+                        <span>Auto-Adjust</span>
+                        <span>Smart Difficulty</span>
+                        <span>Personalized</span>
+                    </div>
+                </div>
+
+                <!-- AI Doubt Solver -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class='bx bx-message-dots'></i>
+                    </div>
+                    <h3>AI Doubt Solver</h3>
+                    <p>
+                        Get step-by-step solutions and simple explanations for any question.
+                        AI breaks down complex problems into easy, digestible steps.
+                    </p>
+                    <div class="feature-tags">
+                        <span>Step-by-Step</span>
+                        <span>Simple Language</span>
+                        <span>24/7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================
+         ALERTS SECTION — Role-specific notification mockups
+         ============================================ -->
+    <section class="alerts" id="alerts">
+        <div class="container">
+            <!-- Section Header -->
+            <div class="section-header">
+                <span class="section-tag">Smart Notifications</span>
+                <h2 class="section-title">Real-Time Alerts for Everyone</h2>
+                <p class="section-subtitle">
+                    Automated, role-specific notifications that keep everyone informed and in the loop.
+                </p>
+            </div>
+
+            <!-- Alert Cards Grid -->
+            <div class="alerts-grid">
+                <!-- Student Alert -->
+                <div class="alert-card alert-student">
+                    <div class="alert-header">
+                        <div class="alert-icon-wrapper alert-icon-student">
+                            <i class='bx bxs-book-reader'></i>
+                        </div>
+                        <div>
+                            <h4>Student Alert</h4>
+                            <span class="alert-time">Just now</span>
+                        </div>
+                    </div>
+                    <div class="alert-body">
+                        <p>"You're weak in <strong>Algebra</strong> — practice now to improve your score before the next
+                            test."</p>
+                    </div>
+                    <div class="alert-footer">
+                        <span class="alert-action">
+                            <i class='bx bx-right-arrow-alt'></i> Start Practice
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Teacher Alert -->
+                <div class="alert-card alert-teacher">
+                    <div class="alert-header">
+                        <div class="alert-icon-wrapper alert-icon-teacher">
+                            <i class='bx bxs-user-badge'></i>
+                        </div>
+                        <div>
+                            <h4>Teacher Alert</h4>
+                            <span class="alert-time">2 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alert-body">
+                        <p>"<strong>Rahul Sharma</strong> is struggling with <strong>Chapter 4</strong> — consider
+                            intervening with extra guidance."</p>
+                    </div>
+                    <div class="alert-footer">
+                        <span class="alert-action">
+                            <i class='bx bx-right-arrow-alt'></i> View Student
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Parent Alert -->
+                <div class="alert-card alert-parent">
+                    <div class="alert-header">
+                        <div class="alert-icon-wrapper alert-icon-parent">
+                            <i class='bx bxs-group'></i>
+                        </div>
+                        <div>
+                            <h4>Parent Alert</h4>
+                            <span class="alert-time">5 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alert-body">
+                        <p>"Improvement needed in <strong>Maths</strong> this week. Rahul's performance has dropped by
+                            12% — please review."</p>
+                    </div>
+                    <div class="alert-footer">
+                        <span class="alert-action">
+                            <i class='bx bx-right-arrow-alt'></i> View Report
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================
+         STATS SECTION — Animated counters
+         ============================================ -->
+    <section class="stats" id="stats">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Our Impact</span>
+                <h2 class="section-title">Numbers That Speak</h2>
+                <p class="section-subtitle">
+                    Real results from real schools — see the impact EduFlow AI is making in education.
+                </p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class='bx bxs-user-account'></i>
+                    </div>
+                    <h3 class="stat-number" data-target="10000">0</h3>
+                    <p>Students Active</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class='bx bxs-graduation'></i>
+                    </div>
+                    <h3 class="stat-number" data-target="500">0</h3>
+                    <p>Teachers Onboard</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class='bx bx-trending-up'></i>
+                    </div>
+                    <h3 class="stat-number" data-target="95" data-suffix="%">0</h3>
+                    <p>Improvement Rate</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class='bx bx-time-five'></i>
+                    </div>
+                    <h3 class="stat-number" data-target="24" data-suffix="/7">0</h3>
+                    <p>AI Support Available</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================
+         CTA SECTION — Final call to action
+         ============================================ -->
+    <section class="cta" id="cta">
+        <div class="container cta-container">
+            <h2>Ready to Transform Learning?</h2>
+            <p>Join thousands of schools already using EduFlow AI to deliver personalized, AI-powered education.</p>
+            <div class="cta-actions">
+                <a href="pages/signup.html" class="btn btn-white btn-lg">
+                    <i class='bx bx-rocket'></i>
+                    Get Started Free
+                </a>
+                <a href="pages/login.html" class="btn btn-outline-white btn-lg">
+                    <i class='bx bx-log-in'></i>
+                    Login
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================
+         FOOTER — Links, social, copyright
+         ============================================ -->
+    <footer class="footer" id="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Brand Column -->
+                <div class="footer-brand">
+                    <a href="#home" class="nav-logo footer-logo">
+                        <i class='bx bxs-graduation'></i>
+                        <span>EduFlow</span>
+                    </a>
+                    <p>AI-powered education platform connecting teachers, students, and parents for smarter,
+                        personalized learning.</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Twitter"><i class='bx bxl-twitter'></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class='bx bxl-linkedin'></i></a>
+                        <a href="#" aria-label="GitHub"><i class='bx bxl-github'></i></a>
+                        <a href="#" aria-label="Instagram"><i class='bx bxl-instagram'></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="#home">Home</a>
+                    <a href="#roles">Roles</a>
+                    <a href="#workflow">How It Works</a>
+                    <a href="#features">AI Features</a>
+                    <a href="#alerts">Smart Alerts</a>
+                </div>
+
+                <!-- Platform Links -->
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <a href="#">For Teachers</a>
+                    <a href="#">For Students</a>
+                    <a href="#">For Parents</a>
+                    <a href="#">Pricing</a>
+                    <a href="#">API Docs</a>
+                </div>
+
+                <!-- Legal Links -->
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                    <a href="#">Support</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p>&copy; 2026 EduFlow AI. All rights reserved.</p>
+                <p>Made with <i class='bx bxs-heart' style="color: var(--parent);"></i> for Education</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ============================================
+         SCRIPTS — GSAP + Main JS
+         ============================================ -->
+
+    <!-- GSAP Core Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- GSAP ScrollTrigger Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Main Application Script -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login to EduFlow — Access your personalized dashboard as a Teacher, Student, or Parent.">
+    <title>Login — EduFlow</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Boxicons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    
+    <!-- Stylesheets (base + auth) -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+
+<body>
+    <!-- ============================================
+         SUCCESS NOTIFICATION (hidden by default)
+         ============================================ -->
+    <div class="auth-success" id="auth-success">
+        <i class='bx bx-check-circle'></i>
+        <span></span>
+    </div>
+
+
+    <!-- ============================================
+         LOGIN PAGE — Split screen layout
+         ============================================ -->
+    <div class="auth-page">
+        
+        <!-- ============================
+             LEFT — Branding Panel
+             ============================ -->
+        <div class="auth-branding">
+            <!-- Back to Home -->
+            <a href="../index.html" class="auth-back">
+                <i class='bx bx-arrow-back'></i>
+                Back to Home
+            </a>
+            
+            <!-- Logo -->
+            <div class="auth-logo">
+                <i class='bx bxs-graduation'></i>
+                <span>EduFlow</span>
+            </div>
+            
+            <!-- Headline -->
+            <h2>Welcome Back to<br><span>Smart Learning</span></h2>
+            <p>Login to access your personalized dashboard with AI-powered insights, study plans, and real-time alerts.</p>
+            
+            <!-- Features List -->
+            <div class="auth-features">
+                <div class="auth-feature">
+                    <div class="auth-feature-icon">
+                        <i class='bx bx-bar-chart-alt-2'></i>
+                    </div>
+                    <div>
+                        <h4>Track Performance</h4>
+                        <p>View detailed analytics and progress reports</p>
+                    </div>
+                </div>
+                
+                <div class="auth-feature">
+                    <div class="auth-feature-icon">
+                        <i class='bx bx-brain'></i>
+                    </div>
+                    <div>
+                        <h4>AI-Powered Insights</h4>
+                        <p>Get personalized recommendations from AI Mentor</p>
+                    </div>
+                </div>
+                
+                <div class="auth-feature">
+                    <div class="auth-feature-icon">
+                        <i class='bx bx-bell'></i>
+                    </div>
+                    <div>
+                        <h4>Smart Alerts</h4>
+                        <p>Receive real-time notifications about progress</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- ============================
+             RIGHT — Login Form
+             ============================ -->
+        <div class="auth-form-panel">
+            <div class="auth-form-card">
+                
+                <!-- Mobile Header (visible only on mobile) -->
+                <div class="auth-mobile-header">
+                    <a href="../index.html" class="auth-back" style="position: static; color: var(--text-secondary);">
+                        <i class='bx bx-arrow-back'></i>
+                        Home
+                    </a>
+                    <div class="auth-logo" style="margin-bottom: 0; font-size: 1.2rem; color: var(--primary);">
+                        <i class='bx bxs-graduation'></i>
+                        <span>EduFlow</span>
+                    </div>
+                </div>
+                
+                <!-- Form Header -->
+                <div class="auth-form-header">
+                    <h2>Login to your account</h2>
+                    <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+                </div>
+                
+                <!-- Role Selection Tabs -->
+                <div class="role-tabs">
+                    <div class="role-tab" data-role="teacher">
+                        <i class='bx bxs-user-badge'></i>
+                        <span>Teacher</span>
+                    </div>
+                    <div class="role-tab active" data-role="student">
+                        <i class='bx bxs-book-reader'></i>
+                        <span>Student</span>
+                    </div>
+                    <div class="role-tab" data-role="parent">
+                        <i class='bx bxs-group'></i>
+                        <span>Parent</span>
+                    </div>
+                </div>
+                
+                <!-- Login Form -->
+                <form class="auth-form" id="login-form" novalidate>
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label class="form-label" for="login-email">Email Address</label>
+                        <input 
+                            type="email" 
+                            class="form-input" 
+                            id="login-email" 
+                            placeholder="Enter your email"
+                            autocomplete="email"
+                            required
+                        >
+                        <span class="form-error">Please enter a valid email</span>
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label" for="login-password">Password</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="password" 
+                                class="form-input" 
+                                id="login-password" 
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                <i class='bx bx-hide'></i>
+                            </button>
+                        </div>
+                        <span class="form-error">Password must be at least 6 characters</span>
+                    </div>
+                    
+                    <!-- Remember Me + Forgot Password -->
+                    <div class="form-row">
+                        <label class="form-checkbox">
+                            <input type="checkbox" id="remember-checkbox">
+                            Remember me
+                        </label>
+                        <a href="#" class="form-forgot">Forgot Password?</a>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="auth-submit">
+                        <i class='bx bx-log-in'></i>
+                        Login
+                    </button>
+                </form>
+                
+                <!-- Divider -->
+                <div class="auth-divider">
+                    <span>or continue with</span>
+                </div>
+                
+                <!-- Switch to Signup -->
+                <div class="auth-switch">
+                    New to EduFlow? <a href="signup.html">Create an account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="../js/auth.js"></script>
+</body>
+</html>

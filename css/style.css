@@ -1,0 +1,1604 @@
+/* ========================================
+   EduFlow AI — Main Stylesheet
+   ========================================
+   
+   STRUCTURE:
+   1. CSS Variables (Color Palette, Spacing, etc.)
+   2. Reset & Base Styles
+   3. Utility Classes
+   4. Buttons
+   5. Navbar
+   6. Hero Section
+   7. Roles Section
+   8. Workflow / Timeline Section
+   9. AI Features Section
+   10. Alerts Section
+   11. Stats Section
+   12. CTA Section
+   13. Footer
+   14. Responsive Styles (Tablet → Mobile → Small Mobile)
+   
+   ======================================== */
+
+
+/* ========================================
+   1. CSS VARIABLES
+   ======================================== */
+:root {
+    /* --- Primary Colors --- */
+    --primary: #1B2A4A;
+    --primary-light: #243B6A;
+    --secondary: #2A9D8F;
+    --secondary-light: #35C4B3;
+    
+    /* --- Role Colors (each role has its own solid color) --- */
+    --teacher: #264653;
+    --student: #2A9D8F;
+    --parent: #E76F51;
+    
+    /* --- AI Accent --- */
+    --ai-accent: #6C3483;
+    --ai-accent-light: #8E44AD;
+    
+    /* --- Backgrounds --- */
+    --bg-light: #F8F9FA;
+    --bg-dark: #1A1A2E;
+    --bg-white: #FFFFFF;
+    
+    /* --- Text Colors --- */
+    --text-primary: #2D3436;
+    --text-secondary: #636E72;
+    --text-light: #B2BEC3;
+    --text-white: #FFFFFF;
+    
+    /* --- Borders & Shadows (no gradients, just clean shadows) --- */
+    --border: #E8ECEF;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
+    
+    /* --- Spacing --- */
+    --section-padding: 100px 0;
+    --container-max: 1200px;
+    
+    /* --- Border Radius --- */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    
+    /* --- Transitions --- */
+    --transition-fast: 0.2s ease;
+    --transition: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+
+/* ========================================
+   2. RESET & BASE STYLES
+   ======================================== */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-primary);
+    background-color: var(--bg-light);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+}
+
+ul {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+
+/* ========================================
+   3. UTILITY CLASSES
+   ======================================== */
+
+/* Container — max-width with center alignment */
+.container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Section Header — centered title block used in every section */
+.section-header {
+    text-align: center;
+    margin-bottom: 64px;
+}
+
+/* Section Tag — small colored badge above title */
+.section-tag {
+    display: inline-block;
+    padding: 6px 16px;
+    background-color: rgba(42, 157, 143, 0.1);
+    color: var(--secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 50px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+}
+
+/* Light variant for dark backgrounds */
+.section-tag-light {
+    background-color: rgba(42, 157, 143, 0.2);
+    color: var(--secondary-light);
+}
+
+/* Section Title */
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+}
+
+/* Light variant for dark backgrounds */
+.section-header-light .section-title {
+    color: var(--text-white);
+}
+
+/* Section Subtitle */
+.section-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+/* Light variant for dark backgrounds */
+.section-header-light .section-subtitle {
+    color: var(--text-light);
+}
+
+
+/* ========================================
+   4. BUTTONS
+   ======================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.btn i {
+    font-size: 1.2rem;
+}
+
+/* Large button */
+.btn-lg {
+    padding: 16px 32px;
+    font-size: 1rem;
+}
+
+/* Primary button — solid teal */
+.btn-primary {
+    background-color: var(--secondary);
+    color: var(--text-white);
+    border-color: var(--secondary);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-light);
+    border-color: var(--secondary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(42, 157, 143, 0.3);
+}
+
+/* Outline button — transparent with teal border */
+.btn-outline {
+    background-color: transparent;
+    color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.btn-outline:hover {
+    background-color: var(--secondary);
+    color: var(--text-white);
+    transform: translateY(-2px);
+}
+
+/* White button — solid white (for dark backgrounds) */
+.btn-white {
+    background-color: var(--bg-white);
+    color: var(--primary);
+    border-color: var(--bg-white);
+}
+
+.btn-white:hover {
+    background-color: transparent;
+    color: var(--text-white);
+    border-color: var(--text-white);
+    transform: translateY(-2px);
+}
+
+/* Outline white button */
+.btn-outline-white {
+    background-color: transparent;
+    color: var(--text-white);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-outline-white:hover {
+    background-color: var(--bg-white);
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+
+/* ========================================
+   5. NAVBAR
+   ======================================== */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 20px 0;
+    transition: var(--transition);
+    background-color: transparent;
+}
+
+/* Scrolled state — white background with shadow */
+.navbar.scrolled {
+    padding: 12px 0;
+    background-color: var(--bg-white);
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Logo */
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-white);
+    z-index: 1001;
+}
+
+.navbar.scrolled .nav-logo {
+    color: var(--primary);
+}
+
+.nav-logo i {
+    font-size: 1.8rem;
+    color: var(--secondary);
+}
+
+.nav-logo strong {
+    color: var(--secondary);
+}
+
+/* Nav Menu — horizontal links */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Nav Links */
+.nav-link {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+}
+
+.navbar.scrolled .nav-link {
+    color: var(--text-secondary);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--text-white);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar.scrolled .nav-link:hover,
+.navbar.scrolled .nav-link.active {
+    color: var(--secondary);
+    background-color: rgba(42, 157, 143, 0.08);
+}
+
+/* Nav CTA Button */
+.nav-cta {
+    padding: 10px 24px;
+    font-size: 0.9rem;
+}
+
+/* Nav Auth Buttons — Login + Sign Up (Desktop) */
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.nav-login {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 8px 4px;
+    transition: var(--transition);
+}
+
+.nav-login:hover {
+    color: var(--text-white);
+}
+
+.navbar.scrolled .nav-login {
+    color: var(--text-secondary);
+}
+
+.navbar.scrolled .nav-login:hover {
+    color: var(--secondary);
+}
+
+/* Mobile-only auth buttons inside nav menu */
+.nav-menu-auth {
+    display: none;
+}
+
+/* Hamburger Menu Button (hidden on desktop) */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+    padding: 4px;
+}
+
+.hamburger span {
+    width: 24px;
+    height: 2.5px;
+    background-color: var(--text-white);
+    border-radius: 2px;
+    transition: var(--transition);
+}
+
+.navbar.scrolled .hamburger span {
+    background-color: var(--text-primary);
+}
+
+/* Hamburger active state — X icon */
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+
+/* ========================================
+   6. HERO SECTION
+   ======================================== */
+.hero {
+    padding: 160px 0 100px;
+    background-color: var(--primary);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle radial highlight (not a gradient — just a soft glow) */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 70% 50%, rgba(42, 157, 143, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Two-column grid layout */
+.hero-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+/* Hero Badge — small tag above title */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background-color: rgba(42, 157, 143, 0.15);
+    color: var(--secondary-light);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 50px;
+    margin-bottom: 24px;
+}
+
+.hero-badge i {
+    font-size: 1rem;
+}
+
+/* Hero Title */
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--text-white);
+    line-height: 1.15;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+}
+
+.hero-title .highlight {
+    color: var(--secondary);
+}
+
+/* Hero Subtitle */
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.8;
+    margin-bottom: 36px;
+    max-width: 520px;
+}
+
+/* Hero Action Buttons */
+.hero-actions {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+}
+
+/* Mini Stats Row */
+.hero-stats-mini {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.hero-stat-item strong {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--text-white);
+    font-weight: 700;
+}
+
+.hero-stat-item span {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.hero-stat-divider {
+    width: 1px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+
+/* --- Hero Visual — Dashboard Card --- */
+.hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+/* Dashboard Card — looks like a mini app window */
+.dashboard-card {
+    background-color: var(--bg-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 400px;
+    overflow: hidden;
+}
+
+/* Dashboard Header — window-style dots */
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border);
+}
+
+.dashboard-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.dashboard-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dashboard-dots span:nth-child(1) { background-color: #FF6B6B; }
+.dashboard-dots span:nth-child(2) { background-color: #FFC048; }
+.dashboard-dots span:nth-child(3) { background-color: #51CF66; }
+
+.dashboard-title {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Dashboard Body */
+.dashboard-body {
+    padding: 24px 20px;
+}
+
+/* Student Profile Row */
+.dashboard-profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: var(--secondary);
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.dashboard-profile h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.dashboard-profile p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Performance Chart (CSS bars) */
+.dashboard-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 120px;
+    padding: 0 8px;
+    margin-bottom: 20px;
+}
+
+.chart-bar {
+    flex: 1;
+    background-color: var(--bar-color, var(--secondary));
+    border-radius: 6px 6px 0 0;
+    height: 0; /* Animated via JS */
+    position: relative;
+    transition: height 1s ease;
+    opacity: 0.85;
+}
+
+.chart-bar:hover {
+    opacity: 1;
+}
+
+.chart-label {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* AI Tip Box */
+.dashboard-ai-tip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background-color: rgba(108, 52, 131, 0.08);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--ai-accent);
+}
+
+.dashboard-ai-tip i {
+    color: var(--ai-accent);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.dashboard-ai-tip span {
+    font-size: 0.8rem;
+    color: var(--ai-accent);
+    font-weight: 500;
+}
+
+
+/* --- Floating Badges (positioned around dashboard card) --- */
+.float-badge {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.float-badge i {
+    font-size: 1.1rem;
+}
+
+/* Badge positions */
+.float-badge-1 {
+    top: 10%;
+    right: -10px;
+}
+
+.float-badge-1 i { color: #51CF66; }
+
+.float-badge-2 {
+    bottom: 25%;
+    left: -30px;
+}
+
+.float-badge-2 i { color: var(--ai-accent); }
+
+.float-badge-3 {
+    bottom: 5%;
+    right: 0;
+}
+
+.float-badge-3 i { color: var(--parent); }
+
+
+/* ========================================
+   7. ROLES SECTION
+   ======================================== */
+.roles {
+    padding: var(--section-padding);
+    background-color: var(--bg-white);
+}
+
+/* 3-column grid */
+.roles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+/* Role Card */
+.role-card {
+    padding: 40px 32px;
+    border-radius: var(--radius-lg);
+    background-color: var(--bg-white);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Colored top border strip */
+.role-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transition: var(--transition);
+}
+
+.role-teacher::before { background-color: var(--teacher); }
+.role-student::before { background-color: var(--student); }
+.role-parent::before { background-color: var(--parent); }
+
+/* Card hover effect */
+.role-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+}
+
+/* Role Icon */
+.role-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.role-icon i {
+    font-size: 1.8rem;
+    color: var(--text-white);
+}
+
+/* Each role icon gets its own solid color */
+.role-teacher .role-icon { background-color: var(--teacher); }
+.role-student .role-icon { background-color: var(--student); }
+.role-parent .role-icon { background-color: var(--parent); }
+
+.role-card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.role-card p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.7;
+}
+
+/* Feature List */
+.role-features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.role-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.role-features li i {
+    font-size: 1.1rem;
+}
+
+/* Check icon colors per role */
+.role-teacher .role-features li i { color: var(--teacher); }
+.role-student .role-features li i { color: var(--student); }
+.role-parent .role-features li i { color: var(--parent); }
+
+
+/* ========================================
+   8. WORKFLOW / TIMELINE SECTION
+   ======================================== */
+.workflow {
+    padding: var(--section-padding);
+    background-color: var(--bg-light);
+}
+
+.timeline {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* Vertical connecting line */
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: var(--border);
+    transform: translateX(-50%);
+}
+
+/* Timeline Item — each step */
+.timeline-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Left-aligned items (odd steps) */
+.timeline-left {
+    justify-content: flex-start;
+    padding-right: calc(50% + 40px);
+}
+
+/* Right-aligned items (even steps) */
+.timeline-right {
+    justify-content: flex-end;
+    padding-left: calc(50% + 40px);
+}
+
+/* Center-aligned (final step) */
+.timeline-center {
+    justify-content: center;
+    padding: 0;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 75px; /* Space for the larger dot + gap */
+}
+
+/* Timeline Dot — numbered circle on the line */
+.timeline-dot {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    box-shadow: 0 0 0 6px var(--bg-light);
+}
+
+.timeline-dot span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-white);
+}
+
+/* Final dot — larger, different color */
+.timeline-dot-final {
+    width: 50px;
+    height: 50px;
+    background-color: var(--primary);
+    top: 0;
+}
+
+/* Timeline Content Card */
+.timeline-content {
+    background-color: var(--bg-white);
+    padding: 28px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+    max-width: 100%;
+}
+
+.timeline-content:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+}
+
+/* Final step content — centered */
+.timeline-content-final {
+    text-align: center;
+    max-width: 400px;
+}
+
+/* Timeline Step Icon */
+.timeline-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    background-color: rgba(42, 157, 143, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.timeline-icon i {
+    font-size: 1.3rem;
+    color: var(--accent, var(--secondary));
+}
+
+.timeline-content h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.timeline-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+
+/* ========================================
+   9. AI FEATURES SECTION (Dark Background)
+   ======================================== */
+.features {
+    padding: var(--section-padding);
+    background-color: var(--bg-dark);
+}
+
+/* 3-column grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+/* Feature Card — glass-like on dark bg */
+.feature-card {
+    padding: 40px 32px;
+    border-radius: var(--radius-lg);
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: var(--transition);
+}
+
+.feature-card:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Feature Icon */
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    background-color: rgba(108, 52, 131, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.feature-icon i {
+    font-size: 1.8rem;
+    color: var(--ai-accent-light);
+}
+
+.feature-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-white);
+    margin-bottom: 12px;
+}
+
+.feature-card p {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+/* Feature Tags — small pills */
+.feature-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.feature-tags span {
+    padding: 4px 14px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--secondary-light);
+    background-color: rgba(42, 157, 143, 0.12);
+    border-radius: 50px;
+}
+
+
+/* ========================================
+   10. ALERTS SECTION
+   ======================================== */
+.alerts {
+    padding: var(--section-padding);
+    background-color: var(--bg-white);
+}
+
+/* 3-column grid */
+.alerts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+/* Alert Card — notification style */
+.alert-card {
+    border-radius: var(--radius-md);
+    background-color: var(--bg-white);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.alert-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Alert Header */
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Alert Icon Circle */
+.alert-icon-wrapper {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.alert-icon-wrapper i {
+    font-size: 1.2rem;
+    color: var(--text-white);
+}
+
+/* Role-specific icon backgrounds */
+.alert-icon-student { background-color: var(--student); }
+.alert-icon-teacher { background-color: var(--teacher); }
+.alert-icon-parent { background-color: var(--parent); }
+
+.alert-header h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.alert-time {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+/* Alert Body */
+.alert-body {
+    padding: 20px 24px;
+}
+
+.alert-body p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* Alert Footer */
+.alert-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+}
+
+/* Alert Action Link */
+.alert-action {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+/* Role-specific action colors */
+.alert-student .alert-action { color: var(--student); }
+.alert-teacher .alert-action { color: var(--teacher); }
+.alert-parent .alert-action { color: var(--parent); }
+
+.alert-action:hover {
+    gap: 10px;
+}
+
+
+/* ========================================
+   11. STATS SECTION
+   ======================================== */
+.stats {
+    padding: var(--section-padding);
+    background-color: var(--bg-light);
+}
+
+/* 4-column grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+}
+
+/* Stat Card */
+.stat-card {
+    text-align: center;
+    padding: 40px 24px;
+    border-radius: var(--radius-lg);
+    background-color: var(--bg-white);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Stat Icon Circle */
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background-color: rgba(42, 157, 143, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon i {
+    font-size: 1.5rem;
+    color: var(--secondary);
+}
+
+/* Stat Number (animated via JS) */
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    letter-spacing: -1px;
+}
+
+.stat-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+
+/* ========================================
+   12. CTA SECTION
+   ======================================== */
+.cta {
+    padding: var(--section-padding);
+    background-color: var(--primary);
+}
+
+.cta-container {
+    text-align: center;
+}
+
+.cta h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-white);
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+}
+
+.cta p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 40px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+
+/* ========================================
+   13. FOOTER
+   ======================================== */
+.footer {
+    padding: 80px 0 0;
+    background-color: var(--bg-dark);
+}
+
+/* Footer Grid — 4 columns (brand takes 2fr) */
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    padding-bottom: 60px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Footer Logo */
+.footer-logo {
+    margin-bottom: 20px;
+}
+
+.footer-logo i {
+    color: var(--secondary);
+}
+
+/* Footer Brand Description */
+.footer-brand p {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    line-height: 1.8;
+    margin-bottom: 24px;
+    max-width: 320px;
+}
+
+/* Social Icons */
+.footer-social {
+    display: flex;
+    gap: 12px;
+}
+
+.footer-social a {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 1.2rem;
+    transition: var(--transition);
+}
+
+.footer-social a:hover {
+    background-color: var(--secondary);
+    color: var(--text-white);
+    transform: translateY(-3px);
+}
+
+/* Footer Link Columns */
+.footer-links h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-white);
+    margin-bottom: 20px;
+}
+
+.footer-links a {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    padding: 6px 0;
+    transition: var(--transition);
+}
+
+.footer-links a:hover {
+    color: var(--secondary);
+    padding-left: 4px;
+}
+
+/* Footer Bottom Bar */
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 0;
+}
+
+.footer-bottom p {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+
+/* ========================================
+   14. RESPONSIVE STYLES
+   ======================================== */
+
+/* --- Tablet (max-width: 1024px) --- */
+@media (max-width: 1024px) {
+    .hero-title {
+        font-size: 2.8rem;
+    }
+    
+    .hero-container {
+        gap: 40px;
+    }
+    
+    .roles-grid,
+    .features-grid,
+    .alerts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+}
+
+
+/* --- Mobile (max-width: 768px) --- */
+@media (max-width: 768px) {
+    /* Mobile Nav Menu — slide-in from right */
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background-color: var(--bg-white);
+        flex-direction: column;
+        padding: 100px 32px 40px;
+        gap: 4px;
+        transition: var(--transition-slow);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .nav-menu.active {
+        right: 0;
+    }
+    
+    .nav-menu .nav-link {
+        color: var(--text-primary);
+        padding: 12px 16px;
+        font-size: 1rem;
+        width: 100%;
+    }
+    
+    .nav-menu .nav-link:hover,
+    .nav-menu .nav-link.active {
+        background-color: rgba(42, 157, 143, 0.08);
+        color: var(--secondary);
+    }
+    
+    /* Hide desktop auth buttons, show hamburger */
+    .nav-auth {
+        display: none;
+    }
+    
+    .hamburger {
+        display: flex;
+    }
+    
+    /* Show mobile auth buttons inside slide-in menu */
+    .nav-menu-auth {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        width: 100%;
+    }
+    
+    .nav-menu-auth .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Hero — single column */
+    .hero {
+        padding: 120px 0 80px;
+    }
+    
+    .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    
+    .hero-subtitle {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .hero-actions {
+        justify-content: center;
+    }
+    
+    .hero-stats-mini {
+        justify-content: center;
+    }
+    
+    .hero-visual {
+        min-height: 340px;
+    }
+    
+    .float-badge-2 {
+        left: 0;
+    }
+    
+    /* Stack cards vertically */
+    .roles-grid,
+    .features-grid,
+    .alerts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    /* Timeline — single column layout */
+    .timeline-line {
+        left: 20px;
+    }
+    
+    .timeline-dot {
+        left: 20px;
+        width: 36px;
+        height: 36px;
+    }
+    
+    .timeline-left,
+    .timeline-right {
+        padding-left: 60px;
+        padding-right: 0;
+        justify-content: flex-start;
+    }
+    
+    .timeline-center {
+        padding-left: 60px;
+        justify-content: flex-start;
+        flex-direction: row;
+        align-items: center;
+        padding-top: 0;
+    }
+    
+    .timeline-dot-final {
+        top: auto;
+    }
+    
+    .timeline-content-final {
+        text-align: left;
+    }
+    
+    /* Smaller titles */
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .cta h2 {
+        font-size: 1.8rem;
+    }
+    
+    /* Footer — single column */
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+}
+
+
+/* --- Small Mobile (max-width: 480px) --- */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-stats-mini {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .hero-stat-divider {
+        width: 40px;
+        height: 1px;
+    }
+    
+    .btn-lg {
+        padding: 14px 24px;
+        font-size: 0.9rem;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .cta-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .role-card,
+    .feature-card,
+    .alert-card {
+        padding: 28px 20px;
+    }
+    
+    .timeline-content {
+        padding: 20px;
+    }
+}

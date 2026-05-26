@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EduFlow AI — Teacher Dashboard">
+    <title>Teacher Dashboard — EduFlow AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-top">
+            <a href="../index.html" class="sidebar-brand">
+                <i class='bx bxs-graduation'></i>
+                <span>EduFlow</span>
+            </a>
+            <nav class="sidebar-menu">
+                <div class="menu-item active" data-panel="overview-panel">
+                    <i class='bx bx-grid-alt'></i>
+                    <span>Overview</span>
+                </div>
+                <div class="menu-item" data-panel="quiz-gen-panel">
+                    <i class='bx bx-brain'></i>
+                    <span>Create Quiz</span>
+                </div>
+                <div class="menu-item" data-panel="students-panel">
+                    <i class='bx bx-user'></i>
+                    <span>Students</span>
+                </div>
+                <div class="menu-item" data-panel="alerts-panel">
+                    <i class='bx bx-bell'></i>
+                    <span>Smart Alerts</span>
+                </div>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="profile-avatar" style="background-color: var(--teacher);">T</div>
+                <div class="user-info">
+                    <span class="user-name" id="profile-name">Teacher Name</span>
+                    <span class="user-role-badge" style="color: #66B5A8;">Teacher</span>
+                </div>
+            </div>
+            <button class="btn-logout" id="logout-button">
+                <i class='bx bx-log-out'></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1 id="panel-title">Teacher Dashboard</h1>
+                <p id="panel-subtitle">Manage your classes and track student progress.</p>
+            </div>
+            <div class="header-date">
+                <span id="current-date-string" style="font-weight: 500; color: var(--text-secondary);"></span>
+            </div>
+        </header>
+
+        <!-- PANEL 1: OVERVIEW -->
+        <section id="overview-panel" class="dashboard-panel active">
+            <div class="stat-group" style="margin-bottom: 2rem;">
+                <div class="dashboard-stat-card">
+                    <div class="stat-icon-wrapper teacher-theme"><i class='bx bx-user'></i></div>
+                    <div class="stat-details">
+                        <h3>32</h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="stat-icon-wrapper student-theme"><i class='bx bx-check-double'></i></div>
+                    <div class="stat-details">
+                        <h3>78%</h3>
+                        <p>Avg. Class Score</p>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="stat-icon-wrapper ai-theme"><i class='bx bx-brain'></i></div>
+                    <div class="stat-details">
+                        <h3 id="stat-quizzes-created">0</h3>
+                        <p>Quizzes Created</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card" style="grid-column: span 2;">
+                    <h3 class="card-title"><i class='bx bx-trending-up'></i> Class Performance Summary</h3>
+                    <div class="db-table-container">
+                        <table class="db-table">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Avg. Score</th>
+                                    <th>Weakest Topic</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Mathematics</td>
+                                    <td>72%</td>
+                                    <td>Quadratic Equations</td>
+                                    <td><span class="status-badge status-struggling">Needs Attention</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Science</td>
+                                    <td>85%</td>
+                                    <td>Chemical Reactions</td>
+                                    <td><span class="status-badge status-good">Good</span></td>
+                                </tr>
+                                <tr>
+                                    <td>English</td>
+                                    <td>91%</td>
+                                    <td>Essay Writing</td>
+                                    <td><span class="status-badge status-good">Excellent</span></td>
+                                </tr>
+                                <tr>
+                                    <td>History</td>
+                                    <td>66%</td>
+                                    <td>Indian Freedom Movement</td>
+                                    <td><span class="status-badge status-struggling">Needs Attention</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-bulb'></i> AI Insight</h3>
+                    <p style="font-style: italic; line-height: 1.6; color: var(--text-secondary);">
+                        "Students are scoring lowest in Mathematics — specifically Quadratic Equations. Consider assigning extra practice worksheets or creating a targeted quiz on this topic."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL 2: CREATE QUIZ -->
+        <section id="quiz-gen-panel" class="dashboard-panel">
+            <div class="card form-card" id="teacher-quiz-setup">
+                <h3 class="card-title"><i class='bx bx-brain'></i> AI Quiz Generator for Your Class</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                    Generate a ready-to-deploy quiz for your students. AI will create high-quality MCQs tailored to the topic, grade, and difficulty you specify.
+                </p>
+                <form id="teacher-quiz-form">
+                    <div class="form-group-db">
+                        <label for="tq-topic">Quiz Topic</label>
+                        <input type="text" id="tq-topic" class="form-input-db" placeholder="e.g., Newton's Laws of Motion" required>
+                    </div>
+                    <div class="form-group-db">
+                        <label for="tq-grade">Class Level</label>
+                        <select id="tq-grade" class="form-select-db" required>
+                            <option value="" disabled selected>Select class</option>
+                            <option value="6th Grade">Class 6</option>
+                            <option value="7th Grade">Class 7</option>
+                            <option value="8th Grade">Class 8</option>
+                            <option value="9th Grade">Class 9</option>
+                            <option value="10th Grade">Class 10</option>
+                            <option value="11th Grade">Class 11</option>
+                            <option value="12th Grade">Class 12</option>
+                        </select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group-db">
+                            <label for="tq-difficulty">Difficulty</label>
+                            <select id="tq-difficulty" class="form-select-db" required>
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        <div class="form-group-db">
+                            <label for="tq-count">Questions</label>
+                            <select id="tq-count" class="form-select-db" required>
+                                <option value="3">3</option>
+                                <option value="5" selected>5</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i class='bx bx-magic-wand'></i> Generate Quiz
+                    </button>
+                </form>
+            </div>
+
+            <!-- Loader -->
+            <div class="spinner-wrapper" id="tq-loader">
+                <div class="db-spinner"></div>
+                <p class="spinner-text">AI is crafting questions for your class...</p>
+            </div>
+
+            <!-- Generated Quiz Preview -->
+            <div class="card" id="tq-preview-box" style="display: none; max-width: 800px; margin: 2rem auto 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 class="card-title" style="margin-bottom: 0;"><i class='bx bx-check-shield'></i> Generated Quiz Preview</h3>
+                    <button class="btn btn-secondary btn-sm" onclick="printTeacherQuiz()"><i class='bx bx-printer'></i> Print Quiz</button>
+                </div>
+                <div id="tq-quiz-list">
+                    <!-- Questions rendered here -->
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;" onclick="document.getElementById('tq-preview-box').style.display='none'; document.getElementById('teacher-quiz-setup').style.display='block';">
+                    <i class='bx bx-plus'></i> Create Another Quiz
+                </button>
+            </div>
+        </section>
+
+        <!-- PANEL 3: STUDENTS LIST -->
+        <section id="students-panel" class="dashboard-panel">
+            <div class="card">
+                <h3 class="card-title"><i class='bx bx-user'></i> Student Performance Tracker</h3>
+                <div class="db-table-container">
+                    <table class="db-table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Score (%)</th>
+                                <th>Weak Area</th>
+                                <th>Status</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Rahul Sharma</td>
+                                <td>62%</td>
+                                <td>Algebra, Quadratics</td>
+                                <td><span class="status-badge status-struggling">Struggling</span></td>
+                                <td>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 62%; background-color: var(--parent);"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Priya Gupta</td>
+                                <td>89%</td>
+                                <td>Organic Chemistry</td>
+                                <td><span class="status-badge status-good">Good</span></td>
+                                <td>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 89%; background-color: var(--secondary);"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Amit Patel</td>
+                                <td>75%</td>
+                                <td>Trigonometry</td>
+                                <td><span class="status-badge status-good">Average</span></td>
+                                <td>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 75%; background-color: var(--secondary);"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sneha Reddy</td>
+                                <td>55%</td>
+                                <td>Electromagnetic Waves</td>
+                                <td><span class="status-badge status-struggling">Struggling</span></td>
+                                <td>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 55%; background-color: var(--parent);"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Vikram Singh</td>
+                                <td>93%</td>
+                                <td>—</td>
+                                <td><span class="status-badge status-good">Excellent</span></td>
+                                <td>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 93%; background-color: var(--secondary);"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL 4: SMART ALERTS -->
+        <section id="alerts-panel" class="dashboard-panel">
+            <div class="card">
+                <h3 class="card-title"><i class='bx bx-bell'></i> Smart Alert Feed</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">AI-generated alerts about students who need your attention.</p>
+
+                <div class="alerts-feed">
+                    <div class="feed-item">
+                        <div class="feed-item-icon" style="background-color: rgba(231,111,81,0.1); color: var(--parent);">
+                            <i class='bx bx-error-circle'></i>
+                        </div>
+                        <div class="feed-item-details">
+                            <div class="feed-item-header">
+                                <span class="feed-item-title">Rahul Sharma — Performance Drop</span>
+                                <span class="feed-item-time">2 hours ago</span>
+                            </div>
+                            <p class="feed-item-body">Rahul's score in Mathematics dropped 18% over the last 3 tests. Weak area: Quadratic Equations. Consider assigning targeted practice.</p>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-item-icon" style="background-color: rgba(231,111,81,0.1); color: var(--parent);">
+                            <i class='bx bx-error-circle'></i>
+                        </div>
+                        <div class="feed-item-details">
+                            <div class="feed-item-header">
+                                <span class="feed-item-title">Sneha Reddy — Consistently Low</span>
+                                <span class="feed-item-time">5 hours ago</span>
+                            </div>
+                            <p class="feed-item-body">Sneha scored below 60% in 4 consecutive Science tests. Electromagnetic Waves is a recurring weak area. Parent notification has been sent.</p>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
+                            <i class='bx bx-trophy'></i>
+                        </div>
+                        <div class="feed-item-details">
+                            <div class="feed-item-header">
+                                <span class="feed-item-title">Vikram Singh — Top Performer</span>
+                                <span class="feed-item-time">Yesterday</span>
+                            </div>
+                            <p class="feed-item-body">Vikram achieved 93% average across all subjects this month. He is the top-performing student in Class 10-B!</p>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-item-icon" style="background-color: rgba(108,52,131,0.1); color: var(--ai-accent);">
+                            <i class='bx bx-brain'></i>
+                        </div>
+                        <div class="feed-item-details">
+                            <div class="feed-item-header">
+                                <span class="feed-item-title">AI Suggestion — Class-Wide</span>
+                                <span class="feed-item-time">Yesterday</span>
+                            </div>
+                            <p class="feed-item-body">60% of students in your class are weak in "Quadratic Equations". AI recommends scheduling a special revision session on this topic.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="../js/teacher_dashboard.js"></script>
+</body>
+
+</html>

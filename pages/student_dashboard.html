@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EduFlow AI — Student Dashboard">
+    <title>Student Dashboard — EduFlow AI</title>
+
+    <!-- Google Fonts — Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Boxicons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ============================================
+         SIDEBAR NAVIGATION
+         ============================================ -->
+    <aside class="sidebar">
+        <div class="sidebar-top">
+            <a href="../index.html" class="sidebar-brand">
+                <i class='bx bxs-graduation'></i>
+                <span>EduFlow</span>
+            </a>
+
+            <nav class="sidebar-menu">
+                <div class="menu-item active" data-panel="overview-panel">
+                    <i class='bx bx-grid-alt'></i>
+                    <span>Overview</span>
+                </div>
+                <div class="menu-item" data-panel="study-panel">
+                    <i class='bx bx-book-open'></i>
+                    <span>AI Study Plan</span>
+                </div>
+                <div class="menu-item" data-panel="doubt-panel">
+                    <i class='bx bx-help-circle'></i>
+                    <span>AI Doubt Solver</span>
+                </div>
+                <div class="menu-item" data-panel="quiz-panel">
+                    <i class='bx bx-brain'></i>
+                    <span>Practice Quizzes</span>
+                </div>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="profile-avatar">S</div>
+                <div class="user-info">
+                    <span class="user-name" id="profile-name">Student Name</span>
+                    <span class="user-role-badge">Student</span>
+                </div>
+            </div>
+            <button class="btn-logout" id="logout-button">
+                <i class='bx bx-log-out'></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ============================================
+         MAIN CONTENT AREA
+         ============================================ -->
+    <main class="main-content">
+        
+        <!-- Header Banner -->
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1 id="panel-title">Welcome Back!</h1>
+                <p id="panel-subtitle">Here is your learning summary for today.</p>
+            </div>
+            <div class="header-date">
+                <span id="current-date-string" style="font-weight: 500; color: var(--text-secondary);"></span>
+            </div>
+        </header>
+
+        <!-- ============================================
+             PANEL 1: OVERVIEW
+             ============================================ -->
+        <section id="overview-panel" class="dashboard-panel active">
+            <!-- Stats Grid -->
+            <div class="stat-group mb-4" style="margin-bottom: 2rem;">
+                <div class="dashboard-stat-card">
+                    <div class="stat-icon-wrapper student-theme">
+                        <i class='bx bx-book-open'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="stat-plans-count">1</h3>
+                        <p>Study Plans Active</p>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="stat-icon-wrapper ai-theme">
+                        <i class='bx bx-help-circle'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="stat-doubts-count">0</h3>
+                        <p>Doubts Resolved</p>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="stat-icon-wrapper student-theme">
+                        <i class='bx bx-award'></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="stat-quizzes-count">0</h3>
+                        <p>Quizzes Completed</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome Board & Action Hub -->
+            <div class="dashboard-grid">
+                <div class="card" style="grid-column: span 2;">
+                    <h3 class="card-title"><i class='bx bx-rocket'></i> Start Learning with AI</h3>
+                    <p style="margin-bottom: 1.5rem; color: var(--text-secondary); line-height: 1.6;">
+                        Welcome to your AI workspace. You can generate custom revisions schedules, solve complicated science and maths questions, and prepare yourself for exams by playing dynamically adaptive quizzes.
+                    </p>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="switchPanel('study-panel')">
+                            Create Study Plan
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchPanel('doubt-panel')">
+                            Solve a Doubt
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-bulb'></i> Daily Tip</h3>
+                    <p style="font-style: italic; line-height: 1.6; color: var(--text-secondary);" id="daily-learning-tip">
+                        "Focus on your weak topics first. Revision of hard subjects in the morning helps improve long-term retention of critical concepts."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             PANEL 2: AI STUDY PLAN
+             ============================================ -->
+        <section id="study-panel" class="dashboard-panel">
+            <div class="card form-card">
+                <h3 class="card-title"><i class='bx bx-brain'></i> Create Study Plan with AI Mentor</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                    Specify details about your subject, class, and weaknesses, and our AI Mentor will design a customized revision checklist for you.
+                </p>
+
+                <form id="study-plan-form">
+                    <div class="form-group-db">
+                        <label for="study-subject">Subject</label>
+                        <input type="text" id="study-subject" class="form-input-db" placeholder="e.g., Mathematics, Physics, Chemistry" required>
+                    </div>
+
+                    <div class="form-group-db">
+                        <label for="study-grade">Grade / Class Level</label>
+                        <select id="study-grade" class="form-select-db" required>
+                            <option value="" disabled selected>Select class</option>
+                            <option value="6th Grade">Class 6</option>
+                            <option value="7th Grade">Class 7</option>
+                            <option value="8th Grade">Class 8</option>
+                            <option value="9th Grade">Class 9</option>
+                            <option value="10th Grade">Class 10</option>
+                            <option value="11th Grade">Class 11</option>
+                            <option value="12th Grade">Class 12</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group-db">
+                        <label>Weak Topics (Press Enter to add topic)</label>
+                        <div class="tag-input-container" id="study-topics-container">
+                            <input type="text" id="study-topics-input" class="tag-input-field" placeholder="Type a topic and press Enter">
+                        </div>
+                    </div>
+
+                    <div class="form-group-db">
+                        <label for="study-goals">Target Goals (Optional)</label>
+                        <input type="text" id="study-goals" class="form-input-db" placeholder="e.g., Score above 90% in exams, revise before test">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i class='bx bx-magic-wand'></i> Generate Study Plan
+                    </button>
+                </form>
+            </div>
+
+            <!-- Loader -->
+            <div class="spinner-wrapper" id="study-loader">
+                <div class="db-spinner"></div>
+                <p class="spinner-text">AI Mentor is analyzing your topics and writing plan...</p>
+            </div>
+
+            <!-- AI Output Card -->
+            <div class="ai-output-container" id="study-output-box">
+                <div class="ai-output-header">
+                    <span class="ai-badge"><i class='bx bx-bot'></i> AI Mentor Plan</span>
+                    <button class="btn btn-secondary btn-sm" onclick="printPlan()">
+                        <i class='bx bx-printer'></i> Print
+                    </button>
+                </div>
+                <div class="ai-output-content" id="study-markdown-content">
+                    <!-- Parsed HTML will load here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             PANEL 3: AI DOUBT SOLVER
+             ============================================ -->
+        <section id="doubt-panel" class="dashboard-panel">
+            <div class="card form-card">
+                <h3 class="card-title"><i class='bx bx-help-circle'></i> Academic Doubt Solver</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                    Ask any question, or upload a photo/screenshot of the question (math equations, science diagrams, textbook problems) for a step-by-step explanation.
+                </p>
+
+                <form id="doubt-form">
+                    <div class="form-group-db">
+                        <label for="doubt-text">Type Your Question / Doubt</label>
+                        <textarea id="doubt-text" class="form-input-db" rows="4" placeholder="Type your doubt here... (e.g. Explain how photosynthesis works, or Solve: x^2 + 5x + 6 = 0)"></textarea>
+                    </div>
+
+                    <div class="form-group-db">
+                        <label>Upload Image of the Problem (Optional)</label>
+                        <div class="image-upload-zone" id="image-dropzone">
+                            <i class='bx bx-cloud-upload'></i>
+                            <p>Drag & drop file here or click to select image</p>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">Supported: JPG, PNG, WEBP</span>
+                            <input type="file" id="doubt-image-file" accept="image/*" style="display: none;">
+                            <img id="image-upload-preview" class="image-preview" alt="Doubt Preview">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i class='bx bx-paper-plane'></i> Solve Doubt
+                    </button>
+                </form>
+            </div>
+
+            <!-- Loader -->
+            <div class="spinner-wrapper" id="doubt-loader">
+                <div class="db-spinner"></div>
+                <p class="spinner-text">AI Tutor is studying the image and preparing explanation...</p>
+            </div>
+
+            <!-- AI Output Card -->
+            <div class="ai-output-container" id="doubt-output-box">
+                <div class="ai-output-header">
+                    <span class="ai-badge"><i class='bx bx-bot'></i> AI Tutor Explanation</span>
+                </div>
+                <div class="ai-output-content" id="doubt-markdown-content">
+                    <!-- Parsed HTML will load here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             PANEL 4: PRACTICE QUIZZES
+             ============================================ -->
+        <section id="quiz-panel" class="dashboard-panel">
+            
+            <!-- Setup Form -->
+            <div class="card form-card" id="quiz-setup-box">
+                <h3 class="card-title"><i class='bx bx-brain'></i> Generate Interactive Quiz</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                    Choose any topic, difficulty, and size. The AI will build a personalized multiple-choice assessment.
+                </p>
+
+                <form id="quiz-setup-form">
+                    <div class="form-group-db">
+                        <label for="quiz-topic">Quiz Topic</label>
+                        <input type="text" id="quiz-topic" class="form-input-db" placeholder="e.g., Solar System, Heredity, Trigonometry, World War II" required>
+                    </div>
+
+                    <div class="form-group-db">
+                        <label for="quiz-grade">Grade Level</label>
+                        <select id="quiz-grade" class="form-select-db" required>
+                            <option value="" disabled selected>Select class</option>
+                            <option value="6th Grade">Class 6</option>
+                            <option value="7th Grade">Class 7</option>
+                            <option value="8th Grade">Class 8</option>
+                            <option value="9th Grade">Class 9</option>
+                            <option value="10th Grade">Class 10</option>
+                            <option value="11th Grade">Class 11</option>
+                            <option value="12th Grade">Class 12</option>
+                        </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group-db">
+                            <label for="quiz-difficulty">Difficulty</label>
+                            <select id="quiz-difficulty" class="form-select-db" required>
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        <div class="form-group-db">
+                            <label for="quiz-count">Number of Questions</label>
+                            <select id="quiz-count" class="form-select-db" required>
+                                <option value="3">3</option>
+                                <option value="5" selected>5</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i class='bx bx-check-shield'></i> Launch AI Quiz
+                    </button>
+                </form>
+            </div>
+
+            <!-- Loader -->
+            <div class="spinner-wrapper" id="quiz-loader">
+                <div class="db-spinner"></div>
+                <p class="spinner-text">AI Quiz Generator is drafting questions for you...</p>
+            </div>
+
+            <!-- Active Quiz Box -->
+            <div class="card quiz-card" id="quiz-active-box" style="display: none;">
+                <div class="quiz-question-box">
+                    <div class="quiz-question-number" id="quiz-q-num">Question 1 of 5</div>
+                    <div class="quiz-question-text" id="quiz-q-text">What is the formula of photosynthesis?</div>
+                </div>
+
+                <div class="quiz-options" id="quiz-options-container">
+                    <!-- Option items will render here dynamically -->
+                </div>
+
+                <div class="quiz-explanation-box" id="quiz-explanation-box">
+                    <h4><i class='bx bx-bulb'></i> Explanation</h4>
+                    <p id="quiz-explanation-text">Explanation content</p>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                    <button class="btn btn-secondary" id="quiz-quit-btn">Quit Quiz</button>
+                    <button class="btn btn-primary" id="quiz-next-btn" disabled>Next Question</button>
+                </div>
+            </div>
+
+            <!-- Score Summary Screen -->
+            <div class="card quiz-card quiz-summary-box" id="quiz-summary-box">
+                <div class="feed-item-icon ai-theme" style="margin: 0 auto 1rem; width: 60px; height: 60px; font-size: 2.2rem;">
+                    <i class='bx bxs-check-shield'></i>
+                </div>
+                <h2>Quiz Completed!</h2>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;" id="quiz-summary-subtitle">Here is your performance score:</p>
+                <div class="quiz-summary-score" id="quiz-summary-score">4/5</div>
+                <p id="quiz-summary-comment" style="font-weight: 500; color: var(--text-primary); margin-bottom: 2rem;">Excellent work!</p>
+                <button class="btn btn-primary" id="quiz-restart-btn">Take Another Quiz</button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Markdown Parser Library (marked.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Student Dashboard JavaScript Logic -->
+    <script src="../js/student_dashboard.js"></script>
+</body>
+
+</html>

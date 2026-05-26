@@ -1,0 +1,36 @@
+# ========================================
+# EduFlow AI — .gitignore
+# ========================================
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (future backend)
+node_modules/
+package-lock.json
+
+# Environment variables (future)
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+logs/
+
+# Build output (future)
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
