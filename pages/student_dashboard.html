@@ -49,7 +49,47 @@
                     <i class='bx bx-brain'></i>
                     <span>Practice Quizzes</span>
                 </div>
+                <div class="menu-item" data-panel="flashcards-panel">
+                    <i class='bx bx-slideshow'></i>
+                    <span>3D Flashcards</span>
+                </div>
+                <div class="menu-item" data-panel="chat-panel">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Messages</span>
+                </div>
             </nav>
+        </div>
+
+        <!-- Lofi Pomodoro Widget -->
+        <div class="sidebar-widget pomodoro-widget">
+            <div class="widget-header" id="pomodoro-toggle">
+                <span><i class='bx bx-timer'></i> Focus Companion</span>
+                <i class='bx bx-chevron-down' id="pomo-toggle-icon"></i>
+            </div>
+            <div class="widget-body" id="pomodoro-body" style="display: none;">
+                <div class="pomo-timer" id="pomo-time-display">25:00</div>
+                <div class="pomo-mode" id="pomo-mode-display">Focus Time</div>
+                <div class="pomo-controls">
+                    <button class="btn btn-secondary btn-sm" id="pomo-start-btn" style="padding: 4px 10px;">
+                        <i class='bx bx-play'></i> Start
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="pomo-reset-btn" style="padding: 4px 10px;">
+                        <i class='bx bx-reset'></i> Reset
+                    </button>
+                </div>
+                <div class="lofi-player" style="margin-top: 1rem; width: 100%;">
+                    <label style="font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">
+                        <i class='bx bx-music'></i> Lofi Radio
+                    </label>
+                    <select id="lofi-select" class="form-select-db btn-sm" style="font-size: 0.75rem; padding: 6px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1); width: 100%;">
+                        <option value="none" selected>Mute / Stop</option>
+                        <option value="beats">Lofi Study Beats</option>
+                        <option value="rain">Soft Rain Ambient</option>
+                        <option value="nature">Forest Ambient</option>
+                    </select>
+                    <audio id="lofi-audio" loop></audio>
+                </div>
+            </div>
         </div>
 
         <div class="sidebar-footer">
@@ -73,11 +113,27 @@
     <main class="main-content">
         
         <!-- Header Banner -->
-        <header class="dashboard-header">
+        <header class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <div class="header-title">
                 <h1 id="panel-title">Welcome Back!</h1>
                 <p id="panel-subtitle">Here is your learning summary for today.</p>
             </div>
+            
+            <!-- User XP and Level Gamified progress indicators -->
+            <div class="user-stats-bar" style="display: flex; align-items: center; gap: 1rem; background: var(--bg-light); padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.05); flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <i class='bx bxs-zap' style="color: #FFB020; font-size: 1.3rem;"></i>
+                    <span id="header-xp" style="font-weight: 700; color: var(--text-primary); font-size: 0.9rem;">0 XP</span>
+                </div>
+                <div style="height: 15px; width: 1px; background: rgba(0,0,0,0.1);"></div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="header-level" class="status-badge status-good" style="font-weight: 700; font-size: 0.8rem; background: var(--secondary); color: #fff; padding: 2px 8px;">Lvl 1</span>
+                    <div style="width: 100px; height: 6px; background: rgba(0,0,0,0.06); border-radius: 10px; overflow: hidden; position: relative;">
+                        <div id="header-level-bar" style="width: 0%; height: 100%; background: var(--secondary); transition: width 0.4s ease; border-radius: 10px;"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="header-date">
                 <span id="current-date-string" style="font-weight: 500; color: var(--text-secondary);"></span>
             </div>
@@ -137,9 +193,31 @@
 
                 <div class="card">
                     <h3 class="card-title"><i class='bx bx-bulb'></i> Daily Tip</h3>
-                    <p style="font-style: italic; line-height: 1.6; color: var(--text-secondary);" id="daily-learning-tip">
+                    <p style="font-style: italic; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0px;" id="daily-learning-tip">
                         "Focus on your weak topics first. Revision of hard subjects in the morning helps improve long-term retention of critical concepts."
                     </p>
+                </div>
+
+                <div class="card" style="grid-column: span 3;">
+                    <h3 class="card-title"><i class='bx bx-award'></i> Achievements & Badges</h3>
+                    <div id="badges-container" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                        <div class="badge-item locked" id="badge-quiz" data-badge="Quiz Master">
+                            <div class="badge-icon-wrap"><i class='bx bx-brain'></i></div>
+                            <span class="badge-name">Quiz Master</span>
+                        </div>
+                        <div class="badge-item locked" id="badge-doubt" data-badge="Doubt Buster">
+                            <div class="badge-icon-wrap"><i class='bx bx-help-circle'></i></div>
+                            <span class="badge-name">Doubt Buster</span>
+                        </div>
+                        <div class="badge-item locked" id="badge-plan" data-badge="Master Planner">
+                            <div class="badge-icon-wrap"><i class='bx bx-calendar-star'></i></div>
+                            <span class="badge-name">Master Planner</span>
+                        </div>
+                        <div class="badge-item locked" id="badge-scholar" data-badge="Gemini Scholar">
+                            <div class="badge-icon-wrap"><i class='bx bxs-graduation'></i></div>
+                            <span class="badge-name">Gemini Scholar</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -198,16 +276,71 @@
                 <p class="spinner-text">AI Mentor is analyzing your topics and writing plan...</p>
             </div>
 
-            <!-- AI Output Card -->
-            <div class="ai-output-container" id="study-output-box">
-                <div class="ai-output-header">
-                    <span class="ai-badge"><i class='bx bx-bot'></i> AI Mentor Plan</span>
-                    <button class="btn btn-secondary btn-sm" onclick="printPlan()">
-                        <i class='bx bx-printer'></i> Print
+            <!-- Kanban Study Board -->
+            <div class="ai-output-container" id="study-output-box" style="display: none; padding: 1.5rem; background-color: var(--bg-white); border-radius: 12px; margin-top: 2rem;">
+                <div class="ai-output-header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <span class="ai-badge" style="background-color: var(--secondary);"><i class='bx bx-task'></i> Active Study Board</span>
+                    <button class="btn btn-secondary btn-sm" id="btn-reset-kanban" style="padding: 4px 10px;">
+                        <i class='bx bx-refresh'></i> Generate New
                     </button>
                 </div>
-                <div class="ai-output-content" id="study-markdown-content">
-                    <!-- Parsed HTML will load here -->
+                
+                <div class="kanban-board-wrapper" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                    <!-- Column 1: TO DO -->
+                    <div class="kanban-column" data-status="todo" style="background: var(--bg-light); padding: 1rem; border-radius: 10px; min-height: 350px; display: flex; flex-direction: column;">
+                        <div class="kanban-column-header" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #E74C3C; padding-left: 8px; margin-bottom: 1rem;">
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary);">To Do</h4>
+                            <span class="kanban-count" id="count-todo" style="background: rgba(231, 76, 60, 0.1); color: #E74C3C; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 20px;">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="kanban-todo" style="flex-grow: 1; display: flex; flex-direction: column; gap: 0.8rem; min-height: 250px;">
+                            <!-- Cards render here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Column 2: IN PROGRESS -->
+                    <div class="kanban-column" data-status="inprogress" style="background: var(--bg-light); padding: 1rem; border-radius: 10px; min-height: 350px; display: flex; flex-direction: column;">
+                        <div class="kanban-column-header" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #F1C40F; padding-left: 8px; margin-bottom: 1rem;">
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary);">In Progress</h4>
+                            <span class="kanban-count" id="count-inprogress" style="background: rgba(241, 196, 15, 0.1); color: #F1C40F; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 20px;">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="kanban-inprogress" style="flex-grow: 1; display: flex; flex-direction: column; gap: 0.8rem; min-height: 250px;">
+                            <!-- Cards render here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Column 3: COMPLETED -->
+                    <div class="kanban-column" data-status="completed" style="background: var(--bg-light); padding: 1rem; border-radius: 10px; min-height: 350px; display: flex; flex-direction: column;">
+                        <div class="kanban-column-header" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #2ECC71; padding-left: 8px; margin-bottom: 1rem;">
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary);">Completed</h4>
+                            <span class="kanban-count" id="count-completed" style="background: rgba(46, 204, 113, 0.1); color: #2ECC71; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 20px;">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="kanban-completed" style="flex-grow: 1; display: flex; flex-direction: column; gap: 0.8rem; min-height: 250px;">
+                            <!-- Cards render here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Joined Classrooms & Parent Connections -->
+            <div class="dashboard-grid" style="margin-top: 2rem;">
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-group'></i> Join a Classroom</h3>
+                    <form id="join-classroom-form" style="display: flex; gap: 8px;">
+                        <input type="text" id="join-class-code" class="form-input-db" placeholder="Enter Class Code (e.g. EDUX89)" style="flex-grow: 1; text-transform: uppercase;" required>
+                        <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">Join</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-school'></i> My Classrooms</h3>
+                    <div id="joined-classrooms-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                        <p style="font-size: 0.82rem; color: var(--text-secondary);">No classrooms joined yet.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-user-voice'></i> Linked Parent</h3>
+                    <div id="linked-parent-info" style="margin-top: 8px;">
+                        <p style="font-size: 0.82rem; color: var(--text-secondary);">No parent linked yet. Share your student email with your parent to link.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -216,49 +349,71 @@
              PANEL 3: AI DOUBT SOLVER
              ============================================ -->
         <section id="doubt-panel" class="dashboard-panel">
-            <div class="card form-card">
-                <h3 class="card-title"><i class='bx bx-help-circle'></i> Academic Doubt Solver</h3>
-                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
-                    Ask any question, or upload a photo/screenshot of the question (math equations, science diagrams, textbook problems) for a step-by-step explanation.
-                </p>
+            <div class="doubt-layout-wrapper" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; align-items: start;">
+                
+                <!-- Left: Form and explanations -->
+                <div class="doubt-left-side" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="card form-card">
+                        <h3 class="card-title"><i class='bx bx-help-circle'></i> Academic Doubt Solver</h3>
+                        <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                            Ask any question, or upload a photo/screenshot of the question (math equations, science diagrams, textbook problems) for a step-by-step explanation.
+                        </p>
 
-                <form id="doubt-form">
-                    <div class="form-group-db">
-                        <label for="doubt-text">Type Your Question / Doubt</label>
-                        <textarea id="doubt-text" class="form-input-db" rows="4" placeholder="Type your doubt here... (e.g. Explain how photosynthesis works, or Solve: x^2 + 5x + 6 = 0)"></textarea>
+                        <form id="doubt-form">
+                            <div class="form-group-db">
+                                <label for="doubt-text">Type Your Question / Doubt</label>
+                                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                                    <textarea id="doubt-text" class="form-input-db" rows="4" placeholder="Type your doubt here... (e.g. Explain how photosynthesis works, or Solve: x^2 + 5x + 6 = 0)" style="flex-grow: 1;"></textarea>
+                                    <button type="button" id="btn-doubt-mic" class="btn btn-secondary" style="height: 50px; width: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border-radius: 8px; flex-shrink: 0;" title="Speak question (Voice-to-Text)">
+                                        <i class='bx bx-microphone' id="mic-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group-db">
+                                <label>Upload Image of the Problem (Optional)</label>
+                                <div class="image-upload-zone" id="image-dropzone">
+                                    <i class='bx bx-cloud-upload'></i>
+                                    <p>Drag & drop file here or click to select image</p>
+                                    <span style="font-size: 0.8rem; color: var(--text-secondary);">Supported: JPG, PNG, WEBP</span>
+                                    <input type="file" id="doubt-image-file" accept="image/*" style="display: none;">
+                                    <img id="image-upload-preview" class="image-preview" alt="Doubt Preview">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                                <i class='bx bx-paper-plane'></i> Solve Doubt
+                            </button>
+                        </form>
                     </div>
 
-                    <div class="form-group-db">
-                        <label>Upload Image of the Problem (Optional)</label>
-                        <div class="image-upload-zone" id="image-dropzone">
-                            <i class='bx bx-cloud-upload'></i>
-                            <p>Drag & drop file here or click to select image</p>
-                            <span style="font-size: 0.8rem; color: var(--text-secondary);">Supported: JPG, PNG, WEBP</span>
-                            <input type="file" id="doubt-image-file" accept="image/*" style="display: none;">
-                            <img id="image-upload-preview" class="image-preview" alt="Doubt Preview">
+                    <!-- Loader -->
+                    <div class="spinner-wrapper" id="doubt-loader">
+                        <div class="db-spinner"></div>
+                        <p class="spinner-text">AI Tutor is studying the image and preparing explanation...</p>
+                    </div>
+
+                    <!-- AI Output Card -->
+                    <div class="ai-output-container" id="doubt-output-box" style="margin-top: 0;">
+                        <div class="ai-output-header">
+                            <span class="ai-badge"><i class='bx bx-bot'></i> AI Tutor Explanation</span>
+                        </div>
+                        <div class="ai-output-content" id="doubt-markdown-content">
+                            <!-- Parsed HTML will load here -->
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
-                        <i class='bx bx-paper-plane'></i> Solve Doubt
-                    </button>
-                </form>
-            </div>
-
-            <!-- Loader -->
-            <div class="spinner-wrapper" id="doubt-loader">
-                <div class="db-spinner"></div>
-                <p class="spinner-text">AI Tutor is studying the image and preparing explanation...</p>
-            </div>
-
-            <!-- AI Output Card -->
-            <div class="ai-output-container" id="doubt-output-box">
-                <div class="ai-output-header">
-                    <span class="ai-badge"><i class='bx bx-bot'></i> AI Tutor Explanation</span>
                 </div>
-                <div class="ai-output-content" id="doubt-markdown-content">
-                    <!-- Parsed HTML will load here -->
+
+                <!-- Right: Solved Doubts Sidebar -->
+                <div class="card doubt-right-side" style="max-height: 600px; display: flex; flex-direction: column;">
+                    <h3 class="card-title" style="font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem;">
+                        <i class='bx bx-history'></i> Solved Doubts History
+                    </h3>
+                    <div id="doubt-history-list" style="overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 0.8rem; padding-right: 4px; max-height: 480px;">
+                        <p style="font-size: 0.82rem; color: var(--text-secondary); text-align: center; margin: 2rem 0;">No doubts solved yet</p>
+                    </div>
                 </div>
+
             </div>
         </section>
 
@@ -313,6 +468,17 @@
                         </div>
                     </div>
 
+                    <!-- AI Bot Battle Mode Toggle -->
+                    <div class="form-group-db" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-light); padding: 12px 16px; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid rgba(0,0,0,0.04); margin-top: 1rem;">
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <label style="margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--primary);">🤖 AI Bot Battle Mode</label>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">Race against the AI mentor! Correct answers deal damage!</span>
+                        </div>
+                        <label class="switch-toggle" style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                            <input type="checkbox" id="quiz-battle-toggle" style="display: block; width: 20px; height: 20px; accent-color: var(--secondary);">
+                        </label>
+                    </div>
+
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
                         <i class='bx bx-check-shield'></i> Launch AI Quiz
                     </button>
@@ -327,6 +493,31 @@
 
             <!-- Active Quiz Box -->
             <div class="card quiz-card" id="quiz-active-box" style="display: none;">
+                
+                <!-- Battle Mode HUD (Visible only when battle toggle is active) -->
+                <div class="battle-hud" id="quiz-battle-hud" style="display: none; background: #1B2A4A; color: #fff; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: 700; font-size: 0.85rem;"><i class='bx bx-user'></i> You (Player)</span>
+                        <span style="font-weight: 700; font-size: 0.85rem; color: #E76F51;"><i class='bx bx-bot'></i> AI Opponent</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center;">
+                        <div>
+                            <div class="health-bar" style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                                <div id="player-health" style="width: 100%; height: 100%; background: #2ECC71; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="health-bar" style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                                <div id="bot-health" style="width: 100%; height: 100%; background: #E74C3C; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; opacity: 0.8; margin-top: 4px;">
+                        <span id="player-hp-text">HP: 3/3</span>
+                        <span id="bot-hp-text">HP: 3/3</span>
+                    </div>
+                </div>
+
                 <div class="quiz-question-box">
                     <div class="quiz-question-number" id="quiz-q-num">Question 1 of 5</div>
                     <div class="quiz-question-text" id="quiz-q-text">What is the formula of photosynthesis?</div>
@@ -359,6 +550,156 @@
                 <button class="btn btn-primary" id="quiz-restart-btn">Take Another Quiz</button>
             </div>
 
+        </section>
+
+        <!-- ============================================
+             PANEL 5: 3D FLASHCARDS
+             ============================================ -->
+        <section id="flashcards-panel" class="dashboard-panel">
+            <!-- Flashcards Generator Form -->
+            <div class="card form-card" id="fc-setup-box">
+                <h3 class="card-title"><i class='bx bx-slideshow'></i> Create Active Recall Flashcards</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                    Paste your study notes or type a chapter topic, and the AI Mentor will generate a deck of interactive 3D flashcards.
+                </p>
+
+                <form id="fc-setup-form">
+                    <div class="form-group-db">
+                        <label for="fc-topic">Topic or Study Notes</label>
+                        <textarea id="fc-topic" class="form-input-db" rows="4" placeholder="e.g. Newton's laws of motion, Photosynthesis steps, or paste your class notes directly here..." required></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group-db">
+                            <label for="fc-grade">Grade Level</label>
+                            <select id="fc-grade" class="form-select-db" required>
+                                <option value="" disabled selected>Select class</option>
+                                <option value="6th Grade">Class 6</option>
+                                <option value="7th Grade">Class 7</option>
+                                <option value="8th Grade">Class 8</option>
+                                <option value="9th Grade">Class 9</option>
+                                <option value="10th Grade" selected>Class 10</option>
+                                <option value="11th Grade">Class 11</option>
+                                <option value="12th Grade">Class 12</option>
+                            </select>
+                        </div>
+                        <div class="form-group-db">
+                            <label for="fc-count">Number of Cards</label>
+                            <select id="fc-count" class="form-select-db" required>
+                                <option value="3">3 Cards</option>
+                                <option value="5" selected>5 Cards</option>
+                                <option value="8">8 Cards</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i class='bx bx-layer-plus'></i> Generate 3D Flashcards
+                    </button>
+                </form>
+            </div>
+
+            <!-- Loader -->
+            <div class="spinner-wrapper" id="fc-loader" style="display: none;">
+                <div class="db-spinner"></div>
+                <p class="spinner-text">AI Mentor is reading your notes and creating 3D flashcards...</p>
+            </div>
+
+            <!-- Flashcard Active Arena -->
+            <div class="card fc-card-container" id="fc-active-box" style="display: none; max-width: 500px; margin: 0 auto; text-align: center; padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <span id="fc-counter" style="font-size: 0.82rem; font-weight: 700; color: var(--secondary);">Card 1 of 5</span>
+                    <span style="font-size: 0.78rem; color: var(--text-secondary);"><i class='bx bx-info-circle'></i> Click card to flip</span>
+                </div>
+
+                <!-- 3D Card Scene -->
+                <div class="flashcard-scene" style="perspective: 1000px; width: 100%; height: 260px; margin-bottom: 2rem; cursor: pointer;">
+                    <div class="flashcard-inner" id="flashcard-inner" style="position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d;">
+                        
+                        <!-- Front Face -->
+                        <div class="flashcard-face flashcard-front" style="position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; border: 2px solid rgba(0,0,0,0.06); background: var(--bg-light); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem;">
+                            <h3 id="fc-front-text" style="font-size: 1.15rem; font-weight: 700; color: var(--primary); line-height: 1.5;">Question or term goes here?</h3>
+                            <span style="position: absolute; bottom: 12px; font-size: 0.7rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Question</span>
+                        </div>
+                        
+                        <!-- Back Face -->
+                        <div class="flashcard-face flashcard-back" style="position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; border: 2px solid rgba(42, 157, 143, 0.15); background: rgba(42, 157, 143, 0.03); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; transform: rotateY(180deg);">
+                            <p id="fc-back-text" style="font-size: 1rem; font-weight: 600; color: var(--text-primary); line-height: 1.6;">Answer or explanation goes here.</p>
+                            <p id="fc-exp-text" style="font-size: 0.8rem; color: var(--secondary); font-style: italic; margin-top: 10px;">Memory hook or tip</p>
+                            <span style="position: absolute; bottom: 12px; font-size: 0.7rem; color: var(--secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Answer</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Active Recall Action Buttons -->
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn btn-secondary" id="fc-still-learning-btn" style="border-color: #E74C3C; color: #E74C3C; background: rgba(231,76,60,0.04);">
+                        <i class='bx bx-x-circle'></i> Still Learning
+                    </button>
+                    <button class="btn btn-primary" id="fc-mastered-btn" style="background: var(--secondary);">
+                        <i class='bx bx-check-circle'></i> Mastered!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Flashcards Completed Score Box -->
+            <div class="card quiz-card quiz-summary-box" id="fc-summary-box" style="display: none;">
+                <div class="feed-item-icon student-theme" style="margin: 0 auto 1rem; width: 60px; height: 60px; font-size: 2.2rem; background: rgba(42, 157, 143, 0.1); color: var(--secondary);">
+                    <i class='bx bxs-award'></i>
+                </div>
+                <h2>Deck Completed!</h2>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;" id="fc-summary-subtitle">You have successfully reviewed all cards.</p>
+                <div class="quiz-summary-score" id="fc-summary-score" style="color: var(--secondary);">5 / 5</div>
+                <p style="font-weight: 500; color: var(--text-primary); margin-bottom: 2rem;">Keep up the active recall practice for maximum exam scores!</p>
+                <button class="btn btn-primary" id="fc-restart-btn">Review Another Deck</button>
+            </div>
+        <!-- ============================================
+             PANEL 6: DIRECT MESSAGES
+             ============================================ -->
+        <section id="chat-panel" class="dashboard-panel">
+            <div class="chat-container">
+                <!-- Sidebar contacts list -->
+                <div class="chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <i class='bx bx-message-square-dots'></i> Contacts
+                    </div>
+                    <div class="chat-contacts-list" id="chat-contacts-list">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Chat active area -->
+                <div class="chat-active-area" id="chat-active-area">
+                    <!-- Default Empty State -->
+                    <div class="chat-empty-state" id="chat-empty-state" style="display: flex;">
+                        <i class='bx bx-conversation'></i>
+                        <p>Select a contact from the sidebar to start messaging.</p>
+                    </div>
+
+                    <!-- Active Chat Feed (Hidden by default) -->
+                    <div id="chat-active-feed" style="display: none; height: 100%; flex-direction: column;">
+                        <div class="chat-active-header">
+                            <div class="chat-contact-avatar" id="active-chat-avatar">T</div>
+                            <div class="chat-contact-info">
+                                <span class="chat-active-title" id="active-chat-name">Teacher Name</span>
+                                <span class="chat-active-subtitle" id="active-chat-role">Teacher</span>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages-container" id="chat-messages-container">
+                            <!-- Message bubbles go here -->
+                        </div>
+
+                        <form id="chat-send-form" class="chat-input-bar">
+                            <input type="text" id="chat-message-input" class="chat-input-field" placeholder="Type your message..." required autocomplete="off">
+                            <button type="submit" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border-radius: 8px; flex-shrink: 0;">
+                                <i class='bx bx-send' style="font-size: 1.25rem;"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </section>
 
     </main>

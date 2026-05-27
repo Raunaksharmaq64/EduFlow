@@ -262,18 +262,62 @@ function showToast(message, type = 'info') {
     }
     
     const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+    const isErrorOrWarning = type === 'error' || type === 'warning';
+    toast.className = `toast toast-${type} ${isErrorOrWarning ? 'toast-shake' : ''}`;
     
     let icon = 'bx-info-circle';
     if (type === 'success') icon = 'bx-check-circle';
     else if (type === 'error') icon = 'bx-error-circle';
     else if (type === 'warning') icon = 'bx-error';
     
+    const isOffline = message.includes('Server is offline') || message.includes('offline');
+    
     toast.innerHTML = `
         <i class='bx ${icon} toast-icon'></i>
-        <span class="toast-message">${message}</span>
-        <button class="toast-close">&times;</button>
+        <div class="toast-content" style="display: flex; flex-direction: column; flex-grow: 1;">
+            <span class="toast-message">${message}</span>
+            ${isOffline ? `
+                <button class="toast-retry-btn" id="toast-retry-btn">
+                    <i class='bx bx-refresh'></i> Retry Connection
+                </button>
+            ` : ''}
+        </div>
+        <button class="toast-close" style="align-self: flex-start; margin-left: auto;">&times;</button>
+        <div class="toast-progress"></div>
     `;
+    
+    const progressEl = toast.querySelector('.toast-progress');
+    if (progressEl) {
+        progressEl.style.animation = 'toast-progress-shrink 4.5s linear forwards';
+    }
+    
+    if (isOffline) {
+        const retryBtn = toast.querySelector('#toast-retry-btn');
+        if (retryBtn) {
+            retryBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                retryBtn.disabled = true;
+                retryBtn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Checking...";
+                try {
+                    const testRes = await fetch('http://127.0.0.1:8000/', { method: 'GET' });
+                    if (testRes.ok) {
+                        retryBtn.innerHTML = "<i class='bx bx-check'></i> Connected!";
+                        toast.classList.add('toast-fade-out');
+                        setTimeout(() => toast.remove(), 300);
+                        showToast('🎉 Server is back online! Reconnecting...', 'success');
+                    } else {
+                        throw new Error('Offline');
+                    }
+                } catch (err) {
+                    toast.classList.remove('toast-shake');
+                    void toast.offsetWidth; // trigger reflow
+                    toast.classList.add('toast-shake');
+                    retryBtn.disabled = false;
+                    retryBtn.innerHTML = "<i class='bx bx-refresh'></i> Retry Failed. Try Again?";
+                }
+            });
+        }
+    }
     
     toast.querySelector('.toast-close').addEventListener('click', () => {
         toast.classList.add('toast-fade-out');
@@ -284,6 +328,9 @@ function showToast(message, type = 'info') {
     
     setTimeout(() => {
         if (toast.parentElement) {
+            const retryBtn = toast.querySelector('#toast-retry-btn');
+            if (retryBtn && retryBtn.disabled) return; // don't auto remove if checking
+            
             toast.classList.add('toast-fade-out');
             setTimeout(() => {
                 toast.remove();

@@ -6,8 +6,8 @@ from typing import Optional
 from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
-from backend.models.user import TokenData
-from backend.config.db import get_database
+from models.user import TokenData
+from config.db import get_database
 
 load_dotenv()
 

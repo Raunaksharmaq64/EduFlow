@@ -41,6 +41,10 @@
                     <i class='bx bx-bell'></i>
                     <span>Smart Alerts</span>
                 </div>
+                <div class="menu-item" data-panel="chat-panel">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Messages</span>
+                </div>
             </nav>
         </div>
         <div class="sidebar-footer">
@@ -147,6 +151,25 @@
                     </p>
                 </div>
             </div>
+
+            <!-- Classroom Planner Section -->
+            <div class="dashboard-grid" style="margin-top: 2rem;">
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-plus-circle'></i> Create a Classroom</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem;">Generate a unique code for students to join.</p>
+                    <form id="create-classroom-form" style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="create-class-name" class="form-input-db" placeholder="e.g. Science Class 10-A" required>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Classroom</button>
+                    </form>
+                </div>
+                <div class="card" style="grid-column: span 2;">
+                    <h3 class="card-title"><i class='bx bx-layer'></i> My Classrooms</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem;">Share join codes with students to invite them (click code to copy).</p>
+                    <div id="teacher-classrooms-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">No classrooms created yet.</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- PANEL 2: CREATE QUIZ -->
@@ -221,77 +244,166 @@
 
         <!-- PANEL 3: STUDENTS LIST -->
         <section id="students-panel" class="dashboard-panel">
-            <div class="card">
-                <h3 class="card-title"><i class='bx bx-user'></i> Student Performance Tracker</h3>
-                <div class="db-table-container">
-                    <table class="db-table">
-                        <thead>
-                            <tr>
-                                <th>Student Name</th>
-                                <th>Score (%)</th>
-                                <th>Weak Area</th>
-                                <th>Status</th>
-                                <th>Progress</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Rahul Sharma</td>
-                                <td>62%</td>
-                                <td>Algebra, Quadratics</td>
-                                <td><span class="status-badge status-struggling">Struggling</span></td>
-                                <td>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar-fill" style="width: 62%; background-color: var(--parent);"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Priya Gupta</td>
-                                <td>89%</td>
-                                <td>Organic Chemistry</td>
-                                <td><span class="status-badge status-good">Good</span></td>
-                                <td>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar-fill" style="width: 89%; background-color: var(--secondary);"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Amit Patel</td>
-                                <td>75%</td>
-                                <td>Trigonometry</td>
-                                <td><span class="status-badge status-good">Average</span></td>
-                                <td>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar-fill" style="width: 75%; background-color: var(--secondary);"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Sneha Reddy</td>
-                                <td>55%</td>
-                                <td>Electromagnetic Waves</td>
-                                <td><span class="status-badge status-struggling">Struggling</span></td>
-                                <td>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar-fill" style="width: 55%; background-color: var(--parent);"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Vikram Singh</td>
-                                <td>93%</td>
-                                <td>—</td>
-                                <td><span class="status-badge status-good">Excellent</span></td>
-                                <td>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar-fill" style="width: 93%; background-color: var(--secondary);"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div style="display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; align-items: start;">
+                <!-- Left: Classrooms Selection List -->
+                <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <h3 class="card-title" style="margin-bottom: 0.5rem;"><i class='bx bx-school'></i> Select Class</h3>
+                    <div id="students-classroom-selector" style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Classroom items here -->
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">Create a class first.</p>
+                    </div>
+                </div>
+
+                <!-- Right: Classroom Student List and Detail View -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Students list in selected classroom -->
+                    <div class="card" id="classroom-students-card" style="display: none;">
+                        <h3 class="card-title" id="selected-class-title"><i class='bx bx-group'></i> Students in Class</h3>
+                        <div class="db-table-container" style="margin-top: 1rem;">
+                            <table class="db-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Email</th>
+                                        <th>XP</th>
+                                        <th>Level</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classroom-students-table-body">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- AI Class Insights & Lesson Architect Card -->
+                    <div class="card" id="classroom-ai-insights-card" style="display: none;">
+                        <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                            <i class='bx bx-brain' style="color: var(--ai-accent); font-size: 1.5rem;"></i>
+                            AI Class Insights & Lesson Architect
+                        </h3>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
+                            AI scans the collective performance of all students in this class to identify weak concepts and construct a custom lesson plan.
+                        </p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px;">
+                                <div style="background: rgba(42, 157, 143, 0.1); color: var(--secondary); padding: 10px; border-radius: 8px; font-size: 1.5rem; display: flex;">
+                                    <i class='bx bx-check-double'></i>
+                                </div>
+                                <div>
+                                    <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Class Avg Score</span>
+                                    <h4 id="insights-class-average" style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-top: 2px;">--</h4>
+                                </div>
+                            </div>
+                            <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px;">
+                                <div style="background: rgba(231, 111, 81, 0.1); color: var(--parent); padding: 10px; border-radius: 8px; font-size: 1.5rem; display: flex;">
+                                    <i class='bx bx-trending-down'></i>
+                                </div>
+                                <div>
+                                    <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Identified Weak Topic</span>
+                                    <h4 id="insights-weak-topic" style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-top: 2px;">--</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Struggling Students List -->
+                        <div id="struggling-students-box" style="display: none; background: rgba(231, 111, 81, 0.04); border: 1px solid rgba(231, 111, 81, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--parent); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <i class='bx bx-error-circle'></i> Students struggling with this topic
+                            </h4>
+                            <div id="struggling-students-list" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <!-- Dynamic -->
+                            </div>
+                        </div>
+
+                        <button id="generate-lesson-plan-btn" class="btn btn-primary" style="width: 100%;">
+                            <i class='bx bx-magic-wand'></i> Generate AI Lesson Plan
+                        </button>
+
+                        <!-- Loader -->
+                        <div class="spinner-wrapper" id="lesson-plan-loader" style="display: none; margin: 1.5rem 0; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                            <div class="db-spinner" style="border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--secondary); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite;"></div>
+                            <p class="spinner-text" style="font-size: 0.85rem; color: var(--text-secondary);">AI is designing exit ticket questions & lesson outline...</p>
+                        </div>
+
+                        <!-- Generated Plan Viewport -->
+                        <div id="lesson-plan-output-box" style="display: none; margin-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h4 style="font-size: 1rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 6px;">
+                                    <i class='bx bx-book-open' style="color: var(--secondary);"></i> Generated Revision Lesson Plan
+                                </h4>
+                                <button class="btn btn-secondary btn-sm" id="print-lesson-plan-btn" style="padding: 4px 10px; font-size: 0.78rem;">
+                                    <i class='bx bx-printer'></i> Print Lesson Plan
+                                </button>
+                            </div>
+                            <div id="lesson-plan-markdown-viewport" style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); max-height: 500px; overflow-y: auto; line-height: 1.7; color: var(--text-primary);">
+                                <!-- Content -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Student Detailed Progress Card -->
+                    <div class="card" id="student-detail-card" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <h3 class="card-title" id="detail-student-name" style="margin-bottom: 2px;">Student Name</h3>
+                                <p id="detail-student-email" style="font-size: 0.8rem; color: var(--text-secondary);">student@email.com</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="closeStudentDetails()">&times; Close</button>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem;">
+                            <div style="background: var(--bg-light); padding: 12px; border-radius: 8px; text-align: center; border: 1px solid rgba(0,0,0,0.05);">
+                                <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Total XP</span>
+                                <h4 id="detail-student-xp" style="font-size: 1.4rem; font-weight: 800; color: var(--secondary); margin-top: 4px;">0 XP</h4>
+                            </div>
+                            <div style="background: var(--bg-light); padding: 12px; border-radius: 8px; text-align: center; border: 1px solid rgba(0,0,0,0.05);">
+                                <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Level</span>
+                                <h4 id="detail-student-level" style="font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-top: 4px;">Lvl 1</h4>
+                            </div>
+                            <div style="background: var(--bg-light); padding: 12px; border-radius: 8px; text-align: center; border: 1px solid rgba(0,0,0,0.05);">
+                                <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Solved Doubts</span>
+                                <h4 id="detail-student-doubts" style="font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-top: 4px;">0</h4>
+                            </div>
+                            <div style="background: var(--bg-light); padding: 12px; border-radius: 8px; text-align: center; border: 1px solid rgba(0,0,0,0.05);">
+                                <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Study Plans</span>
+                                <h4 id="detail-student-plans" style="font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-top: 4px;">0</h4>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <!-- Latest Quiz Score -->
+                            <div style="border: 1px solid rgba(0,0,0,0.05); padding: 1rem; border-radius: 8px;">
+                                <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                    <i class='bx bx-brain' style="color: var(--secondary);"></i> Latest Quiz Attempt
+                                </h4>
+                                <div id="detail-student-quiz" style="font-size: 0.85rem; color: var(--text-primary);">
+                                    No quiz taken yet.
+                                </div>
+                            </div>
+                            <!-- Badges -->
+                            <div style="border: 1px solid rgba(0,0,0,0.05); padding: 1rem; border-radius: 8px;">
+                                <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                    <i class='bx bx-award' style="color: #FFB020;"></i> Earned Badges
+                                </h4>
+                                <div id="detail-student-badges" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Real Quiz Score Timeline -->
+                        <div style="margin-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 1.5rem;">
+                            <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <i class='bx bx-time-five' style="color: var(--secondary);"></i> Quiz History Timeline
+                            </h4>
+                            <div id="detail-student-history-timeline" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; margin-top: 10px;">
+                                <p style="font-size: 0.8rem; color: var(--text-secondary);">No history available.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -356,10 +468,57 @@
                     </div>
                 </div>
             </div>
+        <!-- ============================================
+             PANEL 5: DIRECT MESSAGES
+             ============================================ -->
+        <section id="chat-panel" class="dashboard-panel">
+            <div class="chat-container">
+                <!-- Sidebar contacts list -->
+                <div class="chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <i class='bx bx-message-square-dots'></i> Contacts
+                    </div>
+                    <div class="chat-contacts-list" id="chat-contacts-list">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Chat active area -->
+                <div class="chat-active-area" id="chat-active-area">
+                    <!-- Default Empty State -->
+                    <div class="chat-empty-state" id="chat-empty-state" style="display: flex;">
+                        <i class='bx bx-conversation'></i>
+                        <p>Select a contact from the sidebar to start messaging.</p>
+                    </div>
+
+                    <!-- Active Chat Feed (Hidden by default) -->
+                    <div id="chat-active-feed" style="display: none; height: 100%; flex-direction: column;">
+                        <div class="chat-active-header">
+                            <div class="chat-contact-avatar" id="active-chat-avatar">C</div>
+                            <div class="chat-contact-info">
+                                <span class="chat-active-title" id="active-chat-name">Contact Name</span>
+                                <span class="chat-active-subtitle" id="active-chat-role">Role</span>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages-container" id="chat-messages-container">
+                            <!-- Message bubbles go here -->
+                        </div>
+
+                        <form id="chat-send-form" class="chat-input-bar">
+                            <input type="text" id="chat-message-input" class="chat-input-field" placeholder="Type your message..." required autocomplete="off">
+                            <button type="submit" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border-radius: 8px; flex-shrink: 0;">
+                                <i class='bx bx-send' style="font-size: 1.25rem;"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </section>
 
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="../js/teacher_dashboard.js"></script>
 </body>
 

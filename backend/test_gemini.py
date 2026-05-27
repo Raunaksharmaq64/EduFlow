@@ -1,6 +1,6 @@
 import asyncio
 import os
-from backend.controllers.ai_controller import generate_study_plan_ai, is_api_key_configured
+from controllers.ai_controller import generate_study_plan_ai, is_api_key_configured
 
 async def test_gemini():
     print("Checking Gemini API Configuration...")

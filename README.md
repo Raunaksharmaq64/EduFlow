@@ -20,39 +20,57 @@ EduFlow AI ek **EdTech platform** hai jisme:
 ```
 Hackthon/
 │
-├── index.html              # Homepage (main page)
+├── index.html              # Homepage (main landing page)
 ├── css/
-│   ├── style.css           # Saare styles yahan hain
-│   └── auth.css            # Login/Signup page styling
+│   ├── style.css           # Global landing page styling
+│   ├── auth.css            # Split-screen login/signup styles
+│   └── dashboard.css       # Unified sidebar dashboard panels styling
 ├── js/
-│   ├── main.js             # GSAP animations aur interactions
-│   └── auth.js             # Login/Signup animations aur form validation
-├── assets/                 # Images aur custom assets
-├── pages/                  # Pages (login.html, signup.html, etc.)
-├── backend/                # Backend code (Node.js/Express)
-│   ├── routes/             # API routes
-│   ├── controllers/        # Business logic
-│   ├── models/             # Database models
-│   ├── middleware/         # Auth middleware etc.
-│   └── config/             # DB config, environment setup
+│   ├── main.js             # Landing page GSAP animations
+│   ├── auth.js             # Auth workflows (signup, login API, toast system)
+│   ├── student_dashboard.js# Student features (AI Study Plan, Doubt Solver, Quiz engine)
+│   ├── teacher_dashboard.js# Teacher analytics & Quiz generator preview/print
+│   └── parent_dashboard.js # Parent child progress tracking & AI Parenting tips
+├── assets/                 # Custom images and SVG assets
+├── pages/                  # Views (login.html, signup.html, dashboards)
+├── backend/                # Backend API Server (Python + FastAPI)
+│   ├── routes/             # API Endpoints (auth.py, ai.py routers)
+│   ├── controllers/        # Auth database logic & Gemini API integrations
+│   ├── models/             # Pydantic schemas (validations)
+│   └── config/             # lifespans event handlers and MongoDB driver config
 ├── README.md               # Ye file — documentation
-└── .gitignore              # Git ignore rules
+└── .gitignore              # Git ignore configuration
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Technologies
 
-| Technology | Kaam Kya Karta Hai |
-|---|---|
-| **HTML5** | Page ka structure |
-| **CSS3** | Styling — colors, layout, responsive design |
-| **JavaScript** | Logic aur interactions |
-| **GSAP** | Smooth scroll animations (CDN se load hota hai) |
-| **Boxicons** | Icons ke liye (CDN se load hota hai) |
-| **Google Fonts (Inter)** | Clean, modern font |
+### 💻 Frontend (Client Side)
+- **HTML5 & CSS3**: Responsive CSS Variables-based grid layouts.
+- **Vanilla JavaScript**: Fetch API, dynamic DOM manipulation, and interactive state management.
+- **GSAP (GreenSock)**: Premium stagger fade-up and scroll animations.
+- **Boxicons**: Rich vector UI elements library.
+- **Marked.js**: CDN parser for rendering rich markdown outputs from Gemini API.
+
+### ⚙️ Backend (Server Side - Python)
+- **Python 3.13 & FastAPI**: High-performance, asynchronous REST framework.
+- **Uvicorn**: Lightweight ASGI web server for running local backend services.
+
+### 🔒 Authentication & Security
+- **JSON Web Tokens (JWT)**: Secure cryptographically signed session tokens (Bearer tokens) using `PyJWT`.
+- **Bcrypt**: Salt-hashed storage of passwords to prevent plain-text breaches.
+- **CORS Protection**: Asynchronous middleware configuration supporting client browser requests.
+
+### 🗄️ Database
+- **MongoDB**: Document-based flexible NoSQL database storing user profiles.
+- **Motor**: Native asynchronous MongoDB driver for high-throughput Python database operations.
+
+### 🤖 Artificial Intelligence
+- **Google Gemini API (`gemini-1.5-flash`)**: Multi-modal queries, structured JSON generation modes, and interactive conversational engines.
 
 ---
+
 
 ## 🚀 Kaise Chalayein (How to Run)
 
@@ -99,10 +117,10 @@ backend\.venv\Scripts\python -m uvicorn backend.main:app --reload --port 8000
 | Page | Status | Description |
 |---|---|---|
 | Homepage | ✅ Done | Hero, Roles, Workflow, AI Features, Alerts, Stats |
-| Login/Signup | 🔜 Coming | Role-wise login (Teacher/Student/Parent) |
-| Teacher Dashboard | 🔜 Coming | Test create, evaluate, class analytics |
-| Student Dashboard | 🔜 Coming | Quiz attempt, study plan, doubt solver |
-| Parent Dashboard | 🔜 Coming | Child progress, alerts, reports |
+| Login/Signup | ✅ Done | Role-wise dynamic login (Teacher/Student/Parent) with smooth GSAP animations and dynamic validation toast feedback |
+| Student Dashboard | ✅ Done | AI Study Plan, Multimodal Doubt Solver (Text + Image), and Interactive MCQ Quiz engine |
+| Teacher Dashboard | ✅ Done | Class metrics, Student Tracker, AI quiz builder preview, printable tests, and performance alerts |
+| Parent Dashboard | ✅ Done | Child academic progress trendlines, Achievement badges, notification logs, and AI parenting advisor tips |
 
 ---
 
@@ -120,14 +138,14 @@ backend\.venv\Scripts\python -m uvicorn backend.main:app --reload --port 8000
 
 ---
 
-## 🔮 Future Plans
+## 🔮 Implemented Features Checklist
 
-- [ ] Login / Signup pages (role-wise)
-- [ ] Backend setup (Node.js + Express)
-- [ ] Database integration (MongoDB)
-- [ ] AI Mentor API integration
-- [ ] Real-time notifications (Socket.io)
-- [ ] Teacher, Student, Parent dashboards
+- [x] Login / Signup pages (role-wise authentication routing)
+- [x] Backend setup (Asynchronous Python + FastAPI API engine)
+- [x] Database integration (MongoDB database cluster using Motor)
+- [x] AI Mentor API integration (Gemini Multimodal AI and structured JSON mode models)
+- [x] Unified Toast Notification engine (Sleek glassmorphism style offline indicators)
+- [x] Teacher, Student, Parent dashboards (Completed responsive HTML/CSS/JS panels)
 
 ---
 
@@ -145,5 +163,9 @@ backend\.venv\Scripts\python -m uvicorn backend.main:app --reload --port 8000
 Ye project educational purposes ke liye hai.
 
 ---
+
+server ko start krne ke liye in backend folder .. $env:PYTHONPATH=".."
+.venv\Scripts\python -m uvicorn main:app --reload --port 8000
+
 
 *Made with ❤️ for Education*

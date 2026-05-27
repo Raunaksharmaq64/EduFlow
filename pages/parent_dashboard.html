@@ -41,6 +41,10 @@
                     <i class='bx bx-bulb'></i>
                     <span>AI Parenting Tips</span>
                 </div>
+                <div class="menu-item" data-panel="chat-panel">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Messages</span>
+                </div>
             </nav>
         </div>
         <div class="sidebar-footer">
@@ -78,121 +82,58 @@
             <div class="stat-group" style="margin-bottom: 2rem;">
                 <div class="dashboard-stat-card">
                     <div class="stat-icon-wrapper parent-theme"><i class='bx bx-user'></i></div>
-                    <div class="stat-details">
-                        <h3>Rahul Sharma</h3>
-                        <p>Child · Class 10-B</p>
+                    <div class="stat-details" style="flex-grow: 1;">
+                        <label for="parent-child-select" style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Selected Child</label>
+                        <select id="parent-child-select" class="form-select-db" style="width: 100%; border: none; padding: 4px 0; background: transparent; font-weight: 700; font-size: 1.15rem; color: var(--primary); outline: none; cursor: pointer;">
+                            <option value="">No children linked</option>
+                        </select>
                     </div>
                 </div>
                 <div class="dashboard-stat-card">
-                    <div class="stat-icon-wrapper student-theme"><i class='bx bx-trending-up'></i></div>
+                    <div class="stat-icon-wrapper student-theme"><i class='bx bxs-zap' style="color: #FFB020;"></i></div>
                     <div class="stat-details">
-                        <h3>74%</h3>
-                        <p>Overall Score</p>
+                        <h3 id="child-xp-display">0 XP</h3>
+                        <p>Total XP Earned</p>
                     </div>
                 </div>
                 <div class="dashboard-stat-card">
-                    <div class="stat-icon-wrapper ai-theme"><i class='bx bx-bell'></i></div>
+                    <div class="stat-icon-wrapper parent-theme" style="background-color: rgba(42, 157, 143, 0.1); color: var(--secondary);"><i class='bx bx-trending-up'></i></div>
                     <div class="stat-details">
-                        <h3>3</h3>
-                        <p>New Alerts</p>
+                        <h3 id="child-level-display">Lvl 1</h3>
+                        <p>Academic Level</p>
                     </div>
                 </div>
             </div>
 
             <div class="dashboard-grid">
+                <!-- Link Child Form -->
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-link-alt'></i> Link Child Account</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem;">Enter your child's student email address to link their account and track progress in real time.</p>
+                    <form id="link-child-form" style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="email" id="link-student-email" class="form-input-db" placeholder="e.g. child@email.com" required>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Link Child</button>
+                    </form>
+                </div>
+
+                <!-- Subject-wise Performance -->
                 <div class="card" style="grid-column: span 2;">
-                    <h3 class="card-title"><i class='bx bx-line-chart'></i> Subject-wise Performance</h3>
+                    <h3 class="card-title"><i class='bx bx-line-chart'></i> Child's Quiz Averages</h3>
                     <div class="db-table-container">
                         <table class="db-table">
                             <thead>
                                 <tr>
-                                    <th>Subject</th>
-                                    <th>Last Test Score</th>
-                                    <th>Average Score</th>
-                                    <th>Trend</th>
-                                    <th>Progress</th>
+                                    <th>Topic</th>
+                                    <th>Difficulty</th>
+                                    <th>Highest Score</th>
+                                    <th>Last Attempt Score</th>
+                                    <th>Date</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Mathematics</td>
-                                    <td>58%</td>
-                                    <td>62%</td>
-                                    <td><i class='bx bx-down-arrow-alt' style="color: var(--parent); font-size: 1.2rem;"></i> Declining</td>
-                                    <td>
-                                        <div class="progress-bar-container">
-                                            <div class="progress-bar-fill" style="width: 62%; background-color: var(--parent);"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Science</td>
-                                    <td>78%</td>
-                                    <td>75%</td>
-                                    <td><i class='bx bx-up-arrow-alt' style="color: var(--secondary); font-size: 1.2rem;"></i> Improving</td>
-                                    <td>
-                                        <div class="progress-bar-container">
-                                            <div class="progress-bar-fill" style="width: 75%; background-color: var(--secondary);"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>English</td>
-                                    <td>85%</td>
-                                    <td>88%</td>
-                                    <td><i class='bx bx-minus' style="color: var(--text-secondary); font-size: 1.2rem;"></i> Stable</td>
-                                    <td>
-                                        <div class="progress-bar-container">
-                                            <div class="progress-bar-fill" style="width: 88%; background-color: var(--secondary);"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>History</td>
-                                    <td>60%</td>
-                                    <td>66%</td>
-                                    <td><i class='bx bx-down-arrow-alt' style="color: var(--parent); font-size: 1.2rem;"></i> Declining</td>
-                                    <td>
-                                        <div class="progress-bar-container">
-                                            <div class="progress-bar-fill" style="width: 66%; background-color: var(--parent);"></div>
-                                        </div>
-                                    </td>
-                                </tr>
+                            <tbody id="parent-subject-performance-body">
+                                <tr><td colspan="5" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">Select a linked child to view performance.</td></tr>
                             </tbody>
                         </table>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3 class="card-title"><i class='bx bx-target-lock'></i> Key Weak Areas</h3>
-                    <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
-                        <div style="display: flex; align-items: center; gap: 0.8rem;">
-                            <div class="stat-icon-wrapper parent-theme" style="width: 38px; height: 38px; font-size: 1.1rem; flex-shrink: 0;">
-                                <i class='bx bx-math'></i>
-                            </div>
-                            <div>
-                                <p style="font-weight: 600; color: var(--primary); font-size: 0.95rem;">Quadratic Equations</p>
-                                <p style="font-size: 0.8rem; color: var(--text-secondary);">Mathematics · Consistently low</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.8rem;">
-                            <div class="stat-icon-wrapper parent-theme" style="width: 38px; height: 38px; font-size: 1.1rem; flex-shrink: 0;">
-                                <i class='bx bx-book'></i>
-                            </div>
-                            <div>
-                                <p style="font-weight: 600; color: var(--primary); font-size: 0.95rem;">Indian Freedom Movement</p>
-                                <p style="font-size: 0.8rem; color: var(--text-secondary);">History · Dropped 12% last test</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.8rem;">
-                            <div class="stat-icon-wrapper student-theme" style="width: 38px; height: 38px; font-size: 1.1rem; flex-shrink: 0;">
-                                <i class='bx bx-atom'></i>
-                            </div>
-                            <div>
-                                <p style="font-weight: 600; color: var(--primary); font-size: 0.95rem;">Chemical Reactions</p>
-                                <p style="font-size: 0.8rem; color: var(--text-secondary);">Science · Improving gradually</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -238,34 +179,8 @@
 
                 <div class="card">
                     <h3 class="card-title"><i class='bx bx-award'></i> Achievements</h3>
-                    <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
-                        <div class="feed-item" style="border: none; padding: 0;">
-                            <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
-                                <i class='bx bx-trophy'></i>
-                            </div>
-                            <div class="feed-item-details">
-                                <span class="feed-item-title">Top 5 in English</span>
-                                <span class="feed-item-body">Ranked 3rd in class — May 2026</span>
-                            </div>
-                        </div>
-                        <div class="feed-item" style="border: none; padding: 0;">
-                            <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
-                                <i class='bx bx-star'></i>
-                            </div>
-                            <div class="feed-item-details">
-                                <span class="feed-item-title">Science Quiz Champion</span>
-                                <span class="feed-item-body">Scored 95% in Chapter 3 Quiz</span>
-                            </div>
-                        </div>
-                        <div class="feed-item" style="border: none; padding: 0;">
-                            <div class="feed-item-icon" style="background-color: rgba(108,52,131,0.1); color: var(--ai-accent);">
-                                <i class='bx bx-brain'></i>
-                            </div>
-                            <div class="feed-item-details">
-                                <span class="feed-item-title">AI Learner Badge</span>
-                                <span class="feed-item-body">Completed 5 AI study plans</span>
-                            </div>
-                        </div>
+                    <div id="child-achievements-list" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">No achievements yet.</p>
                     </div>
                 </div>
 
@@ -276,43 +191,72 @@
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Subject</th>
-                                    <th>Test Title</th>
+                                    <th>Topic</th>
+                                    <th>Difficulty</th>
                                     <th>Score</th>
-                                    <th>Class Average</th>
+                                    <th>Total Questions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>25 May 2026</td>
-                                    <td>Mathematics</td>
-                                    <td>Ch. 4 — Quadratic Equations</td>
-                                    <td><strong style="color: var(--parent);">58%</strong></td>
-                                    <td>72%</td>
-                                </tr>
-                                <tr>
-                                    <td>22 May 2026</td>
-                                    <td>Science</td>
-                                    <td>Ch. 3 — Chemical Reactions</td>
-                                    <td><strong style="color: var(--secondary);">78%</strong></td>
-                                    <td>74%</td>
-                                </tr>
-                                <tr>
-                                    <td>18 May 2026</td>
-                                    <td>English</td>
-                                    <td>Essay Writing — Practice Test</td>
-                                    <td><strong style="color: var(--secondary);">85%</strong></td>
-                                    <td>80%</td>
-                                </tr>
-                                <tr>
-                                    <td>15 May 2026</td>
-                                    <td>History</td>
-                                    <td>Ch. 5 — Freedom Movement</td>
-                                    <td><strong style="color: var(--parent);">60%</strong></td>
-                                    <td>68%</td>
-                                </tr>
+                            <tbody id="parent-recent-tests-body">
+                                <tr><td colspan="5" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">Select a child to view results.</td></tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                <!-- AI Child Insights & Home Study Companion Card -->
+                <div class="card" id="child-ai-insights-card" style="grid-column: span 2; display: none; margin-top: 1.5rem;">
+                    <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                        <i class='bx bx-brain' style="color: var(--ai-accent); font-size: 1.5rem;"></i>
+                        AI Child Insights & Home Study Companion
+                    </h3>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
+                        AI reviews your child's quiz performance to pinpoint their weakest concept and formats a customized, parent-friendly study guide and worksheet.
+                    </p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px;">
+                            <div style="background: rgba(42, 157, 143, 0.1); color: var(--secondary); padding: 10px; border-radius: 8px; font-size: 1.5rem; display: flex;">
+                                <i class='bx bx-check-double'></i>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Child Avg Score</span>
+                                <h4 id="insights-child-average" style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-top: 2px;">--</h4>
+                            </div>
+                        </div>
+                        <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px;">
+                            <div style="background: rgba(231, 111, 81, 0.1); color: var(--parent); padding: 10px; border-radius: 8px; font-size: 1.5rem; display: flex;">
+                                <i class='bx bx-trending-down'></i>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Weakest Topic</span>
+                                <h4 id="insights-child-weak-topic" style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-top: 2px;">--</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="generate-parent-guide-btn" class="btn btn-primary" style="width: 100%;">
+                        <i class='bx bx-magic-wand'></i> Generate Home Revision Guide
+                    </button>
+
+                    <!-- Loader -->
+                    <div class="spinner-wrapper" id="parent-guide-loader" style="display: none; margin: 1.5rem 0; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                        <div class="db-spinner" style="border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--parent); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite;"></div>
+                        <p class="spinner-text" style="font-size: 0.85rem; color: var(--text-secondary);">AI is analyzing quiz attempts and designing a revision companion guide...</p>
+                    </div>
+
+                    <!-- Generated Plan Viewport -->
+                    <div id="parent-guide-output-box" style="display: none; margin-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h4 style="font-size: 1rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 6px;">
+                                <i class='bx bx-book-open' style="color: var(--secondary);"></i> AI Home Study Companion
+                            </h4>
+                            <button class="btn btn-secondary btn-sm" id="print-parent-guide-btn" style="padding: 4px 10px; font-size: 0.78rem;">
+                                <i class='bx bx-printer'></i> Print Revision Guide
+                            </button>
+                        </div>
+                        <div id="parent-guide-markdown-viewport" style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); max-height: 500px; overflow-y: auto; line-height: 1.7; color: var(--text-primary);">
+                            <!-- Content -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -429,6 +373,52 @@
                 </div>
                 <div class="ai-output-content" id="tips-markdown-content">
                     <!-- Parsed HTML will load here -->
+                </div>
+            </div>
+        <!-- ============================================
+             PANEL 5: DIRECT MESSAGES
+             ============================================ -->
+        <section id="chat-panel" class="dashboard-panel">
+            <div class="chat-container">
+                <!-- Sidebar contacts list -->
+                <div class="chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <i class='bx bx-message-square-dots'></i> Contacts
+                    </div>
+                    <div class="chat-contacts-list" id="chat-contacts-list">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Chat active area -->
+                <div class="chat-active-area" id="chat-active-area">
+                    <!-- Default Empty State -->
+                    <div class="chat-empty-state" id="chat-empty-state" style="display: flex;">
+                        <i class='bx bx-conversation'></i>
+                        <p>Select a contact from the sidebar to start messaging.</p>
+                    </div>
+
+                    <!-- Active Chat Feed (Hidden by default) -->
+                    <div id="chat-active-feed" style="display: none; height: 100%; flex-direction: column;">
+                        <div class="chat-active-header">
+                            <div class="chat-contact-avatar" id="active-chat-avatar">T</div>
+                            <div class="chat-contact-info">
+                                <span class="chat-active-title" id="active-chat-name">Teacher Name</span>
+                                <span class="chat-active-subtitle" id="active-chat-role">Teacher</span>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages-container" id="chat-messages-container">
+                            <!-- Message bubbles go here -->
+                        </div>
+
+                        <form id="chat-send-form" class="chat-input-bar">
+                            <input type="text" id="chat-message-input" class="chat-input-field" placeholder="Type your message..." required autocomplete="off">
+                            <button type="submit" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border-radius: 8px; flex-shrink: 0;">
+                                <i class='bx bx-send' style="font-size: 1.25rem;"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>

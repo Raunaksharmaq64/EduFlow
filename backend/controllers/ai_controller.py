@@ -49,10 +49,11 @@ async def generate_study_plan_ai(subject: str, grade: str, weak_topics: list[str
     
     try:
         # Load key dynamically in case it was updated after import
-        if not genai.get_api_key():
-            genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
             
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.5-flash")
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
@@ -70,10 +71,11 @@ async def solve_doubt_ai(question_text: str = None, image_bytes: bytes = None) -
     
     try:
         # Load key dynamically in case it was updated after import
-        if not genai.get_api_key():
-            genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
 
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.5-flash")
         
         # Prepare contents
         contents = []
@@ -137,10 +139,11 @@ async def generate_quiz_ai(topic: str, grade: str, num_questions: int = 5, diffi
     
     try:
         # Load key dynamically in case it was updated after import
-        if not genai.get_api_key():
-            genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
 
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.5-flash")
         
         # Enforce JSON response using generation config
         response = model.generate_content(
@@ -155,3 +158,187 @@ async def generate_quiz_ai(topic: str, grade: str, num_questions: int = 5, diffi
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to generate quiz from Gemini API: {str(e)}"
         )
+
+async def generate_flashcards_ai(topic: str, grade: str, num_cards: int = 5) -> dict:
+    if not is_api_key_configured():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Gemini API Key not configured. Please add GEMINI_API_KEY in your backend/.env file."
+        )
+    
+    prompt = f"""
+    You are an expert AI Learning assistant. Create active recall flashcards to help a student study.
+    - Topic or Source Text: {topic}
+    - Grade/Class Level: {grade}
+    - Number of Flashcards to generate: {num_cards}
+    
+    You MUST respond with a valid JSON object matching this schema exactly:
+    {{
+        "topic": "Brief topic name",
+        "grade": "{grade}",
+        "flashcards": [
+            {{
+                "front": "Write the front of the card (question, term, or formula to recall)",
+                "back": "Write the back of the card (the answer, explanation, or definition)",
+                "explanation": "Brief memory tip or memory hook"
+            }}
+        ]
+    }}
+    
+    Ensure all flashcards are high quality, accurate, and age-appropriate for {grade}. Keep the content concise and focused.
+    """
+    
+    try:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        
+        response = model.generate_content(
+            prompt,
+            generation_config={"response_mime_type": "application/json"}
+        )
+        
+        cards_data = json.loads(response.text)
+        return cards_data
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate flashcards from Gemini API: {str(e)}"
+        )
+
+async def generate_study_kanban_ai(subject: str, grade: str, weak_topics: list[str], target_goals: str = None) -> dict:
+    if not is_api_key_configured():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Gemini API Key not configured. Please add GEMINI_API_KEY in your backend/.env file."
+        )
+    
+    weak_topics_str = ", ".join(weak_topics)
+    target_str = f" Target Goal: {target_goals}" if target_goals else ""
+    
+    prompt = f"""
+    You are an expert AI Learning Mentor. 
+    Create a study plan consisting of highly practical, step-by-step task action items.
+    - Subject: {subject}
+    - Grade/Class Level: {grade}
+    - Weak Topics to focus on: {weak_topics_str}
+    {target_str}
+    
+    You MUST respond with a valid JSON object matching this schema exactly:
+    {{
+        "subject": "{subject}",
+        "grade": "{grade}",
+        "tasks": [
+            {{
+                "id": "task_1",
+                "title": "A short, actionable study task (e.g. Day 1: Read page 20-25 of chemical formulas)",
+                "status": "todo"
+            }}
+        ]
+    }}
+    
+    Provide exactly 6 to 9 tasks. Make sure tasks are concrete, manageable, and sequentially structured.
+    """
+    
+    try:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        
+        response = model.generate_content(
+            prompt,
+            generation_config={"response_mime_type": "application/json"}
+        )
+        
+        kanban_data = json.loads(response.text)
+        return kanban_data
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate study kanban from Gemini API: {str(e)}"
+        )
+
+async def generate_lesson_plan_ai(topic: str, grade: str, weak_topics: list[str] = None, common_misconceptions: str = None) -> str:
+    if not is_api_key_configured():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Gemini API Key not configured. Please add GEMINI_API_KEY in your backend/.env file."
+        )
+    
+    weak_str = f"Specific weak points/sub-topics: {', '.join(weak_topics)}." if weak_topics else ""
+    misconceptions_str = f"Students doubts trends/misconceptions: {common_misconceptions}." if common_misconceptions else ""
+    
+    prompt = f"""
+    You are an expert curriculum designer and teaching assistant.
+    Create a highly engaging, structured lesson plan for a teacher to address class weaknesses.
+    - Class Level: {grade}
+    - Subject/Topic to review: {topic}
+    {weak_str}
+    {misconceptions_str}
+    
+    Please provide the response in a beautiful Markdown format with clear sections:
+    1. Overall Class Insights (Summarize what concepts students are struggling with and why)
+    2. Core Misconceptions (Clear explanations of what students are confusing, and how the teacher should clarify them)
+    3. 50-Minute Lesson Outline (Warmup: 10 mins, Lecture & Demonstration: 20 mins, Group Activity: 15 mins, Exit Ticket/Evaluation: 5 mins)
+    4. Remedial Exit Ticket (Include 3 specific multiple-choice or short-answer questions to test comprehension, with answers highlighted for the teacher)
+    
+    Keep the tone professional, supportive, and practical for classroom use.
+    """
+    
+    try:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate lesson plan from Gemini API: {str(e)}"
+        )
+
+async def generate_parent_revision_guide_ai(topic: str, grade: str, weak_topics: list[str] = None) -> str:
+    if not is_api_key_configured():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Gemini API Key not configured. Please add GEMINI_API_KEY in your backend/.env file."
+        )
+    
+    weak_str = f"Other weak areas of the student: {', '.join(weak_topics)}." if weak_topics else ""
+    
+    prompt = f"""
+    You are an expert educational counselor and tutor helping parents support their child's education at home.
+    Create a highly practical, encouraging, and parent-friendly Home Revision Companion Guide.
+    - Child Grade/Level: {grade}
+    - Concept to review: {topic}
+    {weak_str}
+    
+    Please provide the response in a beautiful Markdown format with clear, styled sections:
+    1. 💡 Concept Explained Simply (Explain this concept in plain English with simple analogies so a parent can understand and teach it to their child).
+    2. ⏱️ 30-Minute Home Revision Plan (Outline a step-by-step interactive study routine, e.g. 5-min warmup discussion, 15-min guided examples, 10-min practice).
+    3. 📝 Home Practice Worksheet (Include exactly 3 specific questions for the child to solve. Highlight the correct answers and provide step-by-step solutions for the parent).
+    
+    Keep the tone extremely supportive, warm, and easy to follow for parents who may not be experts in the subject.
+    """
+    
+    try:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate parent revision guide from Gemini API: {str(e)}"
+        )
+
+

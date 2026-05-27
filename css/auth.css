@@ -513,6 +513,74 @@
     border-left: 5px solid var(--secondary, #2a9d8f);
     animation: toast-slide-in 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     transition: opacity 0.3s, transform 0.3s;
+    position: relative;
+    overflow: hidden; /* Clips the progress bar */
+}
+
+/* Shake animation for errors/warnings */
+.toast-shake {
+    animation: toast-slide-in 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toast-shake-key 0.4s ease-in-out 0.35s;
+}
+
+@keyframes toast-shake-key {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+/* Progress bar indicators */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    transform-origin: left;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.toast-success .toast-progress { background-color: #2ec4b6; }
+.toast-error .toast-progress { background-color: #e71d36; }
+.toast-warning .toast-progress { background-color: #ff9f1c; }
+.toast-info .toast-progress { background-color: #011627; }
+
+@keyframes toast-progress-shrink {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+
+/* Retry Button styling inside toast */
+.toast-retry-btn {
+    background: rgba(231, 29, 54, 0.08);
+    color: #e71d36;
+    border: 1px solid rgba(231, 29, 54, 0.2);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.25s ease;
+    pointer-events: auto;
+    width: fit-content;
+}
+
+.toast-retry-btn:hover:not(:disabled) {
+    background: #e71d36;
+    color: #fff;
+    border-color: #e71d36;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(231, 29, 54, 0.25);
+}
+
+.toast-retry-btn:disabled {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-light, #a0aec0);
+    border-color: rgba(0, 0, 0, 0.08);
+    cursor: not-allowed;
 }
 
 .toast-icon {
@@ -539,7 +607,7 @@
     color: var(--text-primary, #2d3748);
 }
 
-/* Toast types */
+/* Toast types colors */
 .toast-success {
     border-left-color: #2ec4b6; /* vibrant teal-green */
 }
