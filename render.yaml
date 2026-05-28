@@ -1,0 +1,28 @@
+services:
+  # 1. FastAPI Python Backend Service
+  - type: web
+    name: eduflow-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_NAME
+        value: eduflow
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: MONGODB_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+
+  # 2. HTML/CSS/JS Frontend Static Site Service
+  - type: web
+    name: eduflow-frontend
+    env: static
+    buildCommand: ""
+    publishDir: "."

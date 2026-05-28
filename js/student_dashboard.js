@@ -9,7 +9,13 @@
    - Interactive Quiz Engine (MCQ)
    ======================================== */
 
-const API_BASE = 'http://127.0.0.1:8000/api';
+// Centralized backend host detection. Queries global window.CONFIG first, with hostname-based automatic detection fallback.
+const BACKEND_URL = (window.CONFIG && window.CONFIG.BACKEND_URL) || 
+    ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '')
+        ? 'http://127.0.0.1:8000'
+        : 'https://eduflow-api.onrender.com');
+
+const API_BASE = `${BACKEND_URL}/api`;
 
 /* ========================================
    DYNAMIC TOAST NOTIFICATION SYSTEM
@@ -60,7 +66,7 @@ function showToast(message, type = 'info') {
                 retryBtn.disabled = true;
                 retryBtn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Checking...";
                 try {
-                    const testRes = await fetch('http://127.0.0.1:8000/', { method: 'GET' });
+                    const testRes = await fetch(`${BACKEND_URL}/`, { method: 'GET' });
                     if (testRes.ok) {
                         retryBtn.innerHTML = "<i class='bx bx-check'></i> Connected!";
                         toast.classList.add('toast-fade-out');
