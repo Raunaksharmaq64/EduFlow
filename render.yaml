@@ -2,6 +2,7 @@ services:
   # 1. FastAPI Python Backend Service
   - type: web
     name: eduflow-backend
+    plan: free
     env: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt
@@ -23,6 +24,7 @@ services:
   # 2. HTML/CSS/JS Frontend Static Site Service
   - type: web
     name: eduflow-frontend
+    plan: free
     runtime: static
     buildCommand: ""
     staticPublishPath: "."
