@@ -143,6 +143,7 @@ const panelTitles = {
     'overview-panel': { title: 'Teacher Dashboard', sub: 'Manage your classes and track student progress.' },
     'quiz-gen-panel': { title: 'Create AI Quiz', sub: 'Generate MCQ tests for your students using AI.' },
     'students-panel': { title: 'Student Performance', sub: 'View detailed performance reports of each student.' },
+    'assignments-panel': { title: 'Assignments Hub', sub: 'Create, distribute, and grade assignments (Manual, AI, or Links).' },
     'alerts-panel': { title: 'Smart Alerts', sub: 'AI-generated alerts about students who need attention.' },
     'chat-panel': { title: 'Direct Messages', sub: 'Communicate with students and parents.' }
 };
@@ -315,6 +316,21 @@ async function loadTeacherClassrooms() {
             } else {
                 selector.innerHTML = classrooms.map(c => `
                     <div class="selector-item" data-code="${c.class_code}" style="padding: 10px 12px; border-radius: 6px; background: var(--bg-light); border: 1px solid rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s;" onclick="selectClassroomForStudents('${c.class_code}', '${c.class_name}')">
+                        <span style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary); display: block;">${c.class_name}</span>
+                        <span style="font-size: 0.72rem; color: var(--text-secondary);">${c.students_count} students | Code: ${c.class_code}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // 3. Render in Assignments Tab Classroom Selector
+        const asgSelector = document.getElementById('assignments-classroom-selector');
+        if (asgSelector) {
+            if (classrooms.length === 0) {
+                asgSelector.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);">Create a classroom first.</p>`;
+            } else {
+                asgSelector.innerHTML = classrooms.map(c => `
+                    <div class="selector-item-asg" data-code="${c.class_code}" style="padding: 10px 12px; border-radius: 6px; background: var(--bg-light); border: 1px solid rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s; margin-bottom: 8px;" onclick="selectClassroomForAssignments('${c.class_code}', '${c.class_name}')">
                         <span style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary); display: block;">${c.class_name}</span>
                         <span style="font-size: 0.72rem; color: var(--text-secondary);">${c.students_count} students | Code: ${c.class_code}</span>
                     </div>
@@ -613,12 +629,359 @@ function printClassroomLessonPlan() {
     </style>
     </head><body>${html}</body></html>`);
     w.document.close();
-    w.print();
+}
+
+/* ========================================
+   TEACHER ASSIGNMENTS HUB LOGIC
+   ======================================== */
+let selectedAssignmentClassCode = null;
+let currentAIGeneratedQuestions = [];
+
+async function selectClassroomForAssignments(classCode, className) {
+    selectedAssignmentClassCode = classCode;
+    document.getElementById('asg-class-code').value = classCode;
+    
+    // Style active selector item
+    const items = document.querySelectorAll('#assignments-classroom-selector .selector-item-asg');
+    items.forEach(item => {
+        if (item.getAttribute('data-code') === classCode) {
+            item.style.backgroundColor = 'var(--secondary)';
+            item.style.color = '#fff';
+            const spans = item.querySelectorAll('span');
+            if (spans[0]) spans[0].style.color = '#fff';
+            if (spans[1]) spans[1].style.color = 'rgba(255,255,255,0.8)';
+        } else {
+            item.style.backgroundColor = 'var(--bg-light)';
+            item.style.color = 'var(--text-primary)';
+            const spans = item.querySelectorAll('span');
+            if (spans[0]) spans[0].style.color = 'var(--text-primary)';
+            if (spans[1]) spans[1].style.color = 'var(--text-secondary)';
+        }
+    });
+
+    document.getElementById('assignments-class-title').innerHTML = `<i class='bx bx-task'></i> Assignments in ${className}`;
+    document.getElementById('assignments-view-card').style.display = 'block';
+    document.getElementById('create-assignment-card').style.display = 'none';
+    document.getElementById('submissions-grading-card').style.display = 'none';
+    document.getElementById('grade-student-card').style.display = 'none';
+
+    await loadClassroomAssignments(classCode);
+    switchTeacherClassroomTab('assignments');
+}
+
+async function loadClassroomAssignments(classCode) {
+    const list = document.getElementById('teacher-assignments-list');
+    list.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading assignments...</p>`;
+    
+    try {
+        const res = await fetch(`${API_BASE}/assignments/classroom/${classCode}`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const assignments = await res.json();
+
+        if (assignments.length === 0) {
+            list.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);">No assignments published in this classroom yet. Click "New Assignment" to create one!</p>`;
+        } else {
+            list.innerHTML = assignments.map(a => {
+                const dueDate = new Date(a.due_date).toLocaleDateString('en-IN', {
+                    weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                
+                let iconClass = 'bx-file';
+                let iconBg = 'var(--secondary)';
+                if (a.assignment_type === 'ai') {
+                    iconClass = 'bx-brain';
+                    iconBg = 'var(--ai-accent)';
+                } else if (a.assignment_type === 'link') {
+                    iconClass = 'bx-link-external';
+                    iconBg = 'var(--parent)';
+                }
+                
+                return `
+                    <div style="background: var(--bg-light); padding: 1.2rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: start; gap: 1rem; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="display: flex; gap: 1rem; align-items: start;">
+                            <div style="background: ${iconBg}; color: #fff; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+                                <i class='bx ${iconClass}'></i>
+                            </div>
+                            <div>
+                                <h4 style="font-weight: 700; color: var(--text-primary); font-size: 1rem; margin-bottom: 4px;">${a.title}</h4>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.5;">${a.description}</p>
+                                <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); display: block;">
+                                    <i class='bx bx-time' style="vertical-align: middle;"></i> Due: <strong>${dueDate}</strong> | Max Marks: <strong>${a.max_marks}</strong>
+                                </span>
+                                ${a.gdrive_link ? `
+                                    <a href="${a.gdrive_link}" target="_blank" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.72rem; margin-top: 8px; background: rgba(231,111,81,0.08); color: var(--parent); border: 1px solid rgba(231,111,81,0.15); text-decoration: none;">
+                                        <i class='bx bx-link'></i> Attached Link
+                                    </a>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="viewAssignmentSubmissions('${a.id}', '${a.title.replace(/'/g, "\\'")}')">
+                            <i class='bx bx-check-double'></i> View Submissions
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+    } catch (err) {
+        console.error(err);
+        list.innerHTML = `<p style="font-size: 0.85rem; color: var(--parent);">Failed to load assignments.</p>`;
+    }
+}
+
+function showCreateAssignmentForm() {
+    document.getElementById('assignments-view-card').style.display = 'none';
+    document.getElementById('create-assignment-card').style.display = 'block';
+    document.getElementById('submissions-grading-card').style.display = 'none';
+    document.getElementById('grade-student-card').style.display = 'none';
+    document.getElementById('create-assignment-form').reset();
+    
+    // Set default due date: tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(23, 59, 0, 0);
+    const localISO = new Date(tomorrow.getTime() - tomorrow.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    document.getElementById('asg-due').value = localISO;
+    
+    switchAssignmentTab('manual');
+}
+
+function hideCreateAssignmentForm() {
+    document.getElementById('create-assignment-card').style.display = 'none';
+    document.getElementById('assignments-view-card').style.display = 'block';
+}
+
+function switchAssignmentTab(type) {
+    document.getElementById('asg-type').value = type;
+    
+    document.querySelectorAll('.assignment-tab').forEach(btn => btn.classList.remove('active'));
+    
+    if (type === 'manual') {
+        document.getElementById('tab-manual-btn').classList.add('active');
+        document.getElementById('asg-link-group').style.display = 'none';
+        document.getElementById('asg-ai-group').style.display = 'none';
+    } else if (type === 'ai') {
+        document.getElementById('tab-ai-btn').classList.add('active');
+        document.getElementById('asg-link-group').style.display = 'none';
+        document.getElementById('asg-ai-group').style.display = 'block';
+    } else if (type === 'link') {
+        document.getElementById('tab-link-btn').classList.add('active');
+        document.getElementById('asg-link-group').style.display = 'block';
+        document.getElementById('asg-ai-group').style.display = 'none';
+    }
+}
+
+async function generateAIAssignmentQuestions() {
+    const topic = document.getElementById('asg-ai-topic').value.trim();
+    if (!topic) {
+        showToast('Please enter a topic for AI question generation.', 'warning');
+        return;
+    }
+    
+    const preview = document.getElementById('asg-ai-preview');
+    preview.style.display = 'block';
+    preview.innerHTML = `<i class='bx bx-loader-alt bx-spin'></i> AI is generating questions...`;
+    
+    const numQ = parseInt(document.getElementById('asg-ai-count').value);
+    
+    try {
+        const res = await fetch(`${API_BASE}/ai/generate-quiz`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({ topic, grade: 'Medium level practice sheet', num_questions: numQ, difficulty: 'medium' })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Failed to generate questions');
+        
+        currentAIGeneratedQuestions = data.questions.map(q => ({
+            question_text: q.question_text,
+            options: q.options,
+            correct_answer: q.correct_option
+        }));
+        
+        let previewHtml = `<h5 style="margin-bottom: 10px; color: var(--ai-accent);">Generated Questions Preview:</h5>`;
+        currentAIGeneratedQuestions.forEach((q, idx) => {
+            previewHtml += `
+                <div style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed rgba(0,0,0,0.05);">
+                    <strong>Q${idx + 1}: ${q.question_text}</strong>
+                    <ul style="margin: 4px 0 0 15px; padding: 0;">
+                        ${q.options.map(o => `<li>${o}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        });
+        
+        preview.innerHTML = previewHtml;
+        
+        let autoDesc = `AI generated worksheet topic: "${topic}". Please solve the questions below:\n\n`;
+        currentAIGeneratedQuestions.forEach((q, idx) => {
+            autoDesc += `Q${idx + 1}. ${q.question_text}\n`;
+            q.options.forEach((o, i) => {
+                autoDesc += `   [${['A','B','C','D'][i]}] ${o}\n`;
+            });
+            autoDesc += `\n`;
+        });
+        document.getElementById('asg-description').value = autoDesc;
+        showToast('🎉 AI drafted questions successfully added to description!', 'success');
+        
+    } catch (err) {
+        console.error(err);
+        preview.innerHTML = `<span style="color: var(--parent);">Failed to generate AI questions. Please retry.</span>`;
+    }
+}
+
+async function handleCreateAssignmentSubmit(e) {
+    e.preventDefault();
+    
+    const class_code = document.getElementById('asg-class-code').value;
+    const type = document.getElementById('asg-type').value;
+    const title = document.getElementById('asg-title').value.trim();
+    const description = document.getElementById('asg-description').value.trim();
+    const due_date = new Date(document.getElementById('asg-due').value).toISOString();
+    const max_marks = parseInt(document.getElementById('asg-marks').value);
+    const gdrive_link = document.getElementById('asg-link').value.trim() || null;
+    
+    const ai_questions = type === 'ai' ? currentAIGeneratedQuestions : [];
+    
+    try {
+        const res = await fetch(`${API_BASE}/assignments/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({
+                class_code,
+                title,
+                description,
+                assignment_type: type,
+                due_date,
+                max_marks,
+                gdrive_link,
+                ai_questions
+            })
+        });
+        
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Failed to create assignment');
+        
+        showToast('🎉 Assignment published successfully!', 'success');
+        hideCreateAssignmentForm();
+        await loadClassroomAssignments(class_code);
+        
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Failed to create assignment', 'error');
+    }
+}
+
+async function viewAssignmentSubmissions(assignmentId, assignmentTitle) {
+    document.getElementById('submissions-grading-card').style.display = 'block';
+    document.getElementById('grade-student-card').style.display = 'none';
+    document.getElementById('grading-assignment-title').innerHTML = `<i class='bx bx-check-shield'></i> Grading Submissions: ${assignmentTitle}`;
+    
+    const tableBody = document.getElementById('submissions-table-body');
+    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading submissions...</td></tr>`;
+    
+    try {
+        const res = await fetch(`${API_BASE}/assignments/${assignmentId}/submissions`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const submissions = await res.json();
+        
+        if (submissions.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">No student has submitted answers for this assignment yet.</td></tr>`;
+        } else {
+            tableBody.innerHTML = submissions.map(s => {
+                const date = s.submitted_at ? new Date(s.submitted_at).toLocaleDateString('en-IN', {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                }) : '';
+                
+                let scoreText = s.status === 'graded' ? `<strong style="color: var(--secondary);">${s.grade}</strong>` : `<span style="color: var(--text-secondary);">Not Graded</span>`;
+                let badgeClass = s.status === 'graded' ? 'status-good' : 'status-struggling';
+                let badgeText = s.status === 'graded' ? 'Graded' : 'Pending';
+                
+                return `
+                    <tr>
+                        <td style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${s.student_name}</td>
+                        <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+                        <td style="font-size: 0.85rem; color: var(--text-secondary);">${date}</td>
+                        <td style="font-size: 0.9rem;">${scoreText}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.78rem;" 
+                                    onclick="showGradeForm('${s.id}', '${s.student_name.replace(/'/g, "\\'")}', '${s.submission_text.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', ${JSON.stringify(s.answers || [])})">
+                                <i class='bx bx-edit'></i> Grade
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    } catch (err) {
+        console.error(err);
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--parent);">Failed to load submissions.</td></tr>`;
+    }
+}
+
+function closeSubmissionsView() {
+    document.getElementById('submissions-grading-card').style.display = 'none';
+    document.getElementById('grade-student-card').style.display = 'none';
+}
+
+function showGradeForm(submissionId, studentName, submissionText, answers) {
+    document.getElementById('grade-student-card').style.display = 'block';
+    document.getElementById('grade-student-card').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('grade-student-name').textContent = studentName;
+    document.getElementById('grade-submission-id').value = submissionId;
+    document.getElementById('grade-submission-text').textContent = submissionText || "(No description submission)";
+    
+    const ansBox = document.getElementById('grade-submission-answers');
+    ansBox.innerHTML = '';
+    if (answers && answers.length > 0) {
+        let ansHtml = `<h5 style="margin-bottom: 5px; color: var(--secondary);">Worksheet MCQ Answers Submitted:</h5>`;
+        answers.forEach((ans, i) => {
+            ansHtml += `<div><strong>Q${i + 1} Answer:</strong> ${ans}</div>`;
+        });
+        ansBox.innerHTML = ansHtml;
+    }
+    
+    document.getElementById('asg-grade-score').value = '';
+    document.getElementById('asg-grade-remarks').value = '';
+}
+
+async function handleGradingSubmit(e) {
+    e.preventDefault();
+    
+    const submissionId = document.getElementById('grade-submission-id').value;
+    const grade = parseInt(document.getElementById('asg-grade-score').value);
+    const teacher_remarks = document.getElementById('asg-grade-remarks').value.trim();
+    
+    try {
+        const res = await fetch(`${API_BASE}/assignments/submission/${submissionId}/grade`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({ grade, teacher_remarks })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Failed to grade submission');
+        
+        showToast('🎉 Submission graded successfully!', 'success');
+        document.getElementById('grade-student-card').style.display = 'none';
+        
+        await loadClassroomAssignments(selectedAssignmentClassCode);
+        document.getElementById('submissions-grading-card').style.display = 'none';
+        
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Failed to grade submission', 'error');
+    }
 }
 
 // Fetch classrooms on DOM load & set up click listeners
 window.addEventListener('DOMContentLoaded', async () => {
     await loadTeacherClassrooms();
+    await loadTeacherNotifications();
     
     const genBtn = document.getElementById('generate-lesson-plan-btn');
     if (genBtn) {
@@ -634,11 +997,37 @@ window.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    const asgForm = document.getElementById('create-assignment-form');
+    if (asgForm) {
+        asgForm.addEventListener('submit', handleCreateAssignmentSubmit);
+    }
+    
+    const gradeForm = document.getElementById('submit-grading-form');
+    if (gradeForm) {
+        gradeForm.addEventListener('submit', handleGradingSubmit);
+    }
+
     const chatForm = document.getElementById('chat-send-form');
     if (chatForm) {
         chatForm.addEventListener('submit', sendChatMessage);
     }
+
+    const postAnnForm = document.getElementById('teacher-post-announcement-form');
+    if (postAnnForm) {
+        postAnnForm.addEventListener('submit', handleTeacherPostAnnouncementSubmit);
+    }
 });
+
+// Attach helper functions to global window context
+window.selectClassroomForAssignments = selectClassroomForAssignments;
+window.loadClassroomAssignments = loadClassroomAssignments;
+window.showCreateAssignmentForm = showCreateAssignmentForm;
+window.hideCreateAssignmentForm = hideCreateAssignmentForm;
+window.switchAssignmentTab = switchAssignmentTab;
+window.generateAIAssignmentQuestions = generateAIAssignmentQuestions;
+window.viewAssignmentSubmissions = viewAssignmentSubmissions;
+window.closeSubmissionsView = closeSubmissionsView;
+window.showGradeForm = showGradeForm;
 
 /* ========================================
    DIRECT MESSAGES (CHAT) SYSTEM
@@ -791,3 +1180,273 @@ async function sendChatMessage(e) {
 }
 
 window.selectChatContact = selectChatContact;
+
+/* ========================================
+   CLASSROOM STREAM, LEADERBOARD & NOTIFICATIONS
+   ======================================== */
+function switchTeacherClassroomTab(tabName) {
+    document.getElementById('teacher-class-tab-assignments').style.display = tabName === 'assignments' ? 'block' : 'none';
+    document.getElementById('teacher-class-tab-stream').style.display = tabName === 'stream' ? 'block' : 'none';
+    document.getElementById('teacher-class-tab-leaderboard').style.display = tabName === 'leaderboard' ? 'block' : 'none';
+    
+    document.getElementById('tab-btn-asg-assignments').classList.toggle('active', tabName === 'assignments');
+    document.getElementById('tab-btn-asg-stream').classList.toggle('active', tabName === 'stream');
+    document.getElementById('tab-btn-asg-leaderboard').classList.toggle('active', tabName === 'leaderboard');
+    
+    // Hide new assignment button if not on assignments tab
+    const newAsgBtn = document.getElementById('btn-new-assignment-trigger');
+    if (newAsgBtn) {
+        newAsgBtn.style.display = tabName === 'assignments' ? 'block' : 'none';
+    }
+    
+    if (tabName === 'stream' && selectedAssignmentClassCode) {
+        loadClassroomAnnouncements(selectedAssignmentClassCode);
+    } else if (tabName === 'leaderboard' && selectedAssignmentClassCode) {
+        loadClassroomLeaderboard(selectedAssignmentClassCode);
+    }
+}
+
+async function loadClassroomAnnouncements(classCode) {
+    const feed = document.getElementById('teacher-announcements-feed');
+    if (!feed) return;
+    feed.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading notices...</p>`;
+    
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${classCode}/announcements`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const announcements = await res.json();
+        
+        if (announcements.length === 0) {
+            feed.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);">No announcements posted yet. Be the first to share an update!</p>`;
+            return;
+        }
+        
+        feed.innerHTML = announcements.map(ann => {
+            const date = new Date(ann.created_at).toLocaleDateString('en-IN', {
+                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+            const isLiked = ann.likes.includes(user.id);
+            
+            return `
+                <div style="background: var(--bg-light); border: 1px solid rgba(0,0,0,0.04); padding: 1.2rem; border-radius: 8px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: 700; color: var(--primary); font-size: 0.9rem;">${ann.author_name}</span>
+                        <span style="font-size: 0.72rem; color: var(--text-secondary);">${date}</span>
+                    </div>
+                    <p style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.5; white-space: pre-wrap; margin-bottom: 12px;">${ann.content}</p>
+                    
+                    <div style="display: flex; gap: 1rem; align-items: center; border-top: 1px solid rgba(0,0,0,0.03); padding-top: 8px; margin-top: 8px;">
+                        <button class="btn btn-secondary btn-sm" onclick="likeTeacherAnnouncement('${classCode}', '${ann.id}')" style="padding: 4px 8px; font-size: 0.75rem; background: ${isLiked ? 'rgba(42,157,143,0.1)' : 'transparent'}; color: ${isLiked ? 'var(--secondary)' : 'var(--text-secondary)'}; border: none;">
+                            <i class='bx ${isLiked ? 'bxs-heart' : 'bx-heart'}'></i> Like (${ann.likes.length})
+                        </button>
+                    </div>
+                    
+                    <!-- Comments Section -->
+                    <div style="margin-top: 12px; background: rgba(0,0,0,0.01); padding: 10px; border-radius: 6px;">
+                        <div id="comments-list-${ann.id}" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;">
+                            ${ann.comments.length === 0 ? `<p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">No comments yet.</p>` : ann.comments.map(c => `
+                                <div style="font-size: 0.8rem; line-height: 1.4; border-bottom: 1px dashed rgba(0,0,0,0.02); padding-bottom: 4px; margin-bottom: 4px;">
+                                    <strong style="color: var(--primary);">${c.user_name} (${c.user_role}):</strong>
+                                    <span style="color: var(--text-primary);">${c.content}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <form onsubmit="postTeacherAnnouncementComment(event, '${classCode}', '${ann.id}')" style="display: flex; gap: 6px;">
+                            <input type="text" placeholder="Add a comment..." class="form-input-db btn-sm" required style="font-size: 0.75rem; padding: 4px 8px; flex-grow: 1;">
+                            <button type="submit" class="btn btn-secondary btn-sm" style="padding: 4px 8px; font-size: 0.75rem;">Reply</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error(err);
+        feed.innerHTML = `<p style="font-size: 0.85rem; color: var(--parent);">Failed to load announcements.</p>`;
+    }
+}
+
+async function handleTeacherPostAnnouncementSubmit(e) {
+    e.preventDefault();
+    if (!selectedAssignmentClassCode) return;
+    const input = document.getElementById('announcement-content');
+    const content = input.value.trim();
+    if (!content) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${selectedAssignmentClassCode}/announcements`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({ content })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast('🎉 Announcement posted successfully!', 'success');
+            input.value = '';
+            await loadClassroomAnnouncements(selectedAssignmentClassCode);
+        } else {
+            showToast(data.detail || 'Failed to post announcement.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Error posting announcement.', 'error');
+    }
+}
+
+async function likeTeacherAnnouncement(classCode, announcementId) {
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${classCode}/announcements/${announcementId}/like`, {
+            method: 'POST',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            await loadClassroomAnnouncements(classCode);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function postTeacherAnnouncementComment(e, classCode, announcementId) {
+    e.preventDefault();
+    const input = e.target.querySelector('input');
+    const content = input.value.trim();
+    if (!content) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${classCode}/announcements/${announcementId}/comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({ content })
+        });
+        if (res.ok) {
+            input.value = '';
+            await loadClassroomAnnouncements(classCode);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function loadClassroomLeaderboard(classCode) {
+    const tbody = document.getElementById('teacher-class-leaderboard-body');
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading leaderboard...</td></tr>`;
+    
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${classCode}/leaderboard`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const leaderboard = await res.json();
+        
+        if (leaderboard.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">No students enrolled in this classroom.</td></tr>`;
+            return;
+        }
+        
+        tbody.innerHTML = leaderboard.map(student => `
+            <tr style="background: ${student.id === user.id ? 'rgba(42,157,143,0.05)' : 'transparent'};">
+                <td style="font-weight: 700; color: var(--secondary); font-size: 0.95rem;">
+                    ${student.rank === 1 ? '🥇 1' : student.rank === 2 ? '🥈 2' : student.rank === 3 ? '🥉 3' : student.rank}
+                </td>
+                <td style="font-weight: 600; color: var(--text-primary);">${student.name}</td>
+                <td><span class="status-badge" style="background: var(--primary); color: #fff; font-size: 0.72rem; padding: 2px 6px;">Lvl ${student.level}</span></td>
+                <td style="font-weight: 700; color: var(--secondary);">${student.xp} XP</td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        console.error(err);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--parent);">Failed to load leaderboard.</td></tr>`;
+    }
+}
+
+async function loadTeacherNotifications() {
+    const feed = document.getElementById('teacher-alerts-feed');
+    if (!feed) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/notifications`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const notifications = await res.json();
+        
+        if (notifications.length === 0) {
+            feed.innerHTML = `<p style="font-size: 0.82rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;">No recent notifications.</p>`;
+            return;
+        }
+        
+        feed.innerHTML = notifications.map(notif => {
+            const date = new Date(notif.created_at).toLocaleDateString('en-IN', {
+                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+            
+            let iconClass = 'bx-bell';
+            let iconBg = 'rgba(0, 0, 0, 0.05)';
+            let iconColor = 'var(--text-secondary)';
+            
+            if (notif.type === 'assignment_created') {
+                iconClass = 'bx-task';
+                iconBg = 'rgba(42, 157, 143, 0.1)';
+                iconColor = 'var(--secondary)';
+            } else if (notif.type === 'assignment_graded') {
+                iconClass = 'bx-badge-check';
+                iconBg = 'rgba(42, 157, 143, 0.1)';
+                iconColor = 'var(--secondary)';
+            } else if (notif.type === 'announcement_created') {
+                iconClass = 'bx-news';
+                iconBg = 'rgba(108, 52, 131, 0.1)';
+                iconColor = 'var(--ai-accent)';
+            }
+            
+            const isUnread = !notif.read;
+            
+            return `
+                <div class="feed-item" style="border-left: 3px solid ${isUnread ? 'var(--secondary)' : 'transparent'}; background: ${isUnread ? 'rgba(42,157,143,0.01)' : 'transparent'}; position: relative; cursor: pointer; display: flex; align-items: flex-start; gap: 10px; padding: 10px 15px; border-bottom: 1px solid rgba(0,0,0,0.02);" onclick="markTeacherNotificationRead('${notif.id}')">
+                    <div class="feed-item-icon" style="background-color: ${iconBg}; color: ${iconColor}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+                        <i class='bx ${iconClass}'></i>
+                    </div>
+                    <div class="feed-item-details" style="flex-grow: 1;">
+                        <div class="feed-item-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                            <span class="feed-item-title" style="font-weight: ${isUnread ? '700' : '600'}; font-size: 0.85rem; color: var(--text-primary);">${notif.title}</span>
+                            <span class="feed-item-time" style="font-size: 0.72rem; color: var(--text-secondary);">${date}</span>
+                        </div>
+                        <p class="feed-item-body" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.4;">${notif.content}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error(err);
+        feed.innerHTML = `<p style="font-size: 0.82rem; color: var(--parent); text-align: center; margin-top: 1rem;">Failed to load alerts feed.</p>`;
+    }
+}
+
+async function markTeacherNotificationRead(notificationId) {
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/notifications/${notificationId}/read`, {
+            method: 'POST',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            await loadTeacherNotifications();
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// Global exports
+window.switchTeacherClassroomTab = switchTeacherClassroomTab;
+window.likeTeacherAnnouncement = likeTeacherAnnouncement;
+window.postTeacherAnnouncementComment = postTeacherAnnouncementComment;
+window.loadClassroomAnnouncements = loadClassroomAnnouncements;
+window.loadClassroomLeaderboard = loadClassroomLeaderboard;
+window.loadTeacherNotifications = loadTeacherNotifications;
+window.markTeacherNotificationRead = markTeacherNotificationRead;
+window.handleTeacherPostAnnouncementSubmit = handleTeacherPostAnnouncementSubmit;

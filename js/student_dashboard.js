@@ -10,7 +10,7 @@
    ======================================== */
 
 // Centralized backend host detection. Queries global window.CONFIG first, with hostname-based automatic detection fallback.
-const BACKEND_URL = (window.CONFIG && window.CONFIG.BACKEND_URL) || 
+const BACKEND_URL = (window.CONFIG && window.CONFIG.BACKEND_URL) ||
     ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '')
         ? 'http://127.0.0.1:8000'
         : 'https://eduflow-api.onrender.com');
@@ -27,18 +27,18 @@ function showToast(message, type = 'info') {
         container.id = 'toast-container';
         document.body.appendChild(container);
     }
-    
+
     const toast = document.createElement('div');
     const isErrorOrWarning = type === 'error' || type === 'warning';
     toast.className = `toast toast-${type} ${isErrorOrWarning ? 'toast-shake' : ''}`;
-    
+
     let icon = 'bx-info-circle';
     if (type === 'success') icon = 'bx-check-circle';
     else if (type === 'error') icon = 'bx-error-circle';
     else if (type === 'warning') icon = 'bx-error';
-    
+
     const isOffline = message.includes('Server is offline') || message.includes('offline');
-    
+
     toast.innerHTML = `
         <i class='bx ${icon} toast-icon'></i>
         <div class="toast-content" style="display: flex; flex-direction: column; flex-grow: 1;">
@@ -52,12 +52,12 @@ function showToast(message, type = 'info') {
         <button class="toast-close" style="align-self: flex-start; margin-left: auto;">&times;</button>
         <div class="toast-progress"></div>
     `;
-    
+
     const progressEl = toast.querySelector('.toast-progress');
     if (progressEl) {
         progressEl.style.animation = 'toast-progress-shrink 4.5s linear forwards';
     }
-    
+
     if (isOffline) {
         const retryBtn = toast.querySelector('#toast-retry-btn');
         if (retryBtn) {
@@ -85,19 +85,19 @@ function showToast(message, type = 'info') {
             });
         }
     }
-    
+
     toast.querySelector('.toast-close').addEventListener('click', () => {
         toast.classList.add('toast-fade-out');
         setTimeout(() => toast.remove(), 300);
     });
-    
+
     container.appendChild(toast);
-    
+
     setTimeout(() => {
         if (toast.parentElement) {
             const retryBtn = toast.querySelector('#toast-retry-btn');
             if (retryBtn && retryBtn.disabled) return;
-            
+
             toast.classList.add('toast-fade-out');
             setTimeout(() => {
                 toast.remove();
@@ -126,7 +126,7 @@ if (!token || !user || user.role !== 'student') {
    HELPER — Auth headers
    ======================================== */
 function authHeaders() {
-    return { 
+    return {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
     };
@@ -143,24 +143,24 @@ async function syncUserStats() {
         });
         if (!res.ok) throw new Error();
         const updatedUser = await res.json();
-        
+
         // Update localStorage
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        
+
         // Render stats in header
         document.getElementById('header-xp').textContent = `${updatedUser.xp || 0} XP`;
         document.getElementById('header-level').textContent = `Lvl ${updatedUser.level || 1}`;
-        
+
         // Level progression: every 500 XP is a level
         const currentLevelXP = (updatedUser.level - 1) * 500;
         const xpProgressInLevel = (updatedUser.xp - currentLevelXP);
         const progressPercentage = Math.max(0, Math.min(100, (xpProgressInLevel / 500) * 100));
         document.getElementById('header-level-bar').style.width = `${progressPercentage}%`;
-        
+
         // Sync overview profile fields
         document.getElementById('profile-name').textContent = updatedUser.name || 'Student';
         document.getElementById('profile-avatar').textContent = (updatedUser.name || 'S').charAt(0).toUpperCase();
-        
+
         // Sync badge unlocked styles
         const badges = updatedUser.badges || [];
         document.querySelectorAll('.badge-item').forEach(item => {
@@ -230,6 +230,7 @@ const panelTitles = {
     'doubt-panel': { title: 'AI Doubt Solver', sub: 'Get step-by-step solutions to any academic question.' },
     'quiz-panel': { title: 'Practice Quizzes', sub: 'Take AI-generated MCQ tests and sharpen your skills.' },
     'flashcards-panel': { title: '3D Flashcards', sub: 'Review key terms and practice active recall concepts.' },
+    'assignments-panel': { title: 'Assignments Hub', sub: 'Solve homework worksheets, check Google Drive resources, and track performance grades.' },
     'chat-panel': { title: 'Direct Messages', sub: 'Communicate with teachers of your classrooms.' }
 };
 
@@ -239,7 +240,7 @@ function switchPanel(panelId) {
 
     const targetPanel = document.getElementById(panelId);
     if (targetPanel) targetPanel.classList.add('active');
-    
+
     const targetMenu = document.querySelector(`[data-panel="${panelId}"]`);
     if (targetMenu) targetMenu.classList.add('active');
 
@@ -248,7 +249,7 @@ function switchPanel(panelId) {
         document.getElementById('panel-title').textContent = info.title;
         document.getElementById('panel-subtitle').textContent = info.sub;
     }
-    
+
     if (panelId === 'chat-panel') {
         loadChatContacts();
     } else {
@@ -314,9 +315,9 @@ async function loadKanbanPlans() {
         });
         if (!res.ok) throw new Error();
         const plans = await res.json();
-        
+
         document.getElementById('stat-plans-count').textContent = plans.length;
-        
+
         if (plans.length > 0) {
             activeKanbanPlan = plans[plans.length - 1];
             renderKanbanBoard(activeKanbanPlan);
@@ -333,37 +334,37 @@ function renderKanbanBoard(plan) {
         inprogress: document.getElementById('kanban-inprogress'),
         completed: document.getElementById('kanban-completed')
     };
-    
+
     Object.values(columns).forEach(col => col.innerHTML = '');
     const counts = { todo: 0, inprogress: 0, completed: 0 };
-    
+
     plan.tasks.forEach(task => {
         const card = document.createElement('div');
         card.className = 'kanban-card';
         card.draggable = true;
         card.id = `kanban-task-${task.id}`;
         card.textContent = task.title;
-        
+
         card.addEventListener('dragstart', (e) => {
             card.classList.add('dragging');
             e.dataTransfer.setData('text/plain', task.id);
         });
-        
+
         card.addEventListener('dragend', () => {
             card.classList.remove('dragging');
         });
-        
+
         const colId = task.status === 'todo' ? 'todo' : (task.status === 'inprogress' ? 'inprogress' : 'completed');
         if (columns[colId]) {
             columns[colId].appendChild(card);
             counts[colId]++;
         }
     });
-    
+
     document.getElementById('count-todo').textContent = counts.todo;
     document.getElementById('count-inprogress').textContent = counts.inprogress;
     document.getElementById('count-completed').textContent = counts.completed;
-    
+
     initKanbanDragEvents();
 }
 
@@ -371,49 +372,49 @@ function initKanbanDragEvents() {
     const containers = document.querySelectorAll('.kanban-cards-container');
     containers.forEach(container => {
         const column = container.closest('.kanban-column');
-        
+
         container.addEventListener('dragover', (e) => {
             e.preventDefault();
             column.classList.add('dragover');
         });
-        
+
         container.addEventListener('dragleave', () => {
             column.classList.remove('dragover');
         });
-        
+
         container.addEventListener('drop', async (e) => {
             e.preventDefault();
             column.classList.remove('dragover');
-            
+
             const taskId = e.dataTransfer.getData('text/plain');
             const draggedCard = document.getElementById(`kanban-task-${taskId}`);
             if (!draggedCard) return;
-            
+
             const newStatus = column.getAttribute('data-status');
             const task = activeKanbanPlan.tasks.find(t => t.id === taskId);
             if (!task || task.status === newStatus) return;
-            
+
             task.status = newStatus;
             container.appendChild(draggedCard);
-            
+
             try {
                 const res = await fetch(`${API_BASE}/ai/study-kanban/update`, {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ task_id: taskId, status: newStatus })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.detail || 'Failed to update task');
-                
+
                 showToast(`Task moved to ${column.querySelector('h4').textContent}!`, 'success');
-                
+
                 if (newStatus === 'completed') {
                     await addXP(30, 'plan');
                 }
-                
+
                 renderKanbanBoard(activeKanbanPlan);
             } catch (err) {
                 console.error(err);
@@ -442,9 +443,9 @@ document.getElementById('study-plan-form').addEventListener('submit', async (e) 
     try {
         const res = await fetch(`${API_BASE}/ai/study-kanban`, {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 subject,
@@ -463,7 +464,7 @@ document.getElementById('study-plan-form').addEventListener('submit', async (e) 
 
         showToast('🎉 Study Kanban board generated successfully!', 'success');
         await addXP(80, 'plan');
-        
+
         document.getElementById('study-subject').value = '';
         document.getElementById('study-goals').value = '';
         weakTopics.length = 0;
@@ -495,14 +496,14 @@ let selectedImageFile = null;
 
 if (dropzone) {
     dropzone.addEventListener('click', () => imageFileInput.click());
-    
+
     imageFileInput.addEventListener('change', () => {
         if (imageFileInput.files.length > 0) {
             selectedImageFile = imageFileInput.files[0];
             showImagePreview(selectedImageFile);
         }
     });
-    
+
     dropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
         dropzone.classList.add('dragover');
@@ -537,20 +538,20 @@ async function loadDoubtHistory() {
         });
         if (!res.ok) throw new Error();
         const history = await res.json();
-        
+
         document.getElementById('stat-doubts-count').textContent = history.length;
-        
+
         if (history.length === 0) {
             listContainer.innerHTML = `<p style="font-size: 0.82rem; color: var(--text-secondary); text-align: center; margin: 2rem 0;">No doubts solved yet</p>`;
             return;
         }
-        
+
         listContainer.innerHTML = '';
         history.forEach(item => {
             const dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN', {
                 month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
             }) : '';
-            
+
             const div = document.createElement('div');
             div.className = 'doubt-history-item';
             div.innerHTML = `
@@ -576,20 +577,20 @@ function initSpeechRecognition() {
     const micIcon = document.getElementById('mic-icon');
     const textarea = document.getElementById('doubt-text');
     if (!micBtn) return;
-    
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
         micBtn.style.display = 'none';
         return;
     }
-    
+
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = 'en-US';
-    
+
     let isListening = false;
-    
+
     recognition.onstart = () => {
         isListening = true;
         micBtn.style.backgroundColor = '#e71d36';
@@ -597,19 +598,19 @@ function initSpeechRecognition() {
         micIcon.className = 'bx bx-dots-horizontal-rounded bx-flashing';
         showToast('Listening... Speak your question now.', 'info');
     };
-    
+
     recognition.onend = () => {
         isListening = false;
         micBtn.style.backgroundColor = '';
         micBtn.style.color = '';
         micIcon.className = 'bx bx-microphone';
     };
-    
+
     recognition.onerror = (e) => {
         console.error('Speech recognition error', e);
         showToast('Could not recognize voice. Please try again.', 'warning');
     };
-    
+
     recognition.onresult = (event) => {
         const text = event.results[0][0].transcript;
         if (textarea.value) {
@@ -618,7 +619,7 @@ function initSpeechRecognition() {
             textarea.value = text;
         }
     };
-    
+
     micBtn.addEventListener('click', (e) => {
         e.preventDefault();
         if (isListening) {
@@ -661,7 +662,7 @@ document.getElementById('doubt-form').addEventListener('submit', async (e) => {
 
         showToast('🎉 Doubt resolved successfully!', 'success');
         await addXP(50, 'doubt');
-        
+
         document.getElementById('doubt-text').value = '';
         if (imagePreview) {
             imagePreview.style.display = 'none';
@@ -669,7 +670,7 @@ document.getElementById('doubt-form').addEventListener('submit', async (e) => {
         }
         selectedImageFile = null;
         imageFileInput.value = '';
-        
+
         await loadDoubtHistory();
     } catch (err) {
         let errMsg = err.message || 'Error occurred';
@@ -714,9 +715,9 @@ document.getElementById('quiz-setup-form').addEventListener('submit', async (e) 
     try {
         const res = await fetch(`${API_BASE}/ai/generate-quiz`, {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ topic, grade, num_questions: numQ, difficulty })
         });
@@ -758,22 +759,22 @@ function updateBattleHUD() {
     const botBar = document.getElementById('bot-health');
     const playerHPText = document.getElementById('player-hp-text');
     const botHPText = document.getElementById('bot-hp-text');
-    
+
     if (!playerBar || !botBar) return;
-    
+
     const playerPct = (playerHP / 3) * 100;
     const botPct = (botHP / 3) * 100;
-    
+
     playerBar.style.width = `${playerPct}%`;
     botBar.style.width = `${botPct}%`;
-    
+
     playerHPText.textContent = `HP: ${playerHP}/3`;
     botHPText.textContent = `HP: ${botHP}/3`;
-    
+
     if (playerHP === 2) playerBar.style.backgroundColor = '#f1c40f';
     else if (playerHP === 1) playerBar.style.backgroundColor = '#e74c3c';
     else playerBar.style.backgroundColor = '#2ecc71';
-    
+
     if (botHP === 2) botBar.style.backgroundColor = '#f1c40f';
     else if (botHP === 1) botBar.style.backgroundColor = '#e74c3c';
     else botBar.style.backgroundColor = '#e74c3c';
@@ -782,14 +783,14 @@ function updateBattleHUD() {
 function startQuestionTimer() {
     clearInterval(battleTimerInterval);
     if (!isBattleMode) return;
-    
+
     secondsLeft = 15;
     document.getElementById('quiz-next-btn').textContent = `Next Question (15s)`;
-    
+
     battleTimerInterval = setInterval(() => {
         secondsLeft--;
         document.getElementById('quiz-next-btn').textContent = `Next Question (${secondsLeft}s)`;
-        
+
         if (secondsLeft <= 0) {
             clearInterval(battleTimerInterval);
             handleBattleTimeout();
@@ -800,11 +801,11 @@ function startQuestionTimer() {
 function handleBattleTimeout() {
     if (answered) return;
     answered = true;
-    
+
     playerHP--;
     updateBattleHUD();
     showToast('⏳ Time is up! You took 1 damage.', 'warning');
-    
+
     const q = quizData.questions[currentQ];
     const options = document.querySelectorAll('.quiz-option');
     options.forEach(opt => {
@@ -813,13 +814,13 @@ function handleBattleTimeout() {
             opt.classList.add('correct');
         }
     });
-    
+
     document.getElementById('quiz-explanation-text').textContent = q.explanation;
     document.getElementById('quiz-explanation-box').style.display = 'block';
-    
+
     document.getElementById('quiz-next-btn').disabled = false;
     document.getElementById('quiz-next-btn').textContent = 'Next Question';
-    
+
     if (playerHP <= 0) {
         setTimeout(() => {
             endBattleMode(false);
@@ -853,7 +854,7 @@ function renderQuestion() {
     document.getElementById('quiz-explanation-box').style.display = 'none';
     document.getElementById('quiz-next-btn').disabled = true;
     answered = false;
-    
+
     if (isBattleMode) {
         startQuestionTimer();
     }
@@ -862,7 +863,7 @@ function renderQuestion() {
 function selectOption(element, selected, question) {
     if (answered) return;
     answered = true;
-    
+
     clearInterval(battleTimerInterval);
     document.getElementById('quiz-next-btn').textContent = 'Next Question';
 
@@ -943,7 +944,7 @@ function showQuizSummary() {
 
     const el = document.getElementById('stat-quizzes-count');
     el.textContent = parseInt(el.textContent) + 1;
-    
+
     // Save quiz attempt details to MongoDB
     fetch(`${API_BASE}/ai/quiz/save-score`, {
         method: 'POST',
@@ -955,11 +956,11 @@ function showQuizSummary() {
             total_questions: total
         })
     })
-    .then(res => res.json())
-    .then(data => {
-        console.log('Quiz score saved:', data);
-    })
-    .catch(err => console.error('Failed to save quiz score:', err));
+        .then(res => res.json())
+        .then(data => {
+            console.log('Quiz score saved:', data);
+        })
+        .catch(err => console.error('Failed to save quiz score:', err));
 
     addXP(score * 20, 'quiz');
 }
@@ -968,10 +969,10 @@ function endBattleMode(playerWon) {
     clearInterval(battleTimerInterval);
     document.getElementById('quiz-active-box').style.display = 'none';
     document.getElementById('quiz-summary-box').style.display = 'block';
-    
+
     const summaryScore = document.getElementById('quiz-summary-score');
     const summaryComment = document.getElementById('quiz-summary-comment');
-    
+
     if (playerWon) {
         summaryScore.textContent = '🏆 VICTORY!';
         summaryScore.style.color = '#2ecc71';
@@ -983,9 +984,9 @@ function endBattleMode(playerWon) {
         summaryComment.textContent = `The AI Bot defeated you in battle! Keep studying and try again.`;
         addXP(15, 'quiz');
     }
-    
+
     document.getElementById('quiz-summary-subtitle').textContent = `AI Bot Battle Mode`;
-    
+
     const el = document.getElementById('stat-quizzes-count');
     el.textContent = parseInt(el.textContent) + 1;
 }
@@ -1021,41 +1022,41 @@ function initFlashcards() {
     const stillLearningBtn = document.getElementById('fc-still-learning-btn');
     const masteredBtn = document.getElementById('fc-mastered-btn');
     const restartBtn = document.getElementById('fc-restart-btn');
-    
+
     if (innerCard) {
         innerCard.parentElement.addEventListener('click', () => {
             innerCard.classList.toggle('is-flipped');
         });
     }
-    
+
     if (setupForm) {
         setupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const topic = document.getElementById('fc-topic').value.trim();
             const grade = document.getElementById('fc-grade').value;
             const count = parseInt(document.getElementById('fc-count').value);
-            
+
             setupBox.style.display = 'none';
             loader.style.display = 'flex';
             activeBox.style.display = 'none';
             summaryBox.style.display = 'none';
-            
+
             try {
                 const res = await fetch(`${API_BASE}/ai/generate-flashcards`, {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ topic, grade, num_cards: count })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.detail || 'Failed to generate flashcards');
-                
+
                 flashcardsDeck = data.flashcards;
                 currentCardIdx = 0;
                 masteredCount = 0;
-                
+
                 renderFlashcard();
                 activeBox.style.display = 'block';
                 showToast('Flashcard deck generated! Click the card to flip.', 'success');
@@ -1072,28 +1073,28 @@ function initFlashcards() {
             }
         });
     }
-    
+
     function renderFlashcard() {
         const card = flashcardsDeck[currentCardIdx];
         const total = flashcardsDeck.length;
-        
+
         document.getElementById('fc-counter').textContent = `Card ${currentCardIdx + 1} of ${total}`;
         innerCard.classList.remove('is-flipped');
-        
+
         setTimeout(() => {
             frontText.textContent = card.front;
             backText.textContent = card.back;
             expText.textContent = card.explanation || '';
         }, 150);
     }
-    
+
     if (stillLearningBtn) {
         stillLearningBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             nextFlashcard();
         });
     }
-    
+
     if (masteredBtn) {
         masteredBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1101,7 +1102,7 @@ function initFlashcards() {
             nextFlashcard();
         });
     }
-    
+
     function nextFlashcard() {
         currentCardIdx++;
         if (currentCardIdx < flashcardsDeck.length) {
@@ -1110,16 +1111,16 @@ function initFlashcards() {
             showFlashcardSummary();
         }
     }
-    
+
     function showFlashcardSummary() {
         activeBox.style.display = 'none';
         summaryBox.style.display = 'block';
         document.getElementById('fc-summary-score').textContent = `${masteredCount} / ${flashcardsDeck.length}`;
-        
+
         const xpEarned = masteredCount * 20;
         addXP(xpEarned, 'general');
     }
-    
+
     if (restartBtn) {
         restartBtn.addEventListener('click', () => {
             summaryBox.style.display = 'none';
@@ -1145,7 +1146,7 @@ function initPomodoro() {
     const resetBtn = document.getElementById('pomo-reset-btn');
     const timeDisplay = document.getElementById('pomo-time-display');
     const modeDisplay = document.getElementById('pomo-mode-display');
-    
+
     if (pomoToggle && pomoBody) {
         pomoToggle.addEventListener('click', () => {
             if (pomoBody.style.display === 'none') {
@@ -1157,14 +1158,14 @@ function initPomodoro() {
             }
         });
     }
-    
+
     function updateTimerDisplay() {
         if (!timeDisplay) return;
         const mins = Math.floor(pomoSeconds / 60).toString().padStart(2, '0');
         const secs = (pomoSeconds % 60).toString().padStart(2, '0');
         timeDisplay.textContent = `${mins}:${secs}`;
     }
-    
+
     function startTimer() {
         if (pomoIsRunning) {
             clearInterval(pomoInterval);
@@ -1175,7 +1176,7 @@ function initPomodoro() {
             pomoIsRunning = true;
             startBtn.innerHTML = "<i class='bx bx-pause'></i> Pause";
             showToast(`Pomodoro started: ${pomoMode === 'focus' ? 'Focus time!' : 'Break time!'}`, 'success');
-            
+
             pomoInterval = setInterval(() => {
                 pomoSeconds--;
                 if (pomoSeconds < 0) {
@@ -1203,9 +1204,9 @@ function initPomodoro() {
             }, 1000);
         }
     }
-    
+
     if (startBtn) startBtn.addEventListener('click', startTimer);
-    
+
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
             clearInterval(pomoInterval);
@@ -1221,17 +1222,17 @@ function initPomodoro() {
             showToast('Pomodoro reset.', 'info');
         });
     }
-    
+
     const lofiSelect = document.getElementById('lofi-select');
     const audioEl = document.getElementById('lofi-audio');
-    
+
     const audioStreams = {
         none: '',
         beats: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
         rain: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
         nature: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
     };
-    
+
     if (lofiSelect && audioEl) {
         lofiSelect.addEventListener('change', () => {
             const stream = lofiSelect.value;
@@ -1283,17 +1284,41 @@ async function loadClassroomsAndParent() {
                     `).join('');
                 }
             }
+            // 2. Populate Assignments Selector List
+            const asgSelector = document.getElementById('student-assignments-classroom-selector');
+            if (asgSelector) {
+                try {
+                    const res = await fetch(`${API_BASE}/auth/student/classrooms`, {
+                        method: 'GET',
+                        headers: authHeaders()
+                    });
+                    if (res.ok) {
+                        const classrooms = await res.json();
+                        if (classrooms.length === 0) {
+                            asgSelector.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);">Join a classroom first.</p>`;
+                        } else {
+                            asgSelector.innerHTML = classrooms.map(c => `
+                            <div class="selector-item-student-asg" data-code="${c.class_code}" style="padding: 10px 12px; border-radius: 6px; background: var(--bg-light); border: 1px solid rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s; margin-bottom: 8px;" onclick="selectClassroomForStudentAssignments('${c.class_code}', '${c.class_name.replace(/'/g, "\\'")}')">
+                                <span style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary); display: block;">${c.class_name}</span>
+                                <span style="font-size: 0.72rem; color: var(--text-secondary);">Teacher: ${c.teacher_name} | Code: ${c.class_code}</span>
+                            </div>
+                        `).join('');
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }
         } catch (err) {
             console.error('Failed to load student classrooms:', err);
         }
-    }
 
-    // 2. Render linked parent info
-    const parentInfo = document.getElementById('linked-parent-info');
-    if (parentInfo) {
-        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        if (storedUser.parent_email) {
-            parentInfo.innerHTML = `
+        // 2. Render linked parent info
+        const parentInfo = document.getElementById('linked-parent-info');
+        if (parentInfo) {
+            const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+            if (storedUser.parent_email) {
+                parentInfo.innerHTML = `
                 <div style="background: var(--bg-light); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 8px;">
                     <i class='bx bx-user-check' style="color: var(--secondary); font-size: 1.2rem;"></i>
                     <div>
@@ -1302,72 +1327,72 @@ async function loadClassroomsAndParent() {
                     </div>
                 </div>
             `;
-        } else {
-            parentInfo.innerHTML = `<p style="font-size: 0.82rem; color: var(--text-secondary);">No parent linked yet. Share your student email with your parent to link.</p>`;
+            } else {
+                parentInfo.innerHTML = `<p style="font-size: 0.82rem; color: var(--text-secondary);">No parent linked yet. Share your student email with your parent to link.</p>`;
+            }
         }
     }
-}
 
-const joinClassForm = document.getElementById('join-classroom-form');
-if (joinClassForm) {
-    joinClassForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const codeInput = document.getElementById('join-class-code');
-        const code = codeInput.value.trim().toUpperCase();
-        if (!code) return;
+    const joinClassForm = document.getElementById('join-classroom-form');
+    if (joinClassForm) {
+        joinClassForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const codeInput = document.getElementById('join-class-code');
+            const code = codeInput.value.trim().toUpperCase();
+            if (!code) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/student/join-classroom`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ class_code: code })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(`🎉 Joined classroom '${data.class_name}'!`, 'success');
+                    codeInput.value = '';
+                    await loadClassroomsAndParent();
+                    await syncUserStats();
+                } else {
+                    showToast(data.detail || 'Failed to join classroom.', 'error');
+                }
+            } catch (err) {
+                console.error('Error joining classroom:', err);
+                showToast('Failed to join classroom.', 'error');
+            }
+        });
+    }
+
+    let chatPollInterval = null;
+    let activeContactId = null;
+
+    function stopChatPolling() {
+        if (chatPollInterval) {
+            clearInterval(chatPollInterval);
+            chatPollInterval = null;
+        }
+    }
+
+    async function loadChatContacts() {
+        const list = document.getElementById('chat-contacts-list');
+        if (!list) return;
+
+        list.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;"><i class='bx bx-loader-alt bx-spin'></i> Loading...</p>`;
 
         try {
-            const res = await fetch(`${API_BASE}/auth/student/join-classroom`, {
-                method: 'POST',
-                headers: authHeaders(),
-                body: JSON.stringify({ class_code: code })
+            const res = await fetch(`${API_BASE}/communication/contacts`, {
+                method: 'GET',
+                headers: authHeaders()
             });
-            const data = await res.json();
-            if (res.ok) {
-                showToast(`🎉 Joined classroom '${data.class_name}'!`, 'success');
-                codeInput.value = '';
-                await loadClassroomsAndParent();
-                await syncUserStats();
-            } else {
-                showToast(data.detail || 'Failed to join classroom.', 'error');
+            if (!res.ok) throw new Error();
+            const contacts = await res.json();
+
+            if (contacts.length === 0) {
+                list.innerHTML = `<p style="font-size: 0.82rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;">No contacts available.</p>`;
+                return;
             }
-        } catch (err) {
-            console.error('Error joining classroom:', err);
-            showToast('Failed to join classroom.', 'error');
-        }
-    });
-}
 
-let chatPollInterval = null;
-let activeContactId = null;
-
-function stopChatPolling() {
-    if (chatPollInterval) {
-        clearInterval(chatPollInterval);
-        chatPollInterval = null;
-    }
-}
-
-async function loadChatContacts() {
-    const list = document.getElementById('chat-contacts-list');
-    if (!list) return;
-    
-    list.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;"><i class='bx bx-loader-alt bx-spin'></i> Loading...</p>`;
-    
-    try {
-        const res = await fetch(`${API_BASE}/communication/contacts`, {
-            method: 'GET',
-            headers: authHeaders()
-        });
-        if (!res.ok) throw new Error();
-        const contacts = await res.json();
-        
-        if (contacts.length === 0) {
-            list.innerHTML = `<p style="font-size: 0.82rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;">No contacts available.</p>`;
-            return;
-        }
-        
-        list.innerHTML = contacts.map(c => `
+            list.innerHTML = contacts.map(c => `
             <div class="chat-contact-item" id="chat-contact-${c.id}" onclick="selectChatContact('${c.id}', '${c.name}', '${c.role}')">
                 <div class="chat-contact-avatar">${c.name.charAt(0).toUpperCase()}</div>
                 <div class="chat-contact-info">
@@ -1376,128 +1401,587 @@ async function loadChatContacts() {
                 </div>
             </div>
         `).join('');
-        
-        if (activeContactId) {
-            const activeEl = document.getElementById(`chat-contact-${activeContactId}`);
-            if (activeEl) activeEl.classList.add('active');
+
+            if (activeContactId) {
+                const activeEl = document.getElementById(`chat-contact-${activeContactId}`);
+                if (activeEl) activeEl.classList.add('active');
+            }
+        } catch (err) {
+            console.error('Failed to load chat contacts:', err);
+            list.innerHTML = `<p style="font-size: 0.82rem; color: var(--parent); text-align: center; margin-top: 1rem;">Error loading contacts.</p>`;
         }
-    } catch (err) {
-        console.error('Failed to load chat contacts:', err);
-        list.innerHTML = `<p style="font-size: 0.82rem; color: var(--parent); text-align: center; margin-top: 1rem;">Error loading contacts.</p>`;
     }
-}
 
-async function selectChatContact(contactId, contactName, contactRole) {
-    activeContactId = contactId;
-    
-    document.querySelectorAll('.chat-contact-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    const selectedEl = document.getElementById(`chat-contact-${contactId}`);
-    if (selectedEl) selectedEl.classList.add('active');
-    
-    document.getElementById('chat-empty-state').style.display = 'none';
-    const feed = document.getElementById('chat-active-feed');
-    feed.style.display = 'flex';
-    
-    document.getElementById('active-chat-name').textContent = contactName;
-    document.getElementById('active-chat-role').textContent = contactRole;
-    document.getElementById('active-chat-avatar').textContent = contactName.charAt(0).toUpperCase();
-    
-    await loadChatMessages(contactId);
-    
-    stopChatPolling();
-    chatPollInterval = setInterval(() => {
-        loadChatMessages(contactId);
-    }, 4000);
-}
+    async function selectChatContact(contactId, contactName, contactRole) {
+        activeContactId = contactId;
 
-async function loadChatMessages(contactId) {
-    const container = document.getElementById('chat-messages-container');
-    if (!container) return;
-    
-    try {
-        const res = await fetch(`${API_BASE}/communication/messages/${contactId}`, {
-            method: 'GET',
-            headers: authHeaders()
+        document.querySelectorAll('.chat-contact-item').forEach(item => {
+            item.classList.remove('active');
         });
-        if (!res.ok) throw new Error();
-        const messages = await res.json();
-        
-        const shouldScroll = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
-        
-        if (messages.length === 0) {
-            container.innerHTML = `<div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-top: 2rem;">No messages yet. Send a message to start conversation!</div>`;
-            return;
-        }
-        
-        const myUserId = user.id;
-        container.innerHTML = messages.map(msg => {
-            const isOutgoing = msg.sender_id === myUserId;
-            const time = msg.created_at ? new Date(msg.created_at).toLocaleTimeString('en-IN', {
-                hour: '2-digit', minute: '2-digit'
-            }) : '';
-            return `
+        const selectedEl = document.getElementById(`chat-contact-${contactId}`);
+        if (selectedEl) selectedEl.classList.add('active');
+
+        document.getElementById('chat-empty-state').style.display = 'none';
+        const feed = document.getElementById('chat-active-feed');
+        feed.style.display = 'flex';
+
+        document.getElementById('active-chat-name').textContent = contactName;
+        document.getElementById('active-chat-role').textContent = contactRole;
+        document.getElementById('active-chat-avatar').textContent = contactName.charAt(0).toUpperCase();
+
+        await loadChatMessages(contactId);
+
+        stopChatPolling();
+        chatPollInterval = setInterval(() => {
+            loadChatMessages(contactId);
+        }, 4000);
+    }
+
+    async function loadChatMessages(contactId) {
+        const container = document.getElementById('chat-messages-container');
+        if (!container) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/communication/messages/${contactId}`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            if (!res.ok) throw new Error();
+            const messages = await res.json();
+
+            const shouldScroll = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+
+            if (messages.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-top: 2rem;">No messages yet. Send a message to start conversation!</div>`;
+                return;
+            }
+
+            const myUserId = user.id;
+            container.innerHTML = messages.map(msg => {
+                const isOutgoing = msg.sender_id === myUserId;
+                const time = msg.created_at ? new Date(msg.created_at).toLocaleTimeString('en-IN', {
+                    hour: '2-digit', minute: '2-digit'
+                }) : '';
+                return `
                 <div class="chat-message-bubble ${isOutgoing ? 'outgoing' : 'incoming'}">
                     <span>${msg.content}</span>
                     <span class="chat-message-meta">${time}</span>
                 </div>
             `;
-        }).join('');
-        
-        if (shouldScroll) {
-            container.scrollTop = container.scrollHeight;
-        }
-    } catch (err) {
-        console.error('Failed to load chat messages:', err);
-    }
-}
+            }).join('');
 
-async function sendChatMessage(e) {
-    e.preventDefault();
-    if (!activeContactId) return;
-    
-    const input = document.getElementById('chat-message-input');
-    const content = input.value.trim();
-    if (!content) return;
-    
-    input.value = '';
-    
-    try {
-        const res = await fetch(`${API_BASE}/communication/send`, {
-            method: 'POST',
-            headers: authHeaders(),
-            body: JSON.stringify({ recipient_id: activeContactId, content: content })
+            if (shouldScroll) {
+                container.scrollTop = container.scrollHeight;
+            }
+        } catch (err) {
+            console.error('Failed to load chat messages:', err);
+        }
+    }
+
+    async function sendChatMessage(e) {
+        e.preventDefault();
+        if (!activeContactId) return;
+
+        const input = document.getElementById('chat-message-input');
+        const content = input.value.trim();
+        if (!content) return;
+
+        input.value = '';
+
+        try {
+            const res = await fetch(`${API_BASE}/communication/send`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ recipient_id: activeContactId, content: content })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                await loadChatMessages(activeContactId);
+            } else {
+                showToast(data.detail || 'Failed to send message.', 'error');
+            }
+        } catch (err) {
+            console.error('Error sending message:', err);
+            showToast('Error sending message.', 'error');
+        }
+    }
+
+    /* ========================================
+       STUDENT ASSIGNMENTS HUB LOGIC
+       ======================================== */
+    let selectedStudentAssignmentClassCode = null;
+    let currentAssignmentSolvingData = null;
+
+    async function selectClassroomForStudentAssignments(classCode, className) {
+        selectedStudentAssignmentClassCode = classCode;
+
+        // Style active selector item
+        const items = document.querySelectorAll('#student-assignments-classroom-selector .selector-item-student-asg');
+        items.forEach(item => {
+            if (item.getAttribute('data-code') === classCode) {
+                item.style.backgroundColor = 'var(--secondary)';
+                item.style.color = '#fff';
+                const spans = item.querySelectorAll('span');
+                if (spans[0]) spans[0].style.color = '#fff';
+                if (spans[1]) spans[1].style.color = 'rgba(255,255,255,0.8)';
+            } else {
+                item.style.backgroundColor = 'var(--bg-light)';
+                item.style.color = 'var(--text-primary)';
+                const spans = item.querySelectorAll('span');
+                if (spans[0]) spans[0].style.color = 'var(--text-primary)';
+                if (spans[1]) spans[1].style.color = 'var(--text-secondary)';
+            }
         });
-        const data = await res.json();
-        if (res.ok) {
-            await loadChatMessages(activeContactId);
-        } else {
-            showToast(data.detail || 'Failed to send message.', 'error');
+
+        document.getElementById('student-assignments-class-title').innerHTML = `<i class='bx bx-task'></i> Assignments in ${className}`;
+        document.getElementById('student-assignments-view-card').style.display = 'block';
+        document.getElementById('solve-assignment-card').style.display = 'none';
+        document.getElementById('student-graded-details-card').style.display = 'none';
+
+        await loadStudentClassroomAssignments(classCode);
+        switchStudentClassroomTab('assignments');
+    }
+
+    async function loadStudentClassroomAssignments(classCode) {
+        const list = document.getElementById('student-assignments-list');
+        list.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading assignments...</p>`;
+
+        try {
+            const res = await fetch(`${API_BASE}/assignments/classroom/${classCode}`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            if (!res.ok) throw new Error();
+            const assignments = await res.json();
+
+            if (assignments.length === 0) {
+                list.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);">No assignments published in this classroom yet.</p>`;
+            } else {
+                list.innerHTML = assignments.map(a => {
+                    const dueDate = new Date(a.due_date).toLocaleDateString('en-IN', {
+                        weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+
+                    let iconClass = 'bx-file';
+                    let iconBg = 'var(--secondary)';
+                    if (a.assignment_type === 'ai') {
+                        iconClass = 'bx-brain';
+                        iconBg = 'var(--ai-accent)';
+                    } else if (a.assignment_type === 'link') {
+                        iconClass = 'bx-link-external';
+                        iconBg = 'var(--parent)';
+                    }
+
+                    let actionBtnHtml = '';
+                    let statusBadgeHtml = '';
+
+                    if (a.submission) {
+                        if (a.submission.status === 'graded') {
+                            statusBadgeHtml = `<span class="status-badge status-good">Graded (${a.submission.grade}/${a.max_marks})</span>`;
+                            actionBtnHtml = `
+                            <button class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem;" onclick="viewGradedFeedback('${a.submission.grade}', '${a.max_marks}', '${(a.submission.teacher_remarks || '').replace(/'/g, "\\'")}')">
+                                <i class='bx bx-award'></i> Feedback
+                            </button>
+                        `;
+                        } else {
+                            statusBadgeHtml = `<span class="status-badge" style="background: rgba(108,52,131,0.1); color: var(--ai-accent);">Submitted</span>`;
+                            actionBtnHtml = `<span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Awaiting Grading</span>`;
+                        }
+                    } else {
+                        const isOverdue = new Date() > new Date(a.due_date);
+                        if (isOverdue) {
+                            statusBadgeHtml = `<span class="status-badge status-struggling">Overdue</span>`;
+                            actionBtnHtml = `
+                            <button class="btn btn-primary btn-sm" style="padding: 6px 12px; font-size: 0.78rem;" onclick="showSolveForm('${a.id}', '${a.title.replace(/'/g, "\\'")}', '${a.description.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', '${a.assignment_type}', ${JSON.stringify(a.ai_questions || [])})">
+                                <i class='bx bx-edit'></i> Submit Late
+                            </button>
+                        `;
+                        } else {
+                            statusBadgeHtml = `<span class="status-badge" style="background: rgba(42, 157, 143, 0.1); color: var(--secondary);">Assigned</span>`;
+                            actionBtnHtml = `
+                            <button class="btn btn-primary btn-sm" style="padding: 6px 12px; font-size: 0.78rem;" onclick="showSolveForm('${a.id}', '${a.title.replace(/'/g, "\\'")}', '${a.description.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', '${a.assignment_type}', ${JSON.stringify(a.ai_questions || [])})">
+                                <i class='bx bx-edit'></i> Complete
+                            </button>
+                        `;
+                        }
+                    }
+
+                    return `
+                    <div style="background: var(--bg-white); padding: 1.2rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: start; gap: 1rem; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="display: flex; gap: 1rem; align-items: start;">
+                            <div style="background: ${iconBg}; color: #fff; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+                                <i class='bx ${iconClass}'></i>
+                            </div>
+                            <div>
+                                <h4 style="font-weight: 700; color: var(--text-primary); font-size: 1rem; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                                    ${a.title} ${statusBadgeHtml}
+                                </h4>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.5;">${a.description}</p>
+                                <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); display: block;">
+                                    <i class='bx bx-time' style="vertical-align: middle;"></i> Due: <strong>${dueDate}</strong> | Max Marks: <strong>${a.max_marks}</strong>
+                                </span>
+                                ${a.gdrive_link ? `
+                                    <a href="${a.gdrive_link}" target="_blank" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.72rem; margin-top: 8px; background: rgba(231,111,81,0.08); color: var(--parent); border: 1px solid rgba(231,111,81,0.15); text-decoration: none;">
+                                        <i class='bx bx-link'></i> Open Resource Link
+                                    </a>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; flex-shrink: 0;">
+                            ${actionBtnHtml}
+                        </div>
+                    </div>
+                `;
+                }).join('');
+            }
+        } catch (err) {
+            console.error(err);
+            list.innerHTML = `<p style="font-size: 0.85rem; color: var(--parent);">Failed to load assignments.</p>`;
         }
-    } catch (err) {
-        console.error('Error sending message:', err);
-        showToast('Error sending message.', 'error');
     }
-}
 
-// Make functions globally accessible for inline onclick handlers
-window.selectChatContact = selectChatContact;
+    function showSolveForm(assignmentId, title, description, type, aiQuestions) {
+        document.getElementById('student-assignments-view-card').style.display = 'none';
+        document.getElementById('solve-assignment-card').style.display = 'block';
+        document.getElementById('solve-assignment-card').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('student-graded-details-card').style.display = 'none';
 
-/* ========================================
-   INITIALIZE ON PAGE LOAD
-   ======================================== */
-window.addEventListener('DOMContentLoaded', async () => {
-    await syncUserStats();
-    await loadKanbanPlans();
-    await loadDoubtHistory();
-    await loadClassroomsAndParent();
-    initSpeechRecognition();
-    initFlashcards();
-    initPomodoro();
-    
-    const chatForm = document.getElementById('chat-send-form');
-    if (chatForm) {
-        chatForm.addEventListener('submit', sendChatMessage);
+        document.getElementById('solve-assignment-title').innerHTML = `<i class='bx bx-edit'></i> Complete: ${title}`;
+        document.getElementById('solve-assignment-id').value = assignmentId;
+        document.getElementById('solve-assignment-description').textContent = description;
+        document.getElementById('solve-text-answers').value = '';
+
+        const mcqBox = document.getElementById('solve-mcq-solver-box');
+        const mcqContainer = document.getElementById('solve-mcq-questions-container');
+        mcqContainer.innerHTML = '';
+
+        if (type === 'ai' && aiQuestions && aiQuestions.length > 0) {
+            mcqBox.style.display = 'block';
+            currentAssignmentSolvingData = aiQuestions;
+
+            aiQuestions.forEach((q, idx) => {
+                mcqContainer.innerHTML += `
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 8px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">Q${idx + 1}. ${q.question_text}</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        ${q.options.map((opt, i) => `
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; padding: 6px; border: 1px solid rgba(0,0,0,0.05); border-radius: 4px; background: var(--bg-light);">
+                                <input type="radio" name="solve-mcq-q-${idx}" value="${opt}" required style="accent-color: var(--secondary);">
+                                <span>${['A', 'B', 'C', 'D'][i]}. ${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            });
+        } else {
+            mcqBox.style.display = 'none';
+            currentAssignmentSolvingData = null;
+        }
     }
-});
+
+    function hideSolveAssignmentForm() {
+        document.getElementById('solve-assignment-card').style.display = 'none';
+        document.getElementById('student-assignments-view-card').style.display = 'block';
+    }
+
+    function viewGradedFeedback(grade, maxMarks, remarks) {
+        const card = document.getElementById('student-graded-details-card');
+        card.style.display = 'block';
+        card.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('graded-details-score').textContent = `${grade} / ${maxMarks}`;
+        document.getElementById('graded-details-remarks').textContent = remarks || "(No comment written by teacher)";
+    }
+
+    async function handleStudentAssignmentSubmissionSubmit(e) {
+        e.preventDefault();
+
+        const assignmentId = document.getElementById('solve-assignment-id').value;
+        const submission_text = document.getElementById('solve-text-answers').value.trim();
+
+        const answers = [];
+        if (currentAssignmentSolvingData) {
+            currentAssignmentSolvingData.forEach((q, idx) => {
+                const selected = document.querySelector(`input[name="solve-mcq-q-${idx}"]:checked`);
+                if (selected) {
+                    answers.push(selected.value);
+                }
+            });
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/assignments/${assignmentId}/submit`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ submission_text, answers })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Failed to submit assignment');
+
+            showToast('🎉 Submission saved! +50 XP Gained!', 'success');
+            hideSolveAssignmentForm();
+            await loadStudentClassroomAssignments(selectedStudentAssignmentClassCode);
+            await syncUserStats();
+
+        } catch (err) {
+            console.error(err);
+            showToast(err.message || 'Failed to submit assignment', 'error');
+        }
+    }
+
+    /* ========================================
+       INITIALIZE ON PAGE LOAD
+       ======================================== */
+    window.addEventListener('DOMContentLoaded', async () => {
+        await syncUserStats();
+        await loadKanbanPlans();
+        await loadDoubtHistory();
+        await loadClassroomsAndParent();
+        await loadStudentNotifications();
+        initSpeechRecognition();
+        initFlashcards();
+        initPomodoro();
+
+        const asgSubmitForm = document.getElementById('submit-assignment-answers-form');
+        if (asgSubmitForm) {
+            asgSubmitForm.addEventListener('submit', handleStudentAssignmentSubmissionSubmit);
+        }
+
+        const chatForm = document.getElementById('chat-send-form');
+        if (chatForm) {
+            chatForm.addEventListener('submit', sendChatMessage);
+        }
+    });
+
+    // Make functions globally accessible for inline onclick handlers
+    window.selectChatContact = selectChatContact;
+    window.selectClassroomForStudentAssignments = selectClassroomForStudentAssignments;
+    window.loadStudentClassroomAssignments = loadStudentClassroomAssignments;
+    window.showSolveForm = showSolveForm;
+    window.hideSolveAssignmentForm = hideSolveAssignmentForm;
+    window.viewGradedFeedback = viewGradedFeedback;
+
+    /* ========================================
+       CLASSROOM BULLETIN, LEADERBOARD & ALERTS
+       ======================================== */
+    function switchStudentClassroomTab(tabName) {
+        document.getElementById('student-class-tab-assignments').style.display = tabName === 'assignments' ? 'block' : 'none';
+        document.getElementById('student-class-tab-stream').style.display = tabName === 'stream' ? 'block' : 'none';
+        document.getElementById('student-class-tab-leaderboard').style.display = tabName === 'leaderboard' ? 'block' : 'none';
+        
+        document.getElementById('tab-btn-student-assignments').classList.toggle('active', tabName === 'assignments');
+        document.getElementById('tab-btn-student-stream').classList.toggle('active', tabName === 'stream');
+        document.getElementById('tab-btn-student-leaderboard').classList.toggle('active', tabName === 'leaderboard');
+        
+        if (tabName === 'stream' && selectedStudentAssignmentClassCode) {
+            loadStudentClassroomAnnouncements(selectedStudentAssignmentClassCode);
+        } else if (tabName === 'leaderboard' && selectedStudentAssignmentClassCode) {
+            loadStudentClassroomLeaderboard(selectedStudentAssignmentClassCode);
+        }
+    }
+
+    async function loadStudentClassroomAnnouncements(classCode) {
+        const feed = document.getElementById('student-announcements-feed');
+        if (!feed) return;
+        feed.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading notices...</p>`;
+        
+        try {
+            const res = await fetch(`${API_BASE}/classrooms/${classCode}/announcements`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            if (!res.ok) throw new Error();
+            const announcements = await res.json();
+            
+            if (announcements.length === 0) {
+                feed.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);">No announcements posted yet by the teacher.</p>`;
+                return;
+            }
+            
+            feed.innerHTML = announcements.map(ann => {
+                const date = new Date(ann.created_at).toLocaleDateString('en-IN', {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                const isLiked = ann.likes.includes(user.id);
+                
+                return `
+                    <div style="background: var(--bg-light); border: 1px solid rgba(0,0,0,0.04); padding: 1.2rem; border-radius: 8px; margin-bottom: 10px; text-align: left;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-weight: 700; color: var(--primary); font-size: 0.95rem;">${ann.author_name}</span>
+                            <span style="font-size: 0.72rem; color: var(--text-secondary);">${date}</span>
+                        </div>
+                        <p style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.5; white-space: pre-wrap; margin-bottom: 12px;">${ann.content}</p>
+                        
+                        <div style="display: flex; gap: 1rem; align-items: center; border-top: 1px solid rgba(0,0,0,0.03); padding-top: 8px; margin-top: 8px;">
+                            <button class="btn btn-secondary btn-sm" onclick="likeStudentAnnouncement('${classCode}', '${ann.id}')" style="padding: 4px 8px; font-size: 0.75rem; background: ${isLiked ? 'rgba(42,157,143,0.1)' : 'transparent'}; color: ${isLiked ? 'var(--secondary)' : 'var(--text-secondary)'}; border: none;">
+                                <i class='bx ${isLiked ? 'bxs-heart' : 'bx-heart'}'></i> Like (${ann.likes.length})
+                            </button>
+                        </div>
+                        
+                        <!-- Comments Section -->
+                        <div style="margin-top: 12px; background: rgba(0,0,0,0.01); padding: 10px; border-radius: 6px;">
+                            <div id="student-comments-list-${ann.id}" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;">
+                                ${ann.comments.length === 0 ? `<p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">No comments yet.</p>` : ann.comments.map(c => `
+                                    <div style="font-size: 0.8rem; line-height: 1.4; border-bottom: 1px dashed rgba(0,0,0,0.02); padding-bottom: 4px; margin-bottom: 4px;">
+                                        <strong style="color: var(--primary);">${c.user_name} (${c.user_role}):</strong>
+                                        <span style="color: var(--text-primary);">${c.content}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <form onsubmit="postStudentAnnouncementComment(event, '${classCode}', '${ann.id}')" style="display: flex; gap: 6px;">
+                                <input type="text" placeholder="Add a comment..." class="form-input-db btn-sm" required style="font-size: 0.75rem; padding: 4px 8px; flex-grow: 1;">
+                                <button type="submit" class="btn btn-secondary btn-sm" style="padding: 4px 8px; font-size: 0.75rem;">Reply</button>
+                            </form>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (err) {
+            console.error(err);
+            feed.innerHTML = `<p style="font-size: 0.85rem; color: var(--parent);">Failed to load notices.</p>`;
+        }
+    }
+
+    async function likeStudentAnnouncement(classCode, announcementId) {
+        try {
+            const res = await fetch(`${API_BASE}/classrooms/${classCode}/announcements/${announcementId}/like`, {
+                method: 'POST',
+                headers: authHeaders()
+            });
+            if (res.ok) {
+                await loadStudentClassroomAnnouncements(classCode);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function postStudentAnnouncementComment(e, classCode, announcementId) {
+        e.preventDefault();
+        const input = e.target.querySelector('input');
+        const content = input.value.trim();
+        if (!content) return;
+        
+        try {
+            const res = await fetch(`${API_BASE}/classrooms/${classCode}/announcements/${announcementId}/comment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                body: JSON.stringify({ content })
+            });
+            if (res.ok) {
+                input.value = '';
+                await loadStudentClassroomAnnouncements(classCode);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function loadStudentClassroomLeaderboard(classCode) {
+        const tbody = document.getElementById('student-class-leaderboard-body');
+        if (!tbody) return;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading leaderboard...</td></tr>`;
+        
+        try {
+            const res = await fetch(`${API_BASE}/classrooms/${classCode}/leaderboard`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            if (!res.ok) throw new Error();
+            const leaderboard = await res.json();
+            
+            tbody.innerHTML = leaderboard.map(student => {
+                const isMe = student.id === user.id;
+                return `
+                    <tr style="background: ${isMe ? 'rgba(42,157,143,0.05)' : 'transparent'}; font-weight: ${isMe ? '700' : '400'}; border-left: 3px solid ${isMe ? 'var(--secondary)' : 'transparent'};">
+                        <td style="color: var(--secondary); font-size: 0.95rem; font-weight: 700;">
+                            ${student.rank === 1 ? '🥇 1' : student.rank === 2 ? '🥈 2' : student.rank === 3 ? '🥉 3' : student.rank}
+                        </td>
+                        <td style="color: var(--text-primary);">${student.name} ${isMe ? '<strong>(You)</strong>' : ''}</td>
+                        <td><span class="status-badge" style="background: var(--primary); color: #fff; font-size: 0.72rem; padding: 2px 6px;">Lvl ${student.level}</span></td>
+                        <td style="color: var(--secondary); font-weight: 700;">${student.xp} XP</td>
+                    </tr>
+                `;
+            }).join('');
+        } catch (err) {
+            console.error(err);
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--parent);">Failed to load leaderboard.</td></tr>`;
+        }
+    }
+
+    async function loadStudentNotifications() {
+        const container = document.getElementById('student-alerts-container');
+        if (!container) return;
+        
+        try {
+            const res = await fetch(`${API_BASE}/classrooms/notifications`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            if (!res.ok) throw new Error();
+            const notifications = await res.json();
+            
+            if (notifications.length === 0) {
+                container.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;">No recent notifications.</p>`;
+                return;
+            }
+            
+            container.innerHTML = notifications.map(notif => {
+                const date = new Date(notif.created_at).toLocaleDateString('en-IN', {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                const isUnread = !notif.read;
+                
+                let iconClass = 'bx-bell';
+                let iconColor = 'var(--text-secondary)';
+                if (notif.type === 'assignment_created') {
+                    iconClass = 'bx-task';
+                    iconColor = 'var(--secondary)';
+                } else if (notif.type === 'assignment_graded') {
+                    iconClass = 'bx-badge-check';
+                    iconColor = 'var(--secondary)';
+                } else if (notif.type === 'announcement_created') {
+                    iconClass = 'bx-news';
+                    iconColor = 'var(--ai-accent)';
+                }
+                
+                return `
+                    <div style="background: var(--bg-light); border-radius: 6px; padding: 8px 10px; border: 1px solid rgba(0,0,0,0.03); display: flex; align-items: flex-start; gap: 8px; position: relative; cursor: pointer; border-left: 3px solid ${isUnread ? 'var(--secondary)' : 'transparent'}; text-align: left; margin-bottom: 6px;" onclick="markStudentNotificationRead('${notif.id}')">
+                        <i class='bx ${iconClass}' style="font-size: 1.1rem; color: ${iconColor}; margin-top: 2px;"></i>
+                        <div style="flex-grow: 1;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; margin-bottom: 2px; align-items: center;">
+                                <span style="color: var(--text-primary); font-weight: ${isUnread ? '700' : '600'};">${notif.title}</span>
+                                <span style="font-size: 0.68rem; color: var(--text-secondary);">${date}</span>
+                            </div>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0; line-height: 1.3;">${notif.content}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (err) {
+            console.error('Failed to load student notifications:', err);
+            container.innerHTML = `<p style="font-size: 0.8rem; color: var(--parent); text-align: center; margin-top: 1rem;">Failed to load alerts.</p>`;
+        }
+    }
+
+    async function markStudentNotificationRead(notificationId) {
+        try {
+            const res = await fetch(`${API_BASE}/classrooms/notifications/${notificationId}/read`, {
+                method: 'POST',
+                headers: authHeaders()
+            });
+            if (res.ok) {
+                await loadStudentNotifications();
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    window.switchStudentClassroomTab = switchStudentClassroomTab;
+    window.loadStudentClassroomAnnouncements = loadStudentClassroomAnnouncements;
+    window.likeStudentAnnouncement = likeStudentAnnouncement;
+    window.postStudentAnnouncementComment = postStudentAnnouncementComment;
+    window.loadStudentClassroomLeaderboard = loadStudentClassroomLeaderboard;
+    window.loadStudentNotifications = loadStudentNotifications;
+    window.markStudentNotificationRead = markStudentNotificationRead;

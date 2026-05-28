@@ -255,7 +255,8 @@ async def get_linked_students(
             "email": doc["email"],
             "xp": doc.get("xp", 0),
             "level": doc.get("level", 1),
-            "badges": doc.get("badges", [])
+            "badges": doc.get("badges", []),
+            "class_codes": doc.get("class_codes", [])
         })
         
     return students_list
@@ -481,6 +482,55 @@ async def get_student_classrooms(
         )
         
     class_codes = current_user.get("class_codes", []) or []
+    cursor = db["classrooms"].find({"class_code": {"$in": class_codes}})
+    classrooms = []
+    async for doc in cursor:
+        classrooms.append({
+            "class_code": doc["class_code"],
+            "class_name": doc["class_name"],
+            "teacher_name": doc["teacher_name"]
+        })
+        
+    return classrooms
+
+
+@router.get("/parent/child/{student_email}/classrooms")
+async def get_child_classrooms(
+    student_email: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Retrieve all classrooms joined by the linked child.
+    """
+    if current_user.get("role") != "parent":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only parents can inspect child classrooms."
+        )
+        
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    student_email_lower = student_email.lower()
+    linked_emails = current_user.get("linked_student_emails", [])
+    if student_email_lower not in [email.lower() for email in linked_emails]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This child is not linked to your account."
+        )
+        
+    child = await db["users"].find_one({"email": student_email_lower, "role": "student"})
+    if not child:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Child student account not found."
+        )
+        
+    class_codes = child.get("class_codes", []) or []
     cursor = db["classrooms"].find({"class_code": {"$in": class_codes}})
     classrooms = []
     async for doc in cursor:

@@ -33,6 +33,10 @@
                     <i class='bx bx-bar-chart-alt-2'></i>
                     <span>Child Progress</span>
                 </div>
+                <div class="menu-item" data-panel="assignments-panel">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments Tracker</span>
+                </div>
                 <div class="menu-item" data-panel="alerts-panel">
                     <i class='bx bx-bell'></i>
                     <span>Notifications</span>
@@ -269,72 +273,8 @@
             <div class="card">
                 <h3 class="card-title"><i class='bx bx-bell'></i> Recent Notifications</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Automated alerts from teachers and the AI system about your child's learning journey.</p>
-
-                <div class="alerts-feed">
-                    <div class="feed-item">
-                        <div class="feed-item-icon" style="background-color: rgba(231,111,81,0.1); color: var(--parent);">
-                            <i class='bx bx-error-circle'></i>
-                        </div>
-                        <div class="feed-item-details">
-                            <div class="feed-item-header">
-                                <span class="feed-item-title">Score Drop Alert — Mathematics</span>
-                                <span class="feed-item-time">2 hours ago</span>
-                            </div>
-                            <p class="feed-item-body">Rahul scored 58% in today's Mathematics test (Ch.4 — Quadratic Equations), which is 14% below the class average. Please help him review this topic at home.</p>
-                        </div>
-                    </div>
-
-                    <div class="feed-item">
-                        <div class="feed-item-icon" style="background-color: rgba(108,52,131,0.1); color: var(--ai-accent);">
-                            <i class='bx bx-brain'></i>
-                        </div>
-                        <div class="feed-item-details">
-                            <div class="feed-item-header">
-                                <span class="feed-item-title">AI Study Plan Assigned</span>
-                                <span class="feed-item-time">3 hours ago</span>
-                            </div>
-                            <p class="feed-item-body">A personalized study plan for "Quadratic Equations" has been created for Rahul by the AI Mentor. Encourage him to follow the weekly revision schedule.</p>
-                        </div>
-                    </div>
-
-                    <div class="feed-item">
-                        <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
-                            <i class='bx bx-trophy'></i>
-                        </div>
-                        <div class="feed-item-details">
-                            <div class="feed-item-header">
-                                <span class="feed-item-title">Great Performance — Science</span>
-                                <span class="feed-item-time">Yesterday</span>
-                            </div>
-                            <p class="feed-item-body">Rahul scored 78% in Science (Ch.3 — Chemical Reactions), which is above the class average. His performance in Science is improving steadily!</p>
-                        </div>
-                    </div>
-
-                    <div class="feed-item">
-                        <div class="feed-item-icon" style="background-color: rgba(231,111,81,0.1); color: var(--parent);">
-                            <i class='bx bx-calendar-x'></i>
-                        </div>
-                        <div class="feed-item-details">
-                            <div class="feed-item-header">
-                                <span class="feed-item-title">Practice Incomplete</span>
-                                <span class="feed-item-time">2 days ago</span>
-                            </div>
-                            <p class="feed-item-body">Rahul has only completed 45% of the AI-assigned practice exercises this week. Motivate him to finish the remaining tasks for better preparation.</p>
-                        </div>
-                    </div>
-
-                    <div class="feed-item">
-                        <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
-                            <i class='bx bx-message-dots'></i>
-                        </div>
-                        <div class="feed-item-details">
-                            <div class="feed-item-header">
-                                <span class="feed-item-title">Teacher Note — Mrs. Sharma</span>
-                                <span class="feed-item-time">3 days ago</span>
-                            </div>
-                            <p class="feed-item-body">"Rahul is a bright student but needs extra focus on Mathematics. I recommend daily 30-minute practice sessions on algebraic concepts."</p>
-                        </div>
-                    </div>
+                <div class="alerts-feed" id="parent-alerts-feed">
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;"><i class='bx bx-loader-alt bx-spin'></i> Loading notifications...</p>
                 </div>
             </div>
         </section>
@@ -375,9 +315,70 @@
                     <!-- Parsed HTML will load here -->
                 </div>
             </div>
-        <!-- ============================================
-             PANEL 5: DIRECT MESSAGES
-             ============================================ -->
+        </section>
+
+        <!-- PANEL: ASSIGNMENTS TRACKER -->
+        <section id="assignments-panel" class="dashboard-panel">
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h3 class="card-title"><i class='bx bx-task'></i> Child's Homework & Worksheets</h3>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">Select a class to monitor your child's published assignments, submissions, and scores.</p>
+                <div style="display: grid; grid-template-columns: 240px 1fr; gap: 1.5rem; align-items: start; margin-top: 1.5rem;">
+                    <!-- Left Dropdown/List for classes -->
+                    <div style="display: flex; flex-direction: column; gap: 8px;" id="parent-classroom-selector-box">
+                        <label style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Classroom List</label>
+                        <div id="parent-assignments-classroom-list" style="display: flex; flex-direction: column; gap: 6px;">
+                            <p style="font-size: 0.82rem; color: var(--text-secondary);">Select a child to view classrooms.</p>
+                        </div>
+                    </div>
+                    <!-- Right dynamic assignments feed list with tabs -->
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <h4 id="parent-assignments-header-title" style="font-size: 0.95rem; font-weight: 700; color: var(--primary); display: none;">Assignments Activity Feed</h4>
+                        
+                        <!-- Classroom Sub-Tabs -->
+                        <div class="classroom-tabs" id="parent-classroom-tabs" style="display: none; gap: 10px; margin-bottom: 1rem; border-bottom: 2px solid var(--bg-light); padding-bottom: 8px;">
+                            <button class="btn btn-secondary btn-sm active" id="tab-btn-parent-assignments" onclick="switchParentClassroomTab('assignments')" style="padding: 6px 12px; font-size: 0.8rem;">Activity Feed</button>
+                            <button class="btn btn-secondary btn-sm" id="tab-btn-parent-stream" onclick="switchParentClassroomTab('stream')" style="padding: 6px 12px; font-size: 0.8rem;">Bulletin Board</button>
+                            <button class="btn btn-secondary btn-sm" id="tab-btn-parent-leaderboard" onclick="switchParentClassroomTab('leaderboard')" style="padding: 6px 12px; font-size: 0.8rem;">Leaderboard</button>
+                        </div>
+
+                        <!-- Tab Content 1: Assignments list -->
+                        <div id="parent-class-tab-assignments">
+                            <div id="parent-assignments-list-container" style="display: flex; flex-direction: column; gap: 12px;">
+                                <p style="font-size: 0.85rem; color: var(--text-secondary);">Select a classroom from the list on the left.</p>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content 2: Bulletin Board stream -->
+                        <div id="parent-class-tab-stream" style="display: none;">
+                            <div id="parent-announcements-feed" style="display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Notices will render here -->
+                            </div>
+                        </div>
+
+                        <!-- Tab Content 3: Classroom Leaderboard -->
+                        <div id="parent-class-tab-leaderboard" style="display: none;">
+                            <div class="db-table-container">
+                                <table class="db-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Student Name</th>
+                                            <th>Level</th>
+                                            <th>XP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="parent-class-leaderboard-body">
+                                        <!-- Leaderboard rows will render here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL 5: DIRECT MESSAGES -->
         <section id="chat-panel" class="dashboard-panel">
             <div class="chat-container">
                 <!-- Sidebar contacts list -->

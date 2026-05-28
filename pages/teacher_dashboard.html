@@ -37,6 +37,10 @@
                     <i class='bx bx-user'></i>
                     <span>Students</span>
                 </div>
+                <div class="menu-item" data-panel="assignments-panel">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments Hub</span>
+                </div>
                 <div class="menu-item" data-panel="alerts-panel">
                     <i class='bx bx-bell'></i>
                     <span>Smart Alerts</span>
@@ -408,69 +412,212 @@
             </div>
         </section>
 
-        <!-- PANEL 4: SMART ALERTS -->
+        <!-- PANEL 4: ASSIGNMENTS HUB -->
+        <section id="assignments-panel" class="dashboard-panel">
+            <div style="display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; align-items: start;">
+                <!-- Left: Classrooms Selection List -->
+                <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <h3 class="card-title" style="margin-bottom: 0.5rem;"><i class='bx bx-school'></i> Select Class</h3>
+                    <div id="assignments-classroom-selector" style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Classroom items here -->
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">Create a class first.</p>
+                    </div>
+                </div>
+
+                <!-- Right: Assignment Management & List -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="card" id="assignments-view-card" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 class="card-title" id="assignments-class-title" style="margin-bottom: 0;"><i class='bx bx-task'></i> Assignments</h3>
+                            <button class="btn btn-primary btn-sm" id="btn-new-assignment-trigger" onclick="showCreateAssignmentForm()"><i class='bx bx-plus'></i> New Assignment</button>
+                        </div>
+                        
+                        <!-- Classroom Sub-Tabs -->
+                        <div class="classroom-tabs" style="display: flex; gap: 10px; margin-bottom: 1.5rem; border-bottom: 2px solid var(--bg-light); padding-bottom: 8px;">
+                            <button class="btn btn-secondary btn-sm active" id="tab-btn-asg-assignments" onclick="switchTeacherClassroomTab('assignments')" style="padding: 6px 12px; font-size: 0.8rem;">Assignments</button>
+                            <button class="btn btn-secondary btn-sm" id="tab-btn-asg-stream" onclick="switchTeacherClassroomTab('stream')" style="padding: 6px 12px; font-size: 0.8rem;">Bulletin Board</button>
+                            <button class="btn btn-secondary btn-sm" id="tab-btn-asg-leaderboard" onclick="switchTeacherClassroomTab('leaderboard')" style="padding: 6px 12px; font-size: 0.8rem;">Leaderboard</button>
+                        </div>
+
+                        <!-- Tab Content 1: Assignments List -->
+                        <div id="teacher-class-tab-assignments">
+                            <div id="teacher-assignments-list" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                                <!-- Assignments go here -->
+                            </div>
+                        </div>
+
+                        <!-- Tab Content 2: Bulletin Board Stream -->
+                        <div id="teacher-class-tab-stream" style="display: none;">
+                            <div style="background: var(--bg-white); border: 1px solid rgba(0,0,0,0.05); padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                                <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--primary); margin-bottom: 10px;"><i class='bx bx-news'></i> Post Announcement</h4>
+                                <form id="teacher-post-announcement-form" style="display: flex; flex-direction: column; gap: 10px;">
+                                    <textarea id="announcement-content" class="form-input-db" rows="3" placeholder="Type a message or notice for students and parents..." required></textarea>
+                                    <button type="submit" class="btn btn-primary" style="align-self: flex-end; padding: 6px 15px; font-size: 0.85rem;"><i class='bx bx-send'></i> Post Update</button>
+                                </form>
+                            </div>
+                            <div id="teacher-announcements-feed" style="display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Announcements will render here -->
+                            </div>
+                        </div>
+
+                        <!-- Tab Content 3: Classroom Leaderboard -->
+                        <div id="teacher-class-tab-leaderboard" style="display: none;">
+                            <div class="db-table-container">
+                                <table class="db-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Student Name</th>
+                                            <th>Level</th>
+                                            <th>XP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="teacher-class-leaderboard-body">
+                                        <!-- Leaderboard rows will render here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Create Assignment Card -->
+                    <div class="card form-card" id="create-assignment-card" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.8rem;">
+                            <h3 class="card-title" style="margin-bottom: 0;"><i class='bx bx-plus-circle'></i> Create New Assignment</h3>
+                            <button class="btn btn-secondary btn-sm" onclick="hideCreateAssignmentForm()">&times; Cancel</button>
+                        </div>
+
+                        <!-- Assignment Type Tabs -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
+                            <button type="button" class="btn btn-secondary btn-sm assignment-tab active" id="tab-manual-btn" onclick="switchAssignmentTab('manual')">Manual</button>
+                            <button type="button" class="btn btn-secondary btn-sm assignment-tab" id="tab-ai-btn" onclick="switchAssignmentTab('ai')">AI-Generated</button>
+                            <button type="button" class="btn btn-secondary btn-sm assignment-tab" id="tab-link-btn" onclick="switchAssignmentTab('link')">Google Drive / Link</button>
+                        </div>
+
+                        <form id="create-assignment-form">
+                            <input type="hidden" id="asg-class-code">
+                            <input type="hidden" id="asg-type" value="manual">
+
+                            <div class="form-group-db">
+                                <label for="asg-title">Assignment Title</label>
+                                <input type="text" id="asg-title" class="form-input-db" placeholder="e.g., Photosynthesis Chapter 4 Worksheet" required>
+                            </div>
+
+                            <div class="form-group-db">
+                                <label for="asg-description">Instructions / Questions</label>
+                                <textarea id="asg-description" class="form-input-db" style="min-height: 100px; resize: vertical; font-family: inherit;" placeholder="Enter details or questions for students..." required></textarea>
+                            </div>
+
+                            <!-- Link Mode Field -->
+                            <div class="form-group-db" id="asg-link-group" style="display: none;">
+                                <label for="asg-link">Google Drive or External Link</label>
+                                <input type="url" id="asg-link" class="form-input-db" placeholder="https://drive.google.com/...">
+                            </div>
+
+                            <!-- AI Mode Fields -->
+                            <div id="asg-ai-group" style="display: none; background: rgba(108,52,131,0.03); border: 1px solid rgba(108,52,131,0.1); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.25rem;">
+                                <h4 style="font-size: 0.88rem; color: var(--ai-accent); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;"><i class='bx bx-brain'></i> AI Question Generator</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div class="form-group-db">
+                                        <label for="asg-ai-topic">Topic for AI Questions</label>
+                                        <input type="text" id="asg-ai-topic" class="form-input-db" placeholder="e.g. Chemical Reactions Class 10">
+                                    </div>
+                                    <div class="form-group-db">
+                                        <label for="asg-ai-count">Number of MCQs</label>
+                                        <select id="asg-ai-count" class="form-select-db">
+                                            <option value="3" selected>3 Questions</option>
+                                            <option value="5">5 Questions</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 10px; background: var(--ai-accent); color: #fff; border: none;" onclick="generateAIAssignmentQuestions()">
+                                    <i class='bx bx-magic-wand'></i> Auto-Draft Questions with AI
+                                </button>
+                                <div id="asg-ai-preview" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; display: none; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.06); font-size: 0.85rem;"></div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group-db">
+                                    <label for="asg-due">Due Date</label>
+                                    <input type="datetime-local" id="asg-due" class="form-input-db" required>
+                                </div>
+                                <div class="form-group-db">
+                                    <label for="asg-marks">Maximum Marks</label>
+                                    <input type="number" id="asg-marks" class="form-input-db" value="100" min="0" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;"><i class='bx bx-paper-plane'></i> Publish Assignment</button>
+                        </form>
+                    </div>
+
+                    <!-- Submissions & Grading Card -->
+                    <div class="card" id="submissions-grading-card" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.8rem;">
+                            <h3 class="card-title" id="grading-assignment-title" style="margin-bottom: 0;"><i class='bx bx-check-shield'></i> Grade Submissions</h3>
+                            <button class="btn btn-secondary btn-sm" onclick="closeSubmissionsView()">&times; Close</button>
+                        </div>
+                        <div class="db-table-container">
+                            <table class="db-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Submission</th>
+                                        <th>Submitted At</th>
+                                        <th>Score</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="submissions-table-body">
+                                    <!-- Submissions load here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Grade Student Modal Form -->
+                    <div class="card form-card" id="grade-student-card" style="display: none; background: var(--bg-light); border: 1px solid rgba(0,0,0,0.08);">
+                        <h4 style="font-size: 1rem; color: var(--primary); margin-bottom: 1rem;"><i class='bx bx-edit'></i> Mark Submission: <span id="grade-student-name">Student</span></h4>
+                        <div style="background: #fff; padding: 1.2rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 1.25rem;">
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.3rem;">Student's Submission</p>
+                            <p id="grade-submission-text" style="font-size: 0.95rem; white-space: pre-wrap; line-height: 1.6; color: var(--text-primary);">Submission content goes here...</p>
+                            <div id="grade-submission-answers" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;"></div>
+                        </div>
+                        <form id="submit-grading-form">
+                            <input type="hidden" id="grade-submission-id">
+                            <div style="display: grid; grid-template-columns: 150px 1fr; gap: 1rem; align-items: start;">
+                                <div class="form-group-db">
+                                    <label for="asg-grade-score">Awarded Score</label>
+                                    <input type="number" id="asg-grade-score" class="form-input-db" min="0" required>
+                                </div>
+                                <div class="form-group-db">
+                                    <label for="asg-grade-remarks">Teacher Remarks / Feedback</label>
+                                    <input type="text" id="asg-grade-remarks" class="form-input-db" placeholder="e.g. Excellent work, very detailed explainations!">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                                <button type="submit" class="btn btn-primary" style="flex-grow: 1;">Submit Grade</button>
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('grade-student-card').style.display='none'">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL 5: SMART ALERTS -->
         <section id="alerts-panel" class="dashboard-panel">
             <div class="card">
                 <h3 class="card-title"><i class='bx bx-bell'></i> Smart Alert Feed</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">AI-generated alerts about students who need your attention.</p>
-
-                <div class="alerts-feed">
-                    <div class="feed-item">
-                        <div class="feed-item-icon" style="background-color: rgba(231,111,81,0.1); color: var(--parent);">
-                            <i class='bx bx-error-circle'></i>
-                        </div>
-                        <div class="feed-item-details">
-                            <div class="feed-item-header">
-                                <span class="feed-item-title">Rahul Sharma — Performance Drop</span>
-                                <span class="feed-item-time">2 hours ago</span>
-                            </div>
-                            <p class="feed-item-body">Rahul's score in Mathematics dropped 18% over the last 3 tests. Weak area: Quadratic Equations. Consider assigning targeted practice.</p>
-                        </div>
-                    </div>
-
-                    <div class="feed-item">
-                        <div class="feed-item-icon" style="background-color: rgba(231,111,81,0.1); color: var(--parent);">
-                            <i class='bx bx-error-circle'></i>
-                        </div>
-                        <div class="feed-item-details">
-                            <div class="feed-item-header">
-                                <span class="feed-item-title">Sneha Reddy — Consistently Low</span>
-                                <span class="feed-item-time">5 hours ago</span>
-                            </div>
-                            <p class="feed-item-body">Sneha scored below 60% in 4 consecutive Science tests. Electromagnetic Waves is a recurring weak area. Parent notification has been sent.</p>
-                        </div>
-                    </div>
-
-                    <div class="feed-item">
-                        <div class="feed-item-icon" style="background-color: rgba(42,157,143,0.1); color: var(--secondary);">
-                            <i class='bx bx-trophy'></i>
-                        </div>
-                        <div class="feed-item-details">
-                            <div class="feed-item-header">
-                                <span class="feed-item-title">Vikram Singh — Top Performer</span>
-                                <span class="feed-item-time">Yesterday</span>
-                            </div>
-                            <p class="feed-item-body">Vikram achieved 93% average across all subjects this month. He is the top-performing student in Class 10-B!</p>
-                        </div>
-                    </div>
-
-                    <div class="feed-item">
-                        <div class="feed-item-icon" style="background-color: rgba(108,52,131,0.1); color: var(--ai-accent);">
-                            <i class='bx bx-brain'></i>
-                        </div>
-                        <div class="feed-item-details">
-                            <div class="feed-item-header">
-                                <span class="feed-item-title">AI Suggestion — Class-Wide</span>
-                                <span class="feed-item-time">Yesterday</span>
-                            </div>
-                            <p class="feed-item-body">60% of students in your class are weak in "Quadratic Equations". AI recommends scheduling a special revision session on this topic.</p>
-                        </div>
-                    </div>
+                <div class="alerts-feed" id="teacher-alerts-feed">
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;"><i class='bx bx-loader-alt bx-spin'></i> Loading notifications...</p>
                 </div>
             </div>
-        <!-- ============================================
-             PANEL 5: DIRECT MESSAGES
-             ============================================ -->
+        </section>
+        
+        <!-- PANEL 6: DIRECT MESSAGES -->
         <section id="chat-panel" class="dashboard-panel">
             <div class="chat-container">
                 <!-- Sidebar contacts list -->
