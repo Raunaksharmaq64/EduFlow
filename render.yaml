@@ -21,8 +21,7 @@ services:
         generateValue: true
 
   # 2. HTML/CSS/JS Frontend Static Site Service
-  - type: web
+  - type: static
     name: eduflow-frontend
-    env: static
     buildCommand: ""
     publishDir: "."
