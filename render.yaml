@@ -24,7 +24,6 @@ services:
   # 2. HTML/CSS/JS Frontend Static Site Service
   - type: web
     name: eduflow-frontend
-    plan: free
     runtime: static
     buildCommand: ""
     staticPublishPath: "."
