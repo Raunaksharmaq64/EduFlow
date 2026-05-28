@@ -718,9 +718,14 @@ async function loadClassroomAssignments(classCode) {
                                 ` : ''}
                             </div>
                         </div>
-                        <button class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="viewAssignmentSubmissions('${a.id}', '${a.title.replace(/'/g, "\\'")}')">
-                            <i class='bx bx-check-double'></i> View Submissions
-                        </button>
+                        <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                            <button class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="viewAssignmentSubmissions('${a.id}', '${a.title.replace(/'/g, "\\'")}')">
+                                <i class='bx bx-check-double'></i> View Submissions
+                            </button>
+                            <button class="btn btn-sm" style="padding: 4px 10px; font-size: 0.75rem; display: flex; align-items: center; gap: 4px; flex-shrink: 0; background: transparent; border: 1px solid rgba(230,57,70,0.3); color: #e63946;" onclick="deleteTeacherAssignmentItem('${a.id}', '${classCode}')">
+                                <i class='bx bx-trash'></i> Delete
+                            </button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -1234,7 +1239,12 @@ async function loadClassroomAnnouncements(classCode) {
                 <div style="background: var(--bg-light); border: 1px solid rgba(0,0,0,0.04); padding: 1.2rem; border-radius: 8px; margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="font-weight: 700; color: var(--primary); font-size: 0.9rem;">${ann.author_name}</span>
-                        <span style="font-size: 0.72rem; color: var(--text-secondary);">${date}</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.72rem; color: var(--text-secondary);">${date}</span>
+                            <button onclick="deleteTeacherAnnouncement('${classCode}', '${ann.id}')" style="background: transparent; border: none; color: #e63946; cursor: pointer; padding: 2px 4px; display: flex; align-items: center;" title="Delete Announcement">
+                                <i class='bx bx-trash' style="font-size: 0.95rem;"></i>
+                            </button>
+                        </div>
                     </div>
                     <p style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.5; white-space: pre-wrap; margin-bottom: 12px;">${ann.content}</p>
                     
@@ -1414,7 +1424,10 @@ async function loadTeacherNotifications() {
                     <div class="feed-item-details" style="flex-grow: 1;">
                         <div class="feed-item-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                             <span class="feed-item-title" style="font-weight: ${isUnread ? '700' : '600'}; font-size: 0.85rem; color: var(--text-primary);">${notif.title}</span>
-                            <span class="feed-item-time" style="font-size: 0.72rem; color: var(--text-secondary);">${date}</span>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span class="feed-item-time" style="font-size: 0.72rem; color: var(--text-secondary);">${date}</span>
+                                <button onclick="deleteTeacherNotificationItem(event, '${notif.id}')" style="background: transparent; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 0 4px; margin-left: 2px;" title="Delete Alert">&times;</button>
+                            </div>
                         </div>
                         <p class="feed-item-body" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.4;">${notif.content}</p>
                     </div>
@@ -1450,3 +1463,136 @@ window.loadClassroomLeaderboard = loadClassroomLeaderboard;
 window.loadTeacherNotifications = loadTeacherNotifications;
 window.markTeacherNotificationRead = markTeacherNotificationRead;
 window.handleTeacherPostAnnouncementSubmit = handleTeacherPostAnnouncementSubmit;
+
+// Deletion & Auto-clean actions
+async function deleteTeacherAnnouncement(classCode, announcementId) {
+    if (!confirm('Are you sure you want to delete this announcement?')) return;
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${classCode}/announcements/${announcementId}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            showToast('Announcement deleted successfully.', 'success');
+            await loadClassroomAnnouncements(classCode);
+        } else {
+            const data = await res.json();
+            showToast(data.detail || 'Failed to delete announcement.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Error deleting announcement.', 'error');
+    }
+}
+
+async function deleteTeacherAssignmentItem(assignmentId, classCode) {
+    if (!confirm('Are you sure you want to delete this assignment and all its student submissions? This cannot be undone.')) return;
+    try {
+        const res = await fetch(`${API_BASE}/assignments/${assignmentId}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            showToast('Assignment deleted successfully.', 'success');
+            await loadClassroomAssignments(classCode);
+        } else {
+            const data = await res.json();
+            showToast(data.detail || 'Failed to delete assignment.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Error deleting assignment.', 'error');
+    }
+}
+
+async function deleteTeacherClassroom() {
+    if (!selectedClassCode) {
+        showToast('No classroom selected.', 'warning');
+        return;
+    }
+    const classCode = selectedClassCode;
+    const confirmation = prompt(`Warning: This will delete classroom ${classCode} and all its announcements, assignments, student submissions, and notifications. Type the classroom code to confirm:`);
+    if (confirmation !== classCode) {
+        if (confirmation !== null) {
+            showToast('Confirmation code mismatch. Deletion cancelled.', 'warning');
+        }
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${classCode}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            showToast(`Classroom ${classCode} deleted successfully.`, 'success');
+            selectedClassCode = null;
+            selectedAssignmentClassCode = null;
+            
+            // Hide cards
+            document.getElementById('classroom-students-card').style.display = 'none';
+            document.getElementById('student-detail-card').style.display = 'none';
+            if (document.getElementById('assignments-view-card')) {
+                document.getElementById('assignments-view-card').style.display = 'none';
+            }
+            if (document.getElementById('create-assignment-card')) {
+                document.getElementById('create-assignment-card').style.display = 'none';
+            }
+            
+            // Reload classrooms lists
+            await loadTeacherClassrooms();
+        } else {
+            const data = await res.json();
+            showToast(data.detail || 'Failed to delete classroom.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Error deleting classroom.', 'error');
+    }
+}
+
+async function clearTeacherNotifications() {
+    if (!confirm('Are you sure you want to clear all notifications?')) return;
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/notifications`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            showToast('Notifications cleared.', 'success');
+            await loadTeacherNotifications();
+        } else {
+            const data = await res.json();
+            showToast(data.detail || 'Failed to clear notifications.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Error clearing notifications.', 'error');
+    }
+}
+
+async function deleteTeacherNotificationItem(e, notificationId) {
+    e.stopPropagation();
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/notifications/${notificationId}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            showToast('Notification deleted.', 'success');
+            await loadTeacherNotifications();
+        } else {
+            const data = await res.json();
+            showToast(data.detail || 'Failed to delete notification.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Error deleting notification.', 'error');
+    }
+}
+
+window.deleteTeacherAnnouncement = deleteTeacherAnnouncement;
+window.deleteTeacherAssignmentItem = deleteTeacherAssignmentItem;
+window.deleteTeacherClassroom = deleteTeacherClassroom;
+window.clearTeacherNotifications = clearTeacherNotifications;
+window.deleteTeacherNotificationItem = deleteTeacherNotificationItem;

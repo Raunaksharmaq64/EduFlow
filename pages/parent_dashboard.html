@@ -271,7 +271,12 @@
              ============================================ -->
         <section id="alerts-panel" class="dashboard-panel">
             <div class="card">
-                <h3 class="card-title"><i class='bx bx-bell'></i> Recent Notifications</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h3 class="card-title" style="margin: 0;"><i class='bx bx-bell'></i> Recent Notifications</h3>
+                    <button class="btn btn-secondary btn-sm" onclick="clearParentNotifications()" style="padding: 4px 8px; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 4px; background: transparent; border: 1px solid rgba(0,0,0,0.15); color: var(--text-secondary); cursor: pointer;">
+                        <i class='bx bx-trash'></i> Clear All
+                    </button>
+                </div>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Automated alerts from teachers and the AI system about your child's learning journey.</p>
                 <div class="alerts-feed" id="parent-alerts-feed">
                     <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;"><i class='bx bx-loader-alt bx-spin'></i> Loading notifications...</p>

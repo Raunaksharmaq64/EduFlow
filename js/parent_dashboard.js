@@ -1136,7 +1136,10 @@ async function loadParentNotifications() {
                     <div class="feed-item-details" style="flex-grow: 1;">
                         <div class="feed-item-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                             <span class="feed-item-title" style="font-weight: ${isUnread ? '700' : '600'}; font-size: 0.85rem; color: var(--text-primary);">${notif.title}</span>
-                            <span class="feed-item-time" style="font-size: 0.72rem; color: var(--text-secondary);">${date}</span>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span class="feed-item-time" style="font-size: 0.72rem; color: var(--text-secondary);">${date}</span>
+                                <button onclick="deleteParentNotificationItem(event, '${notif.id}')" style="background: transparent; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 0 4px; margin-left: 2px;" title="Delete Alert">&times;</button>
+                            </div>
                         </div>
                         <p class="feed-item-body" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.4;">${notif.content}</p>
                     </div>
@@ -1168,6 +1171,48 @@ window.loadParentClassroomAnnouncements = loadParentClassroomAnnouncements;
 window.likeParentAnnouncement = likeParentAnnouncement;
 window.postParentAnnouncementComment = postParentAnnouncementComment;
 window.loadParentClassroomLeaderboard = loadParentClassroomLeaderboard;
+async function clearParentNotifications() {
+    if (!confirm('Are you sure you want to clear all notifications?')) return;
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/notifications`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            showToast('Notifications cleared.', 'success');
+            await loadParentNotifications();
+        } else {
+            const data = await res.json();
+            showToast(data.detail || 'Failed to clear notifications.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Error clearing notifications.', 'error');
+    }
+}
+
+async function deleteParentNotificationItem(e, notificationId) {
+    e.stopPropagation();
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/notifications/${notificationId}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            showToast('Notification deleted.', 'success');
+            await loadParentNotifications();
+        } else {
+            const data = await res.json();
+            showToast(data.detail || 'Failed to delete notification.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Error deleting notification.', 'error');
+    }
+}
+
 window.loadParentNotifications = loadParentNotifications;
 window.markParentNotificationRead = markParentNotificationRead;
+window.clearParentNotifications = clearParentNotifications;
+window.deleteParentNotificationItem = deleteParentNotificationItem;
 

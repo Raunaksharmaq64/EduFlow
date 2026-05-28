@@ -1768,11 +1768,11 @@ async function loadClassroomsAndParent() {
         document.getElementById('student-class-tab-assignments').style.display = tabName === 'assignments' ? 'block' : 'none';
         document.getElementById('student-class-tab-stream').style.display = tabName === 'stream' ? 'block' : 'none';
         document.getElementById('student-class-tab-leaderboard').style.display = tabName === 'leaderboard' ? 'block' : 'none';
-        
+
         document.getElementById('tab-btn-student-assignments').classList.toggle('active', tabName === 'assignments');
         document.getElementById('tab-btn-student-stream').classList.toggle('active', tabName === 'stream');
         document.getElementById('tab-btn-student-leaderboard').classList.toggle('active', tabName === 'leaderboard');
-        
+
         if (tabName === 'stream' && selectedStudentAssignmentClassCode) {
             loadStudentClassroomAnnouncements(selectedStudentAssignmentClassCode);
         } else if (tabName === 'leaderboard' && selectedStudentAssignmentClassCode) {
@@ -1784,7 +1784,7 @@ async function loadClassroomsAndParent() {
         const feed = document.getElementById('student-announcements-feed');
         if (!feed) return;
         feed.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading notices...</p>`;
-        
+
         try {
             const res = await fetch(`${API_BASE}/classrooms/${classCode}/announcements`, {
                 method: 'GET',
@@ -1792,18 +1792,18 @@ async function loadClassroomsAndParent() {
             });
             if (!res.ok) throw new Error();
             const announcements = await res.json();
-            
+
             if (announcements.length === 0) {
                 feed.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);">No announcements posted yet by the teacher.</p>`;
                 return;
             }
-            
+
             feed.innerHTML = announcements.map(ann => {
                 const date = new Date(ann.created_at).toLocaleDateString('en-IN', {
                     month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
                 });
                 const isLiked = ann.likes.includes(user.id);
-                
+
                 return `
                     <div style="background: var(--bg-light); border: 1px solid rgba(0,0,0,0.04); padding: 1.2rem; border-radius: 8px; margin-bottom: 10px; text-align: left;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -1861,7 +1861,7 @@ async function loadClassroomsAndParent() {
         const input = e.target.querySelector('input');
         const content = input.value.trim();
         if (!content) return;
-        
+
         try {
             const res = await fetch(`${API_BASE}/classrooms/${classCode}/announcements/${announcementId}/comment`, {
                 method: 'POST',
@@ -1881,7 +1881,7 @@ async function loadClassroomsAndParent() {
         const tbody = document.getElementById('student-class-leaderboard-body');
         if (!tbody) return;
         tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading leaderboard...</td></tr>`;
-        
+
         try {
             const res = await fetch(`${API_BASE}/classrooms/${classCode}/leaderboard`, {
                 method: 'GET',
@@ -1889,7 +1889,7 @@ async function loadClassroomsAndParent() {
             });
             if (!res.ok) throw new Error();
             const leaderboard = await res.json();
-            
+
             tbody.innerHTML = leaderboard.map(student => {
                 const isMe = student.id === user.id;
                 return `
@@ -1912,7 +1912,7 @@ async function loadClassroomsAndParent() {
     async function loadStudentNotifications() {
         const container = document.getElementById('student-alerts-container');
         if (!container) return;
-        
+
         try {
             const res = await fetch(`${API_BASE}/classrooms/notifications`, {
                 method: 'GET',
@@ -1920,18 +1920,18 @@ async function loadClassroomsAndParent() {
             });
             if (!res.ok) throw new Error();
             const notifications = await res.json();
-            
+
             if (notifications.length === 0) {
                 container.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;">No recent notifications.</p>`;
                 return;
             }
-            
+
             container.innerHTML = notifications.map(notif => {
                 const date = new Date(notif.created_at).toLocaleDateString('en-IN', {
                     month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
                 });
                 const isUnread = !notif.read;
-                
+
                 let iconClass = 'bx-bell';
                 let iconColor = 'var(--text-secondary)';
                 if (notif.type === 'assignment_created') {
@@ -1944,14 +1944,17 @@ async function loadClassroomsAndParent() {
                     iconClass = 'bx-news';
                     iconColor = 'var(--ai-accent)';
                 }
-                
+
                 return `
                     <div style="background: var(--bg-light); border-radius: 6px; padding: 8px 10px; border: 1px solid rgba(0,0,0,0.03); display: flex; align-items: flex-start; gap: 8px; position: relative; cursor: pointer; border-left: 3px solid ${isUnread ? 'var(--secondary)' : 'transparent'}; text-align: left; margin-bottom: 6px;" onclick="markStudentNotificationRead('${notif.id}')">
                         <i class='bx ${iconClass}' style="font-size: 1.1rem; color: ${iconColor}; margin-top: 2px;"></i>
                         <div style="flex-grow: 1;">
                             <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; margin-bottom: 2px; align-items: center;">
                                 <span style="color: var(--text-primary); font-weight: ${isUnread ? '700' : '600'};">${notif.title}</span>
-                                <span style="font-size: 0.68rem; color: var(--text-secondary);">${date}</span>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <span style="font-size: 0.68rem; color: var(--text-secondary);">${date}</span>
+                                    <button onclick="deleteStudentNotificationItem(event, '${notif.id}')" style="background: transparent; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 0 4px;" title="Delete Alert">&times;</button>
+                                </div>
                             </div>
                             <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0; line-height: 1.3;">${notif.content}</p>
                         </div>
@@ -1978,6 +1981,46 @@ async function loadClassroomsAndParent() {
         }
     }
 
+    async function clearStudentNotifications() {
+        if (!confirm('Are you sure you want to clear all notifications?')) return;
+        try {
+            const res = await fetch(`${API_BASE}/classrooms/notifications`, {
+                method: 'DELETE',
+                headers: authHeaders()
+            });
+            if (res.ok) {
+                showToast('Notifications cleared.', 'success');
+                await loadStudentNotifications();
+            } else {
+                const data = await res.json();
+                showToast(data.detail || 'Failed to clear notifications.', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Error clearing notifications.', 'error');
+        }
+    }
+
+    async function deleteStudentNotificationItem(e, notificationId) {
+        e.stopPropagation();
+        try {
+            const res = await fetch(`${API_BASE}/classrooms/notifications/${notificationId}`, {
+                method: 'DELETE',
+                headers: authHeaders()
+            });
+            if (res.ok) {
+                showToast('Notification deleted.', 'success');
+                await loadStudentNotifications();
+            } else {
+                const data = await res.json();
+                showToast(data.detail || 'Failed to delete notification.', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Error deleting notification.', 'error');
+        }
+    }
+
     window.switchStudentClassroomTab = switchStudentClassroomTab;
     window.loadStudentClassroomAnnouncements = loadStudentClassroomAnnouncements;
     window.likeStudentAnnouncement = likeStudentAnnouncement;
@@ -1985,3 +2028,6 @@ async function loadClassroomsAndParent() {
     window.loadStudentClassroomLeaderboard = loadStudentClassroomLeaderboard;
     window.loadStudentNotifications = loadStudentNotifications;
     window.markStudentNotificationRead = markStudentNotificationRead;
+    window.clearStudentNotifications = clearStudentNotifications;
+    window.deleteStudentNotificationItem = deleteStudentNotificationItem;
+}

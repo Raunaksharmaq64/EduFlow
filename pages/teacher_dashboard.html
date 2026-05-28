@@ -262,7 +262,12 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     <!-- Students list in selected classroom -->
                     <div class="card" id="classroom-students-card" style="display: none;">
-                        <h3 class="card-title" id="selected-class-title"><i class='bx bx-group'></i> Students in Class</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px;">
+                            <h3 class="card-title" id="selected-class-title" style="margin: 0;"><i class='bx bx-group'></i> Students in Class</h3>
+                            <button class="btn btn-sm" id="btn-delete-classroom" style="padding: 4px 10px; font-size: 0.75rem; background: transparent; border: 1px solid rgba(230,57,70,0.3); color: #e63946; display: flex; align-items: center; gap: 4px;" onclick="deleteTeacherClassroom()">
+                                <i class='bx bx-trash'></i> Delete Class
+                            </button>
+                        </div>
                         <div class="db-table-container" style="margin-top: 1rem;">
                             <table class="db-table">
                                 <thead>
@@ -609,7 +614,12 @@
         <!-- PANEL 5: SMART ALERTS -->
         <section id="alerts-panel" class="dashboard-panel">
             <div class="card">
-                <h3 class="card-title"><i class='bx bx-bell'></i> Smart Alert Feed</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h3 class="card-title" style="margin: 0;"><i class='bx bx-bell'></i> Smart Alert Feed</h3>
+                    <button class="btn btn-secondary btn-sm" onclick="clearTeacherNotifications()" style="padding: 4px 8px; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 4px; background: transparent; border: 1px solid rgba(0,0,0,0.15); color: var(--text-secondary);">
+                        <i class='bx bx-trash'></i> Clear All
+                    </button>
+                </div>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">AI-generated alerts about students who need your attention.</p>
                 <div class="alerts-feed" id="teacher-alerts-feed">
                     <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-top: 1rem;"><i class='bx bx-loader-alt bx-spin'></i> Loading notifications...</p>

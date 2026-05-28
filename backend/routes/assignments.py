@@ -513,3 +513,55 @@ async def grade_submission(
         "grade": request.grade,
         "teacher_remarks": request.teacher_remarks
     }
+
+@router.delete("/{assignment_id}")
+async def delete_assignment(
+    assignment_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Delete an assignment. Cascades and deletes all student submissions.
+    """
+    if current_user.get("role") != "teacher":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only teachers can delete assignments."
+        )
+        
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    try:
+        asg_oid = ObjectId(assignment_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid assignment ID."
+        )
+        
+    # Check if assignment exists and belongs to the teacher
+    assignment = await db["assignments"].find_one({
+        "_id": asg_oid,
+        "teacher_id": current_user["id"]
+    })
+    
+    if not assignment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Assignment not found or you are not authorized to delete it."
+        )
+        
+    # Delete all submissions associated with this assignment (stored as string)
+    await db["submissions"].delete_many({"assignment_id": assignment_id})
+    
+    # Delete notifications referencing this assignment
+    await db["notifications"].delete_many({"metadata.assignment_id": assignment_id})
+    
+    # Delete the assignment itself
+    await db["assignments"].delete_one({"_id": asg_oid})
+    
+    return {"status": "success", "message": "Assignment and related submissions deleted successfully."}

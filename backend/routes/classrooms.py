@@ -431,3 +431,180 @@ async def mark_notification_read(
     )
     
     return {"status": "success", "message": "Notification marked as read."}
+
+@router.delete("/notifications/{notification_id}")
+async def delete_notification(
+    notification_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Delete a single notification.
+    """
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    try:
+        notif_oid = ObjectId(notification_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid notification ID."
+        )
+        
+    notification = await db["notifications"].find_one({"_id": notif_oid})
+    if not notification:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Notification not found."
+        )
+        
+    if notification["user_id"] != current_user["id"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only delete your own notifications."
+        )
+        
+    await db["notifications"].delete_one({"_id": notif_oid})
+    return {"status": "success", "message": "Notification deleted."}
+
+@router.delete("/notifications")
+async def clear_notifications(
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Clear (delete) all notifications for the current user.
+    """
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    result = await db["notifications"].delete_many({"user_id": current_user["id"]})
+    return {"status": "success", "message": f"Cleared {result.deleted_count} notifications."}
+
+@router.delete("/{class_code}/announcements/{announcement_id}")
+async def delete_announcement(
+    class_code: str,
+    announcement_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Delete an announcement. Only classroom teacher can delete announcements.
+    """
+    if current_user.get("role") != "teacher":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only teachers can delete announcements."
+        )
+        
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    class_code_upper = class_code.upper()
+    classroom = await db["classrooms"].find_one({
+        "class_code": class_code_upper,
+        "teacher_id": current_user["id"]
+    })
+    if not classroom:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized for this classroom."
+        )
+        
+    try:
+        ann_oid = ObjectId(announcement_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid announcement ID."
+        )
+        
+    announcement = await db["announcements"].find_one({
+        "_id": ann_oid,
+        "class_code": class_code_upper
+    })
+    if not announcement:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Announcement not found."
+        )
+        
+    await db["announcements"].delete_one({"_id": ann_oid})
+    return {"status": "success", "message": "Announcement deleted successfully."}
+
+@router.delete("/{class_code}")
+async def delete_classroom(
+    class_code: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Delete a classroom. Only classroom teacher can delete it.
+    Cascades and cleans up:
+    - Classroom document
+    - Student users class enrollment
+    - Announcements & comments
+    - Assignments & submissions
+    - Classroom-related notifications
+    """
+    if current_user.get("role") != "teacher":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only teachers can delete classrooms."
+        )
+        
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    class_code_upper = class_code.upper()
+    classroom = await db["classrooms"].find_one({
+        "class_code": class_code_upper,
+        "teacher_id": current_user["id"]
+    })
+    if not classroom:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Classroom not found or you are not authorized to delete it."
+        )
+        
+    # 1. Pull classroom from all student class_codes
+    await db["users"].update_many(
+        {"role": "student", "class_codes": class_code_upper},
+        {"$pull": {"class_codes": class_code_upper}}
+    )
+    
+    # 2. Delete all announcements for this class
+    await db["announcements"].delete_many({"class_code": class_code_upper})
+    
+    # 3. Find all assignments for this class to cascade submissions
+    assignments_cursor = db["assignments"].find({"class_code": class_code_upper})
+    assignment_ids = []
+    async for asg in assignments_cursor:
+        assignment_ids.append(str(asg["_id"]))
+        
+    if assignment_ids:
+        # Delete submissions
+        await db["submissions"].delete_many({"assignment_id": {"$in": assignment_ids}})
+        # Delete assignments
+        await db["assignments"].delete_many({"class_code": class_code_upper})
+        
+    # 4. Delete notifications matching class_code
+    await db["notifications"].delete_many({"metadata.class_code": class_code_upper})
+    
+    # 5. Delete classroom document
+    await db["classrooms"].delete_one({"_id": classroom["_id"]})
+    
+    return {"status": "success", "message": f"Classroom {class_code_upper} deleted successfully."}
