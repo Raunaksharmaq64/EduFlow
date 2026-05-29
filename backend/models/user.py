@@ -33,6 +33,7 @@ class UserResponse(UserBase):
     subject: Optional[str] = None
     relationship: Optional[str] = None
     linked_student_emails: Optional[List[str]] = []
+    tutor_persona: Optional[str] = "analogy"
 
     class Config:
         from_attributes = True
@@ -46,6 +47,7 @@ class ProfileUpdateRequest(BaseModel):
     qualification: Optional[str] = None
     subject: Optional[str] = None
     relationship: Optional[str] = None
+    tutor_persona: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str

@@ -206,6 +206,11 @@ async def get_classroom_assignments(
                     "grade": sub.get("grade"),
                     "teacher_remarks": sub.get("teacher_remarks")
                 }
+        elif role == "teacher":
+            submissions_count = await db["submissions"].count_documents({"assignment_id": assignment_id_str})
+            total_students = len(classroom.get("students", []))
+            assignment_res["submissions_count"] = submissions_count
+            assignment_res["total_students"] = total_students
                 
         # Attach child's submission details if requested by parent
         elif role == "parent":

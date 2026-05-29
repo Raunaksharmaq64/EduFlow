@@ -280,12 +280,28 @@
                                 <i class='bx bx-trash'></i> Delete Class
                             </button>
                         </div>
-                        <div class="db-table-container" style="margin-top: 1rem;">
+                        
+                        <!-- Search & Sort Row -->
+                        <div style="display: flex; gap: 12px; margin-bottom: 1.25rem; flex-wrap: wrap;">
+                            <div style="flex-grow: 1; position: relative;">
+                                <input type="text" id="student-search-input" class="form-input-db" placeholder="Search student by name, email, or mobile..." style="width: 100%; padding-left: 36px;">
+                                <i class='bx bx-search' style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 1.1rem;"></i>
+                            </div>
+                            <select id="student-sort-select" class="form-select-db" style="width: 180px;">
+                                <option value="xp-desc" selected>XP: High to Low</option>
+                                <option value="xp-asc">XP: Low to High</option>
+                                <option value="name-asc">Name: A to Z</option>
+                                <option value="name-desc">Name: Z to A</option>
+                            </select>
+                        </div>
+
+                        <div class="db-table-container">
                             <table class="db-table">
                                 <thead>
                                     <tr>
                                         <th>Student Name</th>
                                         <th>Email</th>
+                                        <th>Mobile / Phone</th>
                                         <th>XP</th>
                                         <th>Level</th>
                                         <th>Actions</th>
@@ -602,7 +618,8 @@
                                 <thead>
                                     <tr>
                                         <th>Student Name</th>
-                                        <th>Submission</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
                                         <th>Submitted At</th>
                                         <th>Score</th>
                                         <th>Actions</th>

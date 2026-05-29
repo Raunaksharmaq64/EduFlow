@@ -206,6 +206,17 @@
                     </p>
                 </div>
 
+                <div class="card">
+                    <h3 class="card-title" style="display: flex; align-items: center; gap: 6px;">
+                        <i class='bx bx-brain' style="color: var(--secondary); font-size: 1.3rem;"></i>
+                        AI Concept Mastery Graph
+                    </h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">Based on your recent quiz performances</p>
+                    <div id="mastery-container" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; font-style: italic;">No quiz history available yet. Complete a quiz to analyze mastery levels!</p>
+                    </div>
+                </div>
+
                 <div class="card" style="grid-column: span 2;">
                     <h3 class="card-title"><i class='bx bx-award'></i> Achievements & Badges</h3>
                     <div id="badges-container" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
@@ -497,6 +508,16 @@
                                 <option value="10">10</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="form-group-db" style="margin-top: 1rem;">
+                        <label for="quiz-type">Question Format</label>
+                        <select id="quiz-type" class="form-select-db" required>
+                            <option value="mixed" selected>Mixed Formats (MCQs, T/F, Blanks)</option>
+                            <option value="mcq">Only Multiple Choice (MCQ)</option>
+                            <option value="tf">Only True / False</option>
+                            <option value="fill">Only Fill in the Blanks</option>
+                        </select>
                     </div>
 
                     <!-- AI Bot Battle Mode Toggle -->
@@ -918,6 +939,15 @@
                         <div class="form-group-db">
                             <label for="profile-input-school">School Name</label>
                             <input type="text" id="profile-input-school" class="form-input-db" placeholder="e.g. Delhi Public School">
+                        </div>
+                        
+                        <div class="form-group-db">
+                            <label for="profile-input-persona">Personalized AI Tutor Persona</label>
+                            <select id="profile-input-persona" class="form-select-db">
+                                <option value="analogy">Analogy Master — Explains with stories and comparisons</option>
+                                <option value="socratic">Socratic Coach — Guides you to answers using questions</option>
+                                <option value="exam">Exam Drill Coach — Gives concise points and NCERT tips</option>
+                            </select>
                         </div>
                         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Save Profile Details</button>
                     </form>

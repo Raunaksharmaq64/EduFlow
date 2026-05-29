@@ -14,12 +14,14 @@ class QuizRequest(BaseModel):
     grade: str = Field(..., example="8th Grade")
     num_questions: int = Field(5, ge=1, le=10, description="Number of questions to generate (1 to 10)")
     difficulty: str = Field("medium", example="medium", description="easy, medium, or hard")
+    question_type: Optional[str] = Field("mixed", example="mixed", description="mcq, tf, fill, or mixed")
 
 class QuizQuestion(BaseModel):
     question_text: str = Field(..., description="The multiple choice question text")
-    options: List[str] = Field(..., description="List of 4 choices for the question")
+    options: List[str] = Field(..., description="List of choices for the question")
     correct_option: str = Field(..., description="The correct option from the options list")
     explanation: str = Field(..., description="Explanation of why this option is correct")
+    question_type: Optional[str] = Field("mcq", description="mcq, tf, or fill")
 
 class QuizResponse(BaseModel):
     topic: str

@@ -770,6 +770,7 @@ document.getElementById('quiz-setup-form').addEventListener('submit', async (e) 
     const grade = document.getElementById('quiz-grade').value;
     const difficulty = document.getElementById('quiz-difficulty').value;
     const numQ = parseInt(document.getElementById('quiz-count').value);
+    const qType = document.getElementById('quiz-type')?.value || 'mixed';
     const battleToggle = document.getElementById('quiz-battle-toggle');
     isBattleMode = battleToggle ? battleToggle.checked : false;
 
@@ -785,7 +786,7 @@ document.getElementById('quiz-setup-form').addEventListener('submit', async (e) 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ topic, grade, num_questions: numQ, difficulty })
+            body: JSON.stringify({ topic, grade, num_questions: numQ, difficulty, question_type: qType })
         });
 
         const data = await res.json();
@@ -898,7 +899,17 @@ function renderQuestion() {
     const q = quizData.questions[currentQ];
     const total = quizData.questions.length;
 
-    document.getElementById('quiz-q-num').textContent = `Question ${currentQ + 1} of ${total}`;
+    let formatLabel = "Multiple Choice";
+    let formatClass = "status-good";
+    if (q.question_type === 'tf') {
+        formatLabel = "True / False";
+        formatClass = "status-struggling";
+    } else if (q.question_type === 'fill') {
+        formatLabel = "Fill in the Blank";
+        formatClass = "status-badge";
+    }
+    
+    document.getElementById('quiz-q-num').innerHTML = `Question ${currentQ + 1} of ${total} <span class="status-badge ${formatClass}" style="margin-left: 8px; font-size: 0.65rem; padding: 2px 6px; vertical-align: middle; background-color: ${q.question_type === 'tf' ? 'rgba(231,111,81,0.1)' : q.question_type === 'fill' ? 'rgba(0,0,0,0.05)' : 'rgba(42,157,143,0.1)'}; color: ${q.question_type === 'tf' ? 'var(--parent)' : q.question_type === 'fill' ? 'var(--text-secondary)' : 'var(--secondary)'};">${formatLabel}</span>`;
     document.getElementById('quiz-q-text').textContent = q.question_text;
 
     const letters = ['A', 'B', 'C', 'D'];
@@ -1025,6 +1036,9 @@ function showQuizSummary() {
         .then(res => res.json())
         .then(data => {
             console.log('Quiz score saved:', data);
+            if (typeof loadConceptMastery === 'function') {
+                loadConceptMastery();
+            }
         })
         .catch(err => console.error('Failed to save quiz score:', err));
 
@@ -1360,6 +1374,97 @@ function initPomodoro() {
         });
     }
 }
+
+/* ========================================
+   AI CONCEPT MASTERY GRAPH
+   ======================================== */
+async function loadConceptMastery() {
+    const container = document.getElementById('mastery-container');
+    if (!container) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/ai/quiz/history`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error('Failed to fetch quiz history');
+        const history = await res.json();
+
+        if (!history || history.length === 0) {
+            container.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; font-style: italic;">No quiz history available yet. Complete a quiz to analyze mastery levels!</p>`;
+            return;
+        }
+
+        const topicMap = {};
+        history.forEach(q => {
+            const topicKey = q.topic.trim().toLowerCase();
+            if (!topicMap[topicKey]) {
+                topicMap[topicKey] = {
+                    displayName: q.topic.trim(),
+                    totalScore: 0,
+                    totalQuestions: 0
+                };
+            }
+            if (typeof q.score === 'number' && typeof q.total_questions === 'number' && q.total_questions > 0) {
+                topicMap[topicKey].totalScore += q.score;
+                topicMap[topicKey].totalQuestions += q.total_questions;
+            }
+        });
+
+        const topics = Object.values(topicMap).filter(t => t.totalQuestions > 0);
+
+        if (topics.length === 0) {
+            container.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; font-style: italic;">No quiz history available yet. Complete a quiz to analyze mastery levels!</p>`;
+            return;
+        }
+
+        // Sort by mastery percentage descending
+        topics.forEach(t => {
+            t.percent = Math.round((t.totalScore / t.totalQuestions) * 100);
+        });
+        topics.sort((a, b) => b.percent - a.percent);
+
+        container.innerHTML = topics.map(t => {
+            let barColor = 'var(--secondary)'; // Green
+            let badgeBg = 'rgba(42, 157, 143, 0.1)';
+            let badgeColor = 'var(--secondary)';
+
+            if (t.percent >= 80) {
+                barColor = 'var(--secondary)';
+                badgeBg = 'rgba(42, 157, 143, 0.1)';
+                badgeColor = 'var(--secondary)';
+            } else if (t.percent >= 60) {
+                barColor = '#e9c46a'; // Yellow
+                badgeBg = 'rgba(233, 196, 106, 0.1)';
+                badgeColor = '#d4ac0d';
+            } else {
+                barColor = 'var(--parent)'; // Red
+                badgeBg = 'rgba(231, 111, 81, 0.1)';
+                badgeColor = 'var(--parent)';
+            }
+
+            return `
+                <div style="margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">${t.displayName}</span>
+                        <span class="status-badge" style="font-size: 0.72rem; padding: 2px 6px; background-color: ${badgeBg}; color: ${badgeColor}; font-weight: 700;">
+                            ${t.percent}% Mastery
+                        </span>
+                    </div>
+                    <div class="progress-bar-container" style="background-color: rgba(0, 0, 0, 0.05); height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div class="progress-bar-fill" style="width: ${t.percent}%; height: 100%; background-color: ${barColor}; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error('Failed to load concept mastery:', err);
+        container.innerHTML = `<p style="font-size: 0.85rem; color: var(--parent); text-align: center;">Error loading concept mastery graph.</p>`;
+    }
+}
+
+window.loadConceptMastery = loadConceptMastery;
 
 /* ========================================
    CLASSROOMS & PARENT DETAILS
@@ -1843,6 +1948,11 @@ async function loadClassroomsAndParent() {
         await loadDoubtHistory();
         await loadClassroomsAndParent();
         await loadStudentNotifications();
+        try {
+            await loadConceptMastery();
+        } catch (err) {
+            console.error('Failed to load concept mastery:', err);
+        }
         initSpeechRecognition();
         initFlashcards();
         initPomodoro();
@@ -2178,6 +2288,7 @@ async function loadClassroomsAndParent() {
         document.getElementById('profile-input-bio').value = storedUser.bio || '';
         document.getElementById('profile-input-grade').value = storedUser.grade || '';
         document.getElementById('profile-input-school').value = storedUser.school || '';
+        document.getElementById('profile-input-persona').value = storedUser.tutor_persona || 'analogy';
 
         // Render profile picture
         const placeholderEl = document.getElementById('profile-pic-placeholder');
@@ -2251,12 +2362,13 @@ async function loadClassroomsAndParent() {
                 const bio = document.getElementById('profile-input-bio').value.trim();
                 const grade = document.getElementById('profile-input-grade').value;
                 const school = document.getElementById('profile-input-school').value.trim();
+                const tutor_persona = document.getElementById('profile-input-persona').value;
                 
                 try {
                     const res = await fetch(`${API_BASE}/auth/profile`, {
                         method: 'PUT',
                         headers: authHeaders(),
-                        body: JSON.stringify({ name, phone, bio, grade, school })
+                        body: JSON.stringify({ name, phone, bio, grade, school, tutor_persona })
                     });
                     const updatedUser = await res.json();
                     if (res.ok) {

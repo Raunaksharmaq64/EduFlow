@@ -62,7 +62,7 @@ async def generate_study_plan_ai(subject: str, grade: str, weak_topics: list[str
             detail=f"Failed to generate study plan from Gemini API: {str(e)}"
         )
 
-async def solve_doubt_ai(question_text: str = None, image_bytes: bytes = None) -> str:
+async def solve_doubt_ai(question_text: str = None, image_bytes: bytes = None, tutor_persona: str = None) -> str:
     if not is_api_key_configured():
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -84,8 +84,28 @@ async def solve_doubt_ai(question_text: str = None, image_bytes: bytes = None) -
             image = Image.open(io.BytesIO(image_bytes))
             contents.append(image)
         
+        # Choose teaching instructions based on Tutor Persona
+        if tutor_persona == "socratic":
+            persona_instruction = (
+                "You are a Socratic tutor. Do NOT give the direct answer to the doubt. "
+                "Instead, explain the concepts and ask guiding questions to lead the student "
+                "to find the answer themselves step-by-step. Keep it encouraging."
+            )
+        elif tutor_persona == "analogy":
+            persona_instruction = (
+                "You are an Analogy Master tutor. Explain complex science or mathematical "
+                "concepts using simple everyday analogies, stories, and comparisons that are easy to relate to."
+            )
+        elif tutor_persona == "exam":
+            persona_instruction = (
+                "You are an Exam Drill Coach. Explain concepts concisely using structured "
+                "bullet points, formula highlights, and tips for scoring high in board and school exams."
+            )
+        else:
+            persona_instruction = "You are a highly helpful and expert academic AI Tutor. Solve the problem step-by-step and explain the concepts clearly."
+        
         prompt = f"""
-        You are a highly helpful and expert academic AI Tutor.
+        {persona_instruction}
         A student has asked a question/doubt. Solve the problem step-by-step and explain the concepts clearly.
         
         Student's Question: {question_text if question_text else "Please solve the question shown in the image."}
@@ -104,20 +124,32 @@ async def solve_doubt_ai(question_text: str = None, image_bytes: bytes = None) -
             detail=f"Failed to solve doubt using Gemini API: {str(e)}"
         )
 
-async def generate_quiz_ai(topic: str, grade: str, num_questions: int = 5, difficulty: str = "medium") -> dict:
+async def generate_quiz_ai(topic: str, grade: str, num_questions: int = 5, difficulty: str = "medium", question_type: str = "mixed") -> dict:
     if not is_api_key_configured():
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Gemini API Key not configured. Please add GEMINI_API_KEY in your backend/.env file."
         )
     
+    # Customize Gemini prompt instructions based on selected question type
+    if question_type == "mcq":
+        type_instruction = "Create multiple-choice questions (MCQs) with exactly 4 options each."
+    elif question_type == "tf":
+        type_instruction = "Create True/False statements. For these, the 'options' field MUST be exactly ['True', 'False']."
+    elif question_type == "fill":
+        type_instruction = "Create Fill in the Blanks questions where the question_text contains a blank '________'. The 'options' field must contain 4 candidate words to fill the blank, and the 'correct_option' must be the exact correct word."
+    else:
+        type_instruction = "Create a mix of Multiple Choice (MCQ), True/False (with options ['True', 'False']), and Fill in the Blanks (with '________' in question text and 4 choices in options)."
+
     prompt = f"""
     You are an AI Quiz Generator for an educational platform.
-    Create a multiple-choice quiz about:
+    Create a quiz about:
     - Topic: {topic}
     - Grade/Class Level: {grade}
     - Number of Questions: {num_questions}
     - Difficulty: {difficulty}
+    
+    {type_instruction}
     
     You MUST respond with a valid JSON object matching this schema exactly:
     {{
@@ -127,14 +159,16 @@ async def generate_quiz_ai(topic: str, grade: str, num_questions: int = 5, diffi
         "questions": [
             {{
                 "question_text": "Write the question text here",
-                "options": ["Option A", "Option B", "Option C", "Option D"],
+                "options": ["Choice 1", "Choice 2", "Choice 3", "Choice 4"],
                 "correct_option": "The correct option from the options list",
-                "explanation": "Brief explanation of why this option is correct"
+                "explanation": "Brief explanation of why this option is correct",
+                "question_type": "mcq, tf, or fill (depending on this specific question format)"
             }}
         ]
     }}
     
-    Ensure all questions are high quality, accurate, and age-appropriate for {grade}. The list of options must have exactly 4 choices.
+    Ensure all questions are high quality, accurate, and age-appropriate for {grade}. 
+    For MCQ and Fill-in-the-blank questions, provide exactly 4 options. For True/False questions, provide exactly 2 options: ["True", "False"].
     """
     
     try:

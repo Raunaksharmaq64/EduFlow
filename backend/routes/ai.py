@@ -68,12 +68,19 @@ async def solve_doubt(
             )
         image_bytes = await image.read()
     
+    db = get_database()
+    tutor_persona = "analogy"
+    if db is not None:
+        from bson import ObjectId
+        user_doc = await db["users"].find_one({"_id": ObjectId(current_user["id"])})
+        if user_doc:
+            tutor_persona = user_doc.get("tutor_persona", "analogy")
+
     explanation = await solve_doubt_ai(
         question_text=question_text,
-        image_bytes=image_bytes
+        image_bytes=image_bytes,
+        tutor_persona=tutor_persona
     )
-    
-    db = get_database()
     if db is not None:
         doubt_doc = {
             "user_id": current_user["id"],
@@ -99,11 +106,31 @@ async def generate_quiz(
     """
     Generate a multiple-choice quiz on any topic, grade level, and difficulty.
     """
+    db = get_database()
+    difficulty = request.difficulty
+    
+    if db is not None:
+        # Find previous quizzes on the same topic for this student (case-insensitive)
+        history_cursor = db["quiz_history"].find({
+            "user_id": current_user["id"],
+            "topic": {"$regex": f"^{request.topic}$", "$options": "i"}
+        }).sort("created_at", -1).limit(3)
+        
+        scores = []
+        async for h in history_cursor:
+            if "score" in h and "total_questions" in h and h["total_questions"] > 0:
+                scores.append(h["score"] / h["total_questions"])
+                
+        # Adaptive: if average score of last 3 quizzes is < 60%, force easy difficulty
+        if scores and (sum(scores) / len(scores)) < 0.60:
+            difficulty = "easy"
+
     quiz_data = await generate_quiz_ai(
         topic=request.topic,
         grade=request.grade,
         num_questions=request.num_questions,
-        difficulty=request.difficulty
+        difficulty=difficulty,
+        question_type=request.question_type or "mixed"
     )
     return quiz_data
 
@@ -308,13 +335,27 @@ async def get_quiz_history(
         
     return history
 
+async def get_subject_for_topic(topic: str) -> Optional[str]:
+    db = get_database()
+    if db is None:
+        return None
+    doc = await db["syllabus"].find_one({
+        "chapters.chapter_name": {"$regex": f"^{topic}$", "$options": "i"}
+    })
+    if doc:
+        return doc.get("subject", "").lower().strip()
+    return None
+
 @router.get("/quiz/student-history/{student_email}")
 async def get_student_quiz_history(
     student_email: str,
+    page: int = 1,
+    limit: int = 20,
     current_user: dict = Depends(get_current_user)
 ):
     """
     Fetches a specific student's quiz history for their linked teachers or parents.
+    Supports subject privacy scoping for teachers and database pagination.
     """
     db = get_database()
     if db is None:
@@ -328,13 +369,33 @@ async def get_student_quiz_history(
     email = current_user.get("email")
     
     authorized = False
+    teacher_subjects = []
     if role == "teacher":
-        classroom = await db["classrooms"].find_one({
+        # Find all classrooms of this teacher where this student is enrolled
+        classrooms_cursor = db["classrooms"].find({
             "teacher_id": current_user["id"],
             "students.student_email": student_email.lower()
         })
-        if classroom:
+        classrooms = []
+        async for cl in classrooms_cursor:
+            classrooms.append(cl)
+            
+        if classrooms:
             authorized = True
+            # Inferred teacher subjects from profile
+            teacher_subject = current_user.get("subject")
+            if teacher_subject:
+                teacher_subjects.append(teacher_subject.lower().strip())
+            
+            # Inferred subjects from classroom names
+            for cl in classrooms:
+                class_name = cl.get("class_name", "").lower()
+                for sub in ["science", "mathematics", "math", "physics", "chemistry", "biology", "history", "geography", "english"]:
+                    if sub in class_name:
+                        teacher_subjects.append(sub)
+                        if sub == "math":
+                            teacher_subjects.append("mathematics")
+                            
     elif role == "parent":
         parent = await db["users"].find_one({
             "email": email,
@@ -349,7 +410,26 @@ async def get_student_quiz_history(
             detail="You are not authorized to view this student's history."
         )
         
-    cursor = db["quiz_history"].find({"student_email": student_email.lower()}).sort("created_at", -1)
+    query = {"student_email": student_email.lower()}
+    if role == "teacher" and teacher_subjects:
+        # Fetch chapters matching the teacher's subjects
+        syllabus_cursor = db["syllabus"].find({
+            "subject": {"$regex": f"^({'|'.join(teacher_subjects)})$", "$options": "i"}
+        })
+        allowed_topics = []
+        async for s_doc in syllabus_cursor:
+            for ch in s_doc.get("chapters", []):
+                allowed_topics.append(ch.get("chapter_name"))
+                
+        regex_pattern = "|".join(teacher_subjects)
+        or_clauses = [{"topic": {"$regex": f"({regex_pattern})", "$options": "i"}}]
+        if allowed_topics:
+            or_clauses.append({"topic": {"$in": allowed_topics}})
+            
+        query["$or"] = or_clauses
+        
+    skip = (page - 1) * limit
+    cursor = db["quiz_history"].find(query).sort("created_at", -1).skip(skip).limit(limit)
     history = []
     async for doc in cursor:
         history.append({

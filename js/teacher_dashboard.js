@@ -439,6 +439,95 @@ async function loadTeacherClassrooms() {
     }
 }
 
+function renderFilteredAndSortedStudents() {
+    const tableBody = document.getElementById('classroom-students-table-body');
+    if (!tableBody) return;
+    
+    if (!currentStudentsList || currentStudentsList.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">No students have joined this classroom yet. Share the code <strong>${selectedClassCode}</strong> with them!</td></tr>`;
+        const insightsCard = document.getElementById('classroom-ai-insights-card');
+        if (insightsCard) insightsCard.style.display = 'none';
+        return;
+    }
+    
+    const searchVal = (document.getElementById('student-search-input')?.value || '').toLowerCase().trim();
+    const sortVal = document.getElementById('student-sort-select')?.value || 'xp-desc';
+    
+    // Filter
+    let filtered = [...currentStudentsList];
+    if (searchVal) {
+        const normalizedSearchVal = searchVal.replace(/[^\d+]/g, '');
+        filtered = filtered.filter(s => {
+            const matchesNameOrEmail = (s.name || '').toLowerCase().includes(searchVal) ||
+                                       (s.email || '').toLowerCase().includes(searchVal);
+            
+            const sPhoneClean = (s.phone || '').replace(/[^\d+]/g, '');
+            const matchesPhone = sPhoneClean && normalizedSearchVal && sPhoneClean.includes(normalizedSearchVal);
+            
+            return matchesNameOrEmail || matchesPhone;
+        });
+    }
+    
+    // Sort
+    filtered.sort((a, b) => {
+        if (sortVal === 'xp-desc') {
+            return (b.xp || 0) - (a.xp || 0);
+        } else if (sortVal === 'xp-asc') {
+            return (a.xp || 0) - (b.xp || 0);
+        } else if (sortVal === 'name-asc') {
+            return (a.name || '').localeCompare(b.name || '');
+        } else if (sortVal === 'name-desc') {
+            return (b.name || '').localeCompare(a.name || '');
+        }
+        return 0;
+    });
+    
+    if (filtered.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">No students match search criteria.</td></tr>`;
+        return;
+    }
+    
+    tableBody.innerHTML = filtered.map(s => `
+        <tr>
+            <td style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${s.name}</td>
+            <td style="font-size: 0.85rem; color: var(--text-secondary);">${s.email}</td>
+            <td style="font-size: 0.85rem; color: var(--text-secondary);">${s.phone || 'N/A'}</td>
+            <td style="font-weight: 700; color: var(--secondary); font-size: 0.9rem;">${s.xp} XP</td>
+            <td><span class="status-badge" style="background: var(--primary); color: #fff; font-size: 0.72rem; padding: 2px 8px;">Lvl ${s.level}</span></td>
+            <td>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.78rem;" onclick="viewStudentDetails('${s.email}')">
+                        <i class='bx bx-bar-chart-alt-2'></i> Stats
+                    </button>
+                    ${s.parent ? `
+                        <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.78rem; background: rgba(231,111,81,0.08); color: var(--parent); border: 1px solid rgba(231,111,81,0.15); display: inline-flex; align-items: center; gap: 4px;" onclick="messageParent('${s.parent.id}', '${s.parent.name.replace(/'/g, "\\'")}')">
+                            <i class='bx bx-message-rounded-detail'></i> Message Parent
+                        </button>
+                    ` : ''}
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function messageParent(parentId, parentName) {
+    const chatMenuItem = document.querySelector('.menu-item[data-panel="chat-panel"]');
+    if (chatMenuItem) {
+        chatMenuItem.click();
+    }
+    
+    setTimeout(() => {
+        const contactEl = document.getElementById(`chat-contact-${parentId}`);
+        if (contactEl) {
+            contactEl.click();
+        } else {
+            if (typeof selectChatContact === 'function') {
+                selectChatContact(parentId, parentName, 'parent');
+            }
+        }
+    }, 300);
+}
+
 async function selectClassroomForStudents(classCode, className) {
     selectedClassCode = classCode;
     
@@ -473,25 +562,16 @@ async function selectClassroomForStudents(classCode, className) {
         const students = await res.json();
         currentStudentsList = students;
 
-        const tableBody = document.getElementById('classroom-students-table-body');
-        if (students.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">No students have joined this classroom yet. Share the code <strong>${classCode}</strong> with them!</td></tr>`;
-            document.getElementById('classroom-ai-insights-card').style.display = 'none';
-        } else {
-            tableBody.innerHTML = students.map(s => `
-                <tr>
-                    <td style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${s.name}</td>
-                    <td style="font-size: 0.85rem; color: var(--text-secondary);">${s.email}</td>
-                    <td style="font-weight: 700; color: var(--secondary); font-size: 0.9rem;">${s.xp} XP</td>
-                    <td><span class="status-badge" style="background: var(--primary); color: #fff; font-size: 0.72rem; padding: 2px 8px;">Lvl ${s.level}</span></td>
-                    <td>
-                        <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.78rem;" onclick="viewStudentDetails('${s.email}')">
-                            <i class='bx bx-bar-chart-alt-2'></i> Stats
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-            
+        // Reset search/sort UI inputs
+        const searchInput = document.getElementById('student-search-input');
+        if (searchInput) searchInput.value = '';
+        const sortSelect = document.getElementById('student-sort-select');
+        if (sortSelect) sortSelect.value = 'xp-desc';
+
+        // Render filtered/sorted table body
+        renderFilteredAndSortedStudents();
+
+        if (students.length > 0) {
             // Show AI Insights and reset its state
             document.getElementById('classroom-ai-insights-card').style.display = 'block';
             document.getElementById('insights-class-average').textContent = '--';
@@ -798,24 +878,35 @@ async function loadClassroomAssignments(classCode) {
                 
                 return `
                     <div style="background: var(--bg-light); padding: 1.2rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: start; gap: 1rem; justify-content: space-between; margin-bottom: 12px;">
-                        <div style="display: flex; gap: 1rem; align-items: start;">
+                        <div style="display: flex; gap: 1rem; align-items: start; flex-grow: 1;">
                             <div style="background: ${iconBg}; color: #fff; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
                                 <i class='bx ${iconClass}'></i>
                             </div>
-                            <div>
+                            <div style="flex-grow: 1;">
                                 <h4 style="font-weight: 700; color: var(--text-primary); font-size: 1rem; margin-bottom: 4px;">${a.title}</h4>
                                 <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.5;">${a.description}</p>
-                                <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); display: block;">
+                                <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 8px;">
                                     <i class='bx bx-time' style="vertical-align: middle;"></i> Due: <strong>${dueDate}</strong> | Max Marks: <strong>${a.max_marks}</strong>
                                 </span>
                                 ${a.gdrive_link ? `
-                                    <a href="${a.gdrive_link}" target="_blank" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.72rem; margin-top: 8px; background: rgba(231,111,81,0.08); color: var(--parent); border: 1px solid rgba(231,111,81,0.15); text-decoration: none;">
+                                    <a href="${a.gdrive_link}" target="_blank" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.72rem; margin-top: 2px; margin-bottom: 8px; background: rgba(231,111,81,0.08); color: var(--parent); border: 1px solid rgba(231,111,81,0.15); text-decoration: none;">
                                         <i class='bx bx-link'></i> Attached Link
                                     </a>
                                 ` : ''}
+                                
+                                <!-- Submission Progress Bar -->
+                                <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 4px; max-width: 320px;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">
+                                        <span>Submissions Rate</span>
+                                        <span>${a.submissions_count || 0} / ${a.total_students || 0} students (${a.total_students ? Math.round((a.submissions_count || 0) / a.total_students * 100) : 0}%)</span>
+                                    </div>
+                                    <div style="background: rgba(0,0,0,0.06); height: 6px; border-radius: 3px; overflow: hidden; width: 100%;">
+                                        <div style="background: var(--secondary); height: 100%; width: ${a.total_students ? Math.round((a.submissions_count || 0) / a.total_students * 100) : 0}%;"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                        <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0;">
                             <button class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="viewAssignmentSubmissions('${a.id}', '${a.title.replace(/'/g, "\\'")}')">
                                 <i class='bx bx-check-double'></i> View Submissions
                             </button>
@@ -985,7 +1076,7 @@ async function viewAssignmentSubmissions(assignmentId, assignmentTitle) {
     document.getElementById('grading-assignment-title').innerHTML = `<i class='bx bx-check-shield'></i> Grading Submissions: ${assignmentTitle}`;
     
     const tableBody = document.getElementById('submissions-table-body');
-    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading submissions...</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary);"><i class='bx bx-loader-alt bx-spin'></i> Loading submissions...</td></tr>`;
     
     try {
         const res = await fetch(`${API_BASE}/assignments/${assignmentId}/submissions`, {
@@ -994,38 +1085,77 @@ async function viewAssignmentSubmissions(assignmentId, assignmentTitle) {
         });
         if (!res.ok) throw new Error();
         const submissions = await res.json();
+
+        // Fetch classroom students dynamically to cross-reference
+        const studentsRes = await fetch(`${API_BASE}/auth/teacher/classroom/${selectedAssignmentClassCode}/students`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!studentsRes.ok) throw new Error();
+        const classroomStudents = await studentsRes.json();
         
-        if (submissions.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">No student has submitted answers for this assignment yet.</td></tr>`;
+        if (classroomStudents.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">No students enrolled in this classroom.</td></tr>`;
         } else {
-            tableBody.innerHTML = submissions.map(s => {
-                const date = s.submitted_at ? new Date(s.submitted_at).toLocaleDateString('en-IN', {
-                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-                }) : '';
+            tableBody.innerHTML = classroomStudents.map(student => {
+                const sub = submissions.find(s => 
+                    (s.student_email && s.student_email.toLowerCase() === student.email.toLowerCase()) || 
+                    (s.student_id === student.id)
+                );
                 
-                let scoreText = s.status === 'graded' ? `<strong style="color: var(--secondary);">${s.grade}</strong>` : `<span style="color: var(--text-secondary);">Not Graded</span>`;
-                let badgeClass = s.status === 'graded' ? 'status-good' : 'status-struggling';
-                let badgeText = s.status === 'graded' ? 'Graded' : 'Pending';
+                let statusBadge = '';
+                let submittedAtText = '-';
+                let scoreText = '-';
+                let actionButton = '';
+                
+                if (sub) {
+                    const date = sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString('en-IN', {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    }) : '';
+                    submittedAtText = date;
+                    
+                    if (sub.status === 'graded') {
+                        statusBadge = `<span class="status-badge status-good">Graded</span>`;
+                        scoreText = `<strong style="color: var(--secondary);">${sub.grade}</strong>`;
+                    } else {
+                        statusBadge = `<span class="status-badge" style="background-color: rgba(244, 162, 97, 0.15); color: #f4a261;">Pending</span>`;
+                        scoreText = `<span style="color: var(--text-secondary);">Not Graded</span>`;
+                    }
+                    
+                    const escName = student.name.replace(/'/g, "\\'");
+                    const escText = (sub.submission_text || '').replace(/'/g, "\\'").replace(/\n/g, "\\n");
+                    const answersStr = JSON.stringify(sub.answers || []).replace(/"/g, '&quot;');
+                    
+                    actionButton = `
+                        <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.78rem;" 
+                                onclick="showGradeForm('${sub.id}', '${escName}', '${escText}', ${answersStr})">
+                            <i class='bx bx-edit'></i> Grade
+                        </button>
+                    `;
+                } else {
+                    statusBadge = `<span class="status-badge status-struggling">Not Submitted</span>`;
+                    actionButton = `
+                        <button class="btn btn-secondary btn-sm" disabled style="padding: 4px 10px; font-size: 0.78rem; opacity: 0.5; cursor: not-allowed;">
+                            <i class='bx bx-edit'></i> Grade
+                        </button>
+                    `;
+                }
                 
                 return `
                     <tr>
-                        <td style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${s.student_name}</td>
-                        <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
-                        <td style="font-size: 0.85rem; color: var(--text-secondary);">${date}</td>
+                        <td style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${student.name}</td>
+                        <td style="font-size: 0.85rem; color: var(--text-secondary);">${student.email}</td>
+                        <td>${statusBadge}</td>
+                        <td style="font-size: 0.85rem; color: var(--text-secondary);">${submittedAtText}</td>
                         <td style="font-size: 0.9rem;">${scoreText}</td>
-                        <td>
-                            <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.78rem;" 
-                                    onclick="showGradeForm('${s.id}', '${s.student_name.replace(/'/g, "\\'")}', '${s.submission_text.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', ${JSON.stringify(s.answers || [])})">
-                                <i class='bx bx-edit'></i> Grade
-                            </button>
-                        </td>
+                        <td>${actionButton}</td>
                     </tr>
                 `;
             }).join('');
         }
     } catch (err) {
         console.error(err);
-        tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--parent);">Failed to load submissions.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--parent);">Failed to load submissions.</td></tr>`;
     }
 }
 
@@ -1149,6 +1279,16 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (postAnnForm) {
         postAnnForm.addEventListener('submit', handleTeacherPostAnnouncementSubmit);
     }
+
+    // Student search and sort event listeners
+    const searchInput = document.getElementById('student-search-input');
+    const sortSelect = document.getElementById('student-sort-select');
+    if (searchInput) {
+        searchInput.addEventListener('input', renderFilteredAndSortedStudents);
+    }
+    if (sortSelect) {
+        sortSelect.addEventListener('change', renderFilteredAndSortedStudents);
+    }
 });
 
 // Attach helper functions to global window context
@@ -1161,6 +1301,8 @@ window.generateAIAssignmentQuestions = generateAIAssignmentQuestions;
 window.viewAssignmentSubmissions = viewAssignmentSubmissions;
 window.closeSubmissionsView = closeSubmissionsView;
 window.showGradeForm = showGradeForm;
+window.renderFilteredAndSortedStudents = renderFilteredAndSortedStudents;
+window.messageParent = messageParent;
 
 /* ========================================
    DIRECT MESSAGES (CHAT) SYSTEM

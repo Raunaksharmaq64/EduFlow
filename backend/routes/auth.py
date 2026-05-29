@@ -386,15 +386,28 @@ async def get_classroom_students(
             sort=[("created_at", -1)]
         )
         
+        # Look up parent info linked to this student
+        parent_doc = await db["users"].find_one({
+            "linked_student_emails": doc["email"].lower(),
+            "role": "parent"
+        })
+        parent_info = {
+            "id": str(parent_doc["_id"]),
+            "name": parent_doc["name"],
+            "email": parent_doc["email"]
+        } if parent_doc else None
+        
         students_list.append({
             "id": str(doc["_id"]),
             "name": doc["name"],
             "email": doc["email"],
+            "phone": doc.get("phone"),
             "xp": doc.get("xp", 0),
             "level": doc.get("level", 1),
             "badges": doc.get("badges", []),
             "doubts_count": doubt_count,
             "plans_count": plan_count,
+            "parent": parent_info,
             "latest_quiz": {
                 "topic": latest_quiz["topic"],
                 "score": latest_quiz["score"],
@@ -455,6 +468,42 @@ async def join_classroom(
                 {"_id": current_user["_id"]},
                 {"$set": {"class_codes": class_codes}}
             )
+            
+        # Trigger notifications for Teacher and Parent on successful join
+        try:
+            from routes.classrooms import create_notification
+            
+            # 1. Notify Teacher
+            teacher_id = classroom.get("teacher_id")
+            if teacher_id:
+                await create_notification(
+                    db,
+                    user_id=teacher_id,
+                    recipient_role="teacher",
+                    title="New Student Joined",
+                    content=f"Student {current_user['name']} has joined your classroom '{classroom['class_name']}'.",
+                    notif_type="student_joined",
+                    metadata={"class_code": code}
+                )
+            
+            # 2. Notify Parent of Student if linked
+            parent = await db["users"].find_one({
+                "linked_student_emails": current_user["email"].lower(),
+                "role": "parent"
+            })
+            if parent:
+                parent_id = str(parent["_id"])
+                await create_notification(
+                    db,
+                    user_id=parent_id,
+                    recipient_role="parent",
+                    title="Classroom Joined Alert",
+                    content=f"Your child {current_user['name']} has joined classroom '{classroom['class_name']}' by {classroom['teacher_name']}.",
+                    notif_type="child_joined_class",
+                    metadata={"class_code": code}
+                )
+        except Exception as e:
+            print(f"Failed to generate class join notifications: {e}")
             
     return {
         "status": "success",
@@ -544,6 +593,17 @@ async def get_child_classrooms(
         
     return classrooms
 
+def normalize_phone(phone: str) -> str:
+    if not phone:
+        return phone
+    # Keep only digits and '+'
+    cleaned = "".join(c for c in phone if c.isdigit() or c == "+")
+    if cleaned.startswith("+0"):
+        cleaned = "+" + cleaned[2:]
+    elif cleaned.startswith("0") and not cleaned.startswith("+"):
+        cleaned = cleaned[1:]
+    return cleaned
+
 @router.put("/profile", response_model=UserResponse)
 async def update_profile(
     request: ProfileUpdateRequest,
@@ -559,6 +619,9 @@ async def update_profile(
     # Filter out None fields from update
     update_data = {k: v for k, v in request.dict().items() if v is not None}
     
+    if "phone" in update_data and update_data["phone"]:
+        update_data["phone"] = normalize_phone(update_data["phone"])
+        
     if not update_data:
         current_user["id"] = str(current_user["_id"])
         return current_user
