@@ -18,6 +18,9 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <!-- Chart.js & html2pdf.js CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body class="dashboard-body">
@@ -212,19 +215,45 @@
                     </p>
                 </div>
 
-                <div class="card">
-                    <h3 class="card-title" style="display: flex; align-items: center; gap: 6px;">
-                        <i class='bx bx-brain' style="color: var(--secondary); font-size: 1.3rem;"></i>
-                        AI Concept Mastery Graph
-                        <span class="tooltip-help">
-                            <i class='bx bx-info-circle'></i>
-                            <span class="tooltip-text">Visualizes your subject mastery based on quiz logs. High averages result in green indicators; low scores flag weak subjects in red.</span>
+                <div class="card" id="student-mastery-report-card">
+                    <h3 class="card-title" style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <i class='bx bx-brain' style="color: var(--secondary); font-size: 1.3rem;"></i>
+                            AI Concept Mastery Graph
+                            <span class="tooltip-help">
+                                <i class='bx bx-info-circle'></i>
+                                <span class="tooltip-text">Visualizes your subject mastery based on quiz logs. High averages result in green indicators; low scores flag weak subjects in red.</span>
+                            </span>
                         </span>
                     </h3>
                     <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">Based on your recent quiz performances</p>
-                    <div id="mastery-container" style="display: flex; flex-direction: column; gap: 10px;">
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; font-style: italic;">No quiz history available yet. Complete a quiz to analyze mastery levels!</p>
+                    
+                    <!-- View Switcher Tabs -->
+                    <div class="view-switcher" style="display: flex; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 8px;">
+                        <button class="tab-btn active" id="btn-mastery-table" style="background: none; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--secondary); border-bottom: 2px solid var(--secondary); transition: all 0.2s;">📋 Table</button>
+                        <button class="tab-btn" id="btn-mastery-doughnut" style="background: none; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; transition: all 0.2s;">🍩 Doughnut Chart</button>
+                        <button class="tab-btn" id="btn-mastery-bar" style="background: none; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; transition: all 0.2s;">📊 Bar Graph</button>
                     </div>
+
+                    <!-- Visual containers -->
+                    <div id="student-mastery-table-wrapper" class="mastery-view-content">
+                        <div id="mastery-container" style="display: flex; flex-direction: column; gap: 10px;">
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; font-style: italic;">No quiz history available yet. Complete a quiz to analyze mastery levels!</p>
+                        </div>
+                    </div>
+
+                    <div id="student-mastery-doughnut-wrapper" class="mastery-view-content" style="display: none; position: relative; height: 260px; width: 100%;">
+                        <canvas id="student-mastery-doughnut-chart"></canvas>
+                    </div>
+
+                    <div id="student-mastery-bar-wrapper" class="mastery-view-content" style="display: none; position: relative; height: 260px; width: 100%;">
+                        <canvas id="student-mastery-bar-chart"></canvas>
+                    </div>
+
+                    <!-- PDF Download Button -->
+                    <button id="btn-download-student-report" class="btn-primary" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; font-weight: 600; background: var(--secondary); border: none; color: white; cursor: pointer; box-shadow: var(--shadow-sm); transition: background 0.2s;">
+                        <i class='bx bxs-file-pdf' style="font-size: 1.1rem;"></i> Download Performance Report (PDF)
+                    </button>
                 </div>
 
                 <div class="card" style="grid-column: span 2;">

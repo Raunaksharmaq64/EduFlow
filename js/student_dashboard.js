@@ -1376,8 +1376,336 @@ function initPomodoro() {
 }
 
 /* ========================================
-   AI CONCEPT MASTERY GRAPH
+   AI CONCEPT MASTERY GRAPH & PDF REPORT
    ======================================== */
+window.studentDoughnutChartInstance = null;
+window.studentBarChartInstance = null;
+window.studentMasteryData = [];
+
+async function downloadStudentPDFReport() {
+    showToast('Generating PDF Report...', 'info');
+    
+    // Fetch profile and stats
+    const studentName = document.getElementById('profile-name')?.innerText || 'Student';
+    const studentEmail = document.getElementById('profile-email')?.innerText || '';
+    const studentXP = document.getElementById('profile-xp')?.innerText || '0 XP';
+    const studentLevel = document.getElementById('profile-level')?.innerText || 'Level 1';
+    
+    // Gather concept mastery details
+    if (!window.studentMasteryData || window.studentMasteryData.length === 0) {
+        showToast('No concept mastery data found to export.', 'warning');
+        return;
+    }
+    
+    // Create temporary PDF container
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.padding = '35px';
+    pdfContainer.style.fontFamily = "'Inter', sans-serif";
+    pdfContainer.style.color = '#333';
+    pdfContainer.style.backgroundColor = '#fff';
+    pdfContainer.style.width = '750px';
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-9999px';
+    pdfContainer.style.top = '-9999px';
+    
+    // Header
+    let content = `
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2a9d8f; padding-bottom: 15px; margin-bottom: 25px;">
+            <div>
+                <h1 style="margin: 0; color: #2a9d8f; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">EduFlow AI</h1>
+                <p style="margin: 3px 0 0 0; font-size: 13px; color: #666; font-weight: 500;">Student Performance & Insights Report Card</p>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 10px; color: #999; font-weight: 600; text-transform: uppercase;">Generated On</span>
+                <p style="margin: 3px 0 0 0; font-size: 13px; color: #333; font-weight: 600;">${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef;">
+                <h3 style="margin: 0 0 10px 0; font-size: 13px; color: #2a9d8f; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Student Profile</h3>
+                <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 4px 0; color: #666; font-weight: 500; width: 80px;">Name:</td>
+                        <td style="padding: 4px 0; color: #333; font-weight: 600;">${studentName}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 4px 0; color: #666; font-weight: 500;">Email:</td>
+                        <td style="padding: 4px 0; color: #333; font-weight: 600;">${studentEmail}</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <span style="font-size: 10px; color: #666; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Total XP Points</span>
+                <p style="margin: 0; font-size: 22px; font-weight: 800; color: #2a9d8f;">${studentXP}</p>
+                <span style="font-size: 11px; font-weight: 700; color: #264653; margin-top: 4px;">${studentLevel}</span>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <h3 style="margin: 0 0 12px 0; font-size: 13px; color: #2a9d8f; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Concept Mastery Summary</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid #dee2e6;">
+                <thead>
+                    <tr style="background-color: #f1f3f5; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 10px; text-align: left; font-weight: 700; color: #495057;">Topic / Concept</th>
+                        <th style="padding: 10px; text-align: center; font-weight: 700; color: #495057; width: 120px;">Questions Answered</th>
+                        <th style="padding: 10px; text-align: center; font-weight: 700; color: #495057; width: 120px;">Average Score</th>
+                        <th style="padding: 10px; text-align: center; font-weight: 700; color: #495057; width: 140px;">Mastery Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    window.studentMasteryData.forEach(t => {
+        let statusBadgeColor = '#2a9d8f';
+        let statusBg = 'rgba(42, 157, 143, 0.1)';
+        let statusText = 'Mastered';
+        
+        if (t.percent >= 80) {
+            statusBadgeColor = '#2a9d8f';
+            statusBg = 'rgba(42, 157, 143, 0.1)';
+            statusText = 'Mastered';
+        } else if (t.percent >= 60) {
+            statusBadgeColor = '#d4ac0d';
+            statusBg = 'rgba(233, 196, 106, 0.15)';
+            statusText = 'Developing';
+        } else {
+            statusBadgeColor = '#e76f51';
+            statusBg = 'rgba(231, 111, 81, 0.1)';
+            statusText = 'Needs Focus';
+        }
+        
+        content += `
+            <tr style="border-bottom: 1px solid #dee2e6;">
+                <td style="padding: 10px; color: #212529; font-weight: 600;">${t.displayName}</td>
+                <td style="padding: 10px; text-align: center; color: #495057;">${t.totalQuestions}</td>
+                <td style="padding: 10px; text-align: center; color: #495057; font-weight: 700;">${t.percent}%</td>
+                <td style="padding: 10px; text-align: center;">
+                    <span style="display: inline-block; padding: 3px 8px; border-radius: 12px; font-weight: 700; font-size: 10px; background-color: ${statusBg}; color: ${statusBadgeColor}; text-transform: uppercase;">
+                        ${statusText}
+                    </span>
+                </td>
+            </tr>
+        `;
+    });
+    
+    content += `
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Add charts to PDF -->
+        <div style="margin-bottom: 25px; page-break-inside: avoid;">
+            <h3 style="margin: 0 0 15px 0; font-size: 13px; color: #2a9d8f; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Mastery Charts Visualization</h3>
+            <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+                <div style="width: 280px; height: 260px; position: relative;">
+                    <canvas id="pdf-student-doughnut-chart" style="width: 100%; height: 100%;"></canvas>
+                </div>
+                <div style="width: 380px; height: 260px; position: relative;">
+                    <canvas id="pdf-student-bar-chart" style="width: 100%; height: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div style="border-top: 1px dashed #ced4da; padding-top: 15px; text-align: center; font-size: 11px; color: #6c757d; margin-top: 35px;">
+            <p style="margin: 0;">This report is automatically generated by the EduFlow AI Platform.</p>
+        </div>
+    `;
+    
+    pdfContainer.innerHTML = content;
+    document.body.appendChild(pdfContainer);
+    
+    // Draw charts on PDF containers
+    const pdfDoughnutCtx = document.getElementById('pdf-student-doughnut-chart').getContext('2d');
+    const pdfBarCtx = document.getElementById('pdf-student-bar-chart').getContext('2d');
+    
+    const labels = window.studentMasteryData.map(t => t.displayName);
+    const dataValues = window.studentMasteryData.map(t => t.percent);
+    
+    const colors = [
+        'rgba(42, 157, 143, 0.85)',
+        'rgba(231, 111, 81, 0.85)',
+        'rgba(244, 162, 97, 0.85)',
+        'rgba(38, 70, 83, 0.85)',
+        'rgba(233, 196, 106, 0.85)',
+        'rgba(131, 56, 236, 0.85)',
+        'rgba(255, 0, 110, 0.85)',
+        'rgba(58, 125, 68, 0.85)'
+    ];
+    
+    new Chart(pdfDoughnutCtx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: dataValues,
+                backgroundColor: colors.slice(0, window.studentMasteryData.length),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            animation: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9, family: 'Inter' } } }
+            }
+        }
+    });
+    
+    new Chart(pdfBarCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: dataValues,
+                backgroundColor: window.studentMasteryData.map(t => {
+                    if (t.percent >= 80) return 'rgba(42, 157, 143, 0.8)';
+                    if (t.percent >= 60) return 'rgba(233, 196, 106, 0.8)';
+                    return 'rgba(231, 111, 81, 0.8)';
+                }),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            animation: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, max: 100, ticks: { font: { size: 8, family: 'Inter' } } },
+                x: { ticks: { font: { size: 8, family: 'Inter' } } }
+            }
+        }
+    });
+
+    setTimeout(() => {
+        const opt = {
+            margin: 10,
+            filename: `${studentName.replace(/\s+/g, '_')}_Performance_Report.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(pdfContainer).save().then(() => {
+            document.body.removeChild(pdfContainer);
+            showToast('PDF report downloaded successfully!', 'success');
+        }).catch(err => {
+            console.error(err);
+            if (pdfContainer.parentNode) {
+                document.body.removeChild(pdfContainer);
+            }
+            showToast('Failed to generate PDF.', 'error');
+        });
+    }, 450);
+}
+
+function renderStudentCharts(topics) {
+    const labels = topics.map(t => t.displayName);
+    const dataValues = topics.map(t => t.percent);
+    
+    // 1. Doughnut
+    const doughnutCtx = document.getElementById('student-mastery-doughnut-chart').getContext('2d');
+    const colors = [
+        'rgba(42, 157, 143, 0.8)',
+        'rgba(231, 111, 81, 0.8)',
+        'rgba(244, 162, 97, 0.8)',
+        'rgba(38, 70, 83, 0.8)',
+        'rgba(233, 196, 106, 0.8)',
+        'rgba(131, 56, 236, 0.8)',
+        'rgba(255, 0, 110, 0.8)',
+        'rgba(58, 125, 68, 0.8)'
+    ];
+    const borderColors = colors.map(c => c.replace('0.8', '1'));
+
+    if (window.studentDoughnutChartInstance) {
+        window.studentDoughnutChartInstance.destroy();
+    }
+    window.studentDoughnutChartInstance = new Chart(doughnutCtx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: dataValues,
+                backgroundColor: colors.slice(0, topics.length),
+                borderColor: borderColors.slice(0, topics.length),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#495057',
+                        font: { family: 'Inter', size: 10, weight: '500' }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return ` ${context.label}: ${context.raw}% Mastery`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // 2. Bar Graph
+    const barCtx = document.getElementById('student-mastery-bar-chart').getContext('2d');
+    const barColors = topics.map(t => {
+        if (t.percent >= 80) return 'rgba(42, 157, 143, 0.8)';
+        if (t.percent >= 60) return 'rgba(233, 196, 106, 0.8)';
+        return 'rgba(231, 111, 81, 0.8)';
+    });
+    const barBorderColors = barColors.map(c => c.replace('0.8', '1'));
+
+    if (window.studentBarChartInstance) {
+        window.studentBarChartInstance.destroy();
+    }
+    window.studentBarChartInstance = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Mastery %',
+                data: dataValues,
+                backgroundColor: barColors,
+                borderColor: barBorderColors,
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(0,0,0,0.04)' },
+                    ticks: {
+                        color: '#6c757d',
+                        font: { family: 'Inter', size: 9 }
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        color: '#6c757d',
+                        font: { family: 'Inter', size: 9 }
+                    }
+                }
+            }
+        }
+    });
+}
+
 async function loadConceptMastery() {
     const container = document.getElementById('mastery-container');
     if (!container) return;
@@ -1392,6 +1720,7 @@ async function loadConceptMastery() {
 
         if (!history || history.length === 0) {
             container.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; font-style: italic;">No quiz history available yet. Complete a quiz to analyze mastery levels!</p>`;
+            window.studentMasteryData = [];
             return;
         }
 
@@ -1415,6 +1744,7 @@ async function loadConceptMastery() {
 
         if (topics.length === 0) {
             container.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; font-style: italic;">No quiz history available yet. Complete a quiz to analyze mastery levels!</p>`;
+            window.studentMasteryData = [];
             return;
         }
 
@@ -1423,40 +1753,120 @@ async function loadConceptMastery() {
             t.percent = Math.round((t.totalScore / t.totalQuestions) * 100);
         });
         topics.sort((a, b) => b.percent - a.percent);
+        
+        window.studentMasteryData = topics;
 
-        container.innerHTML = topics.map(t => {
-            let barColor = 'var(--secondary)'; // Green
-            let badgeBg = 'rgba(42, 157, 143, 0.1)';
-            let badgeColor = 'var(--secondary)';
+        // Render Table view
+        container.innerHTML = `
+            <table class="db-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                <thead>
+                    <tr style="border-bottom: 2px solid rgba(0,0,0,0.06); text-align: left;">
+                        <th style="padding: 8px 4px; font-weight: 700; color: var(--text-secondary);">Topic</th>
+                        <th style="padding: 8px 4px; font-weight: 700; color: var(--text-secondary); text-align: center;">Mastery</th>
+                        <th style="padding: 8px 4px; font-weight: 700; color: var(--text-secondary); text-align: center;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${topics.map(t => {
+                        let barColor = 'var(--secondary)';
+                        let badgeBg = 'rgba(42, 157, 143, 0.1)';
+                        let badgeColor = 'var(--secondary)';
+                        let statusText = 'Mastered';
 
-            if (t.percent >= 80) {
-                barColor = 'var(--secondary)';
-                badgeBg = 'rgba(42, 157, 143, 0.1)';
-                badgeColor = 'var(--secondary)';
-            } else if (t.percent >= 60) {
-                barColor = '#e9c46a'; // Yellow
-                badgeBg = 'rgba(233, 196, 106, 0.1)';
-                badgeColor = '#d4ac0d';
-            } else {
-                barColor = 'var(--parent)'; // Red
-                badgeBg = 'rgba(231, 111, 81, 0.1)';
-                badgeColor = 'var(--parent)';
+                        if (t.percent >= 80) {
+                            barColor = 'var(--secondary)';
+                            badgeBg = 'rgba(42, 157, 143, 0.1)';
+                            badgeColor = 'var(--secondary)';
+                            statusText = 'Mastered';
+                        } else if (t.percent >= 60) {
+                            barColor = '#e9c46a';
+                            badgeBg = 'rgba(233, 196, 106, 0.1)';
+                            badgeColor = '#d4ac0d';
+                            statusText = 'Developing';
+                        } else {
+                            barColor = 'var(--parent)';
+                            badgeBg = 'rgba(231, 111, 81, 0.1)';
+                            badgeColor = 'var(--parent)';
+                            statusText = 'Weak';
+                        }
+
+                        return `
+                            <tr style="border-bottom: 1px solid rgba(0,0,0,0.04);">
+                                <td style="padding: 8px 4px; font-weight: 600; color: var(--text-primary);">${t.displayName}</td>
+                                <td style="padding: 8px 4px; text-align: center;">
+                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+                                        <span style="font-weight: 700; color: var(--text-primary); font-size: 0.8rem;">${t.percent}%</span>
+                                        <div class="progress-bar-container" style="background-color: rgba(0, 0, 0, 0.05); height: 5px; width: 60px; border-radius: 4px; overflow: hidden;">
+                                            <div class="progress-bar-fill" style="width: ${t.percent}%; height: 100%; background-color: ${barColor}; border-radius: 4px;"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="padding: 8px 4px; text-align: center;">
+                                    <span class="status-badge" style="font-size: 0.65rem; padding: 2px 6px; background-color: ${badgeBg}; color: ${badgeColor}; font-weight: 700; text-transform: uppercase;">
+                                        ${statusText}
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        `;
+
+        // Render Charts immediately
+        renderStudentCharts(topics);
+
+        // Bind View Switcher Tab Event Listeners
+        const btnTable = document.getElementById('btn-mastery-table');
+        const btnDoughnut = document.getElementById('btn-mastery-doughnut');
+        const btnBar = document.getElementById('btn-mastery-bar');
+
+        const wrapperTable = document.getElementById('student-mastery-table-wrapper');
+        const wrapperDoughnut = document.getElementById('student-mastery-doughnut-wrapper');
+        const wrapperBar = document.getElementById('student-mastery-bar-wrapper');
+
+        const tabs = [btnTable, btnDoughnut, btnBar];
+        const wrappers = [wrapperTable, wrapperDoughnut, wrapperBar];
+
+        function selectTab(activeBtn, activeWrapper) {
+            tabs.forEach(btn => {
+                if (btn) {
+                    btn.style.color = 'var(--text-secondary)';
+                    btn.style.borderBottomColor = 'transparent';
+                    btn.classList.remove('active');
+                }
+            });
+            wrappers.forEach(w => { if (w) w.style.display = 'none'; });
+
+            if (activeBtn) {
+                activeBtn.style.color = 'var(--secondary)';
+                activeBtn.style.borderBottomColor = 'var(--secondary)';
+                activeBtn.classList.add('active');
+            }
+            if (activeWrapper) {
+                activeWrapper.style.display = 'block';
             }
 
-            return `
-                <div style="margin-bottom: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">${t.displayName}</span>
-                        <span class="status-badge" style="font-size: 0.72rem; padding: 2px 6px; background-color: ${badgeBg}; color: ${badgeColor}; font-weight: 700;">
-                            ${t.percent}% Mastery
-                        </span>
-                    </div>
-                    <div class="progress-bar-container" style="background-color: rgba(0, 0, 0, 0.05); height: 8px; border-radius: 4px; overflow: hidden;">
-                        <div class="progress-bar-fill" style="width: ${t.percent}%; height: 100%; background-color: ${barColor}; border-radius: 4px;"></div>
-                    </div>
-                </div>
-            `;
-        }).join('');
+            // Force Chart.js resize / draw when display style changes
+            if (activeBtn === btnDoughnut && window.studentDoughnutChartInstance) {
+                window.studentDoughnutChartInstance.resize();
+                window.studentDoughnutChartInstance.update();
+            }
+            if (activeBtn === btnBar && window.studentBarChartInstance) {
+                window.studentBarChartInstance.resize();
+                window.studentBarChartInstance.update();
+            }
+        }
+
+        if (btnTable) btnTable.onclick = () => selectTab(btnTable, wrapperTable);
+        if (btnDoughnut) btnDoughnut.onclick = () => selectTab(btnDoughnut, wrapperDoughnut);
+        if (btnBar) btnBar.onclick = () => selectTab(btnBar, wrapperBar);
+
+        // Bind PDF Download Button
+        const btnDownload = document.getElementById('btn-download-student-report');
+        if (btnDownload) {
+            btnDownload.onclick = downloadStudentPDFReport;
+        }
 
     } catch (err) {
         console.error('Failed to load concept mastery:', err);

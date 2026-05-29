@@ -378,6 +378,337 @@ async function syncSelectedChildData() {
     }
 }
 
+window.parentChildRadarChartInstance = null;
+window.parentChildBarChartInstance = null;
+window.parentChildDoughnutChartInstance = null;
+
+async function downloadParentChildPDFReport() {
+    const parentSelect = document.getElementById('parent-child-select');
+    const childName = parentSelect ? parentSelect.options[parentSelect.selectedIndex]?.text : 'Child';
+    const childEmail = parentSelect ? parentSelect.value : '';
+    
+    const history = selectedChildQuizHistory || [];
+    
+    if (history.length === 0) {
+        showToast('No progress history found to export.', 'warning');
+        return;
+    }
+    
+    showToast('Compiling child progress scorecard...', 'info');
+    
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.padding = '35px';
+    pdfContainer.style.fontFamily = "'Inter', sans-serif";
+    pdfContainer.style.color = '#333';
+    pdfContainer.style.backgroundColor = '#fff';
+    pdfContainer.style.width = '750px';
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-9999px';
+    pdfContainer.style.top = '-9999px';
+    
+    const averageScore = document.getElementById('insights-child-average')?.innerText || '--%';
+    const weakTopic = document.getElementById('insights-child-weak-topic')?.innerText || '--';
+    
+    let content = `
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #e76f51; padding-bottom: 15px; margin-bottom: 25px;">
+            <div>
+                <h1 style="margin: 0; color: #e76f51; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">EduFlow AI</h1>
+                <p style="margin: 3px 0 0 0; font-size: 13px; color: #666; font-weight: 500;">Child Learning Progress Report (Parent Panel)</p>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 10px; color: #999; font-weight: 600; text-transform: uppercase;">Generated On</span>
+                <p style="margin: 3px 0 0 0; font-size: 13px; color: #333; font-weight: 600;">${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; display: flex; flex-direction: column; justify-content: center;">
+                <h3 style="margin: 0 0 5px 0; font-size: 11px; color: #e76f51; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Linked Child</h3>
+                <p style="margin: 0; font-size: 14px; color: #333; font-weight: 700;">${childName}</p>
+                <p style="margin: 2px 0 0 0; font-size: 11px; color: #666;">${childEmail}</p>
+            </div>
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                <span style="font-size: 9px; color: #666; font-weight: 600; text-transform: uppercase;">Overall Average</span>
+                <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 800; color: #2a9d8f;">${averageScore}</p>
+            </div>
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                <span style="font-size: 9px; color: #666; font-weight: 600; text-transform: uppercase;">Focus Topic</span>
+                <p style="margin: 4px 0 0 0; font-size: 13px; font-weight: 700; color: #e76f51; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${weakTopic}</p>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <h3 style="margin: 0 0 12px 0; font-size: 13px; color: #e76f51; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Recent Assessment Performance</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid #dee2e6;">
+                <thead>
+                    <tr style="background-color: #f1f3f5; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 10px; text-align: left; font-weight: 700; color: #495057;">Topic / Concept</th>
+                        <th style="padding: 10px; text-align: center; font-weight: 700; color: #495057; width: 100px;">Difficulty</th>
+                        <th style="padding: 10px; text-align: center; font-weight: 700; color: #495057; width: 150px;">Attempt Date</th>
+                        <th style="padding: 10px; text-align: center; font-weight: 700; color: #495057; width: 120px;">Score Received</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    history.slice(0, 8).forEach(h => {
+        const date = h.created_at ? new Date(h.created_at).toLocaleDateString('en-IN', {
+            month: 'short', day: 'numeric', year: 'numeric'
+        }) : '';
+        const pct = Math.round((h.score / h.total_questions) * 100);
+        const scoreColor = pct >= 70 ? '#2a9d8f' : '#e76f51';
+        
+        content += `
+            <tr style="border-bottom: 1px solid #dee2e6;">
+                <td style="padding: 10px; color: #212529; font-weight: 600;">${h.topic}</td>
+                <td style="padding: 10px; text-align: center; text-transform: capitalize; color: #495057;">${h.difficulty}</td>
+                <td style="padding: 10px; text-align: center; color: #6c757d;">${date}</td>
+                <td style="padding: 10px; text-align: center; font-weight: 700; color: ${scoreColor};">
+                    ${h.score} / ${h.total_questions} (${pct}%)
+                </td>
+            </tr>
+        `;
+    });
+    
+    content += `
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Add charts to PDF -->
+        <div style="margin-bottom: 25px; page-break-inside: avoid;">
+            <h3 style="margin: 0 0 15px 0; font-size: 13px; color: #e76f51; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Subject Mastery Insights</h3>
+            <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+                <div style="width: 320px; height: 260px; position: relative;">
+                    <h4 style="font-size: 11px; text-align: center; margin: 0 0 8px 0; color: #666; font-weight: 600;">Child Mastery Radar Map</h4>
+                    <canvas id="pdf-parent-radar-chart" style="width: 100%; height: 100%;"></canvas>
+                </div>
+                <div style="width: 320px; height: 260px; position: relative;">
+                    <h4 style="font-size: 11px; text-align: center; margin: 0 0 8px 0; color: #666; font-weight: 600;">Average Score by Topic</h4>
+                    <canvas id="pdf-parent-bar-chart" style="width: 100%; height: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div style="border-top: 1px dashed #ced4da; padding-top: 15px; text-align: center; font-size: 11px; color: #6c757d; margin-top: 35px;">
+            <p style="margin: 0;">This report is automatically compiled and provided for parents by the EduFlow AI Platform.</p>
+        </div>
+    `;
+    
+    pdfContainer.innerHTML = content;
+    document.body.appendChild(pdfContainer);
+    
+    const pdfRadarCtx = document.getElementById('pdf-parent-radar-chart').getContext('2d');
+    const pdfBarCtx = document.getElementById('pdf-parent-bar-chart').getContext('2d');
+    
+    const topicStats = {};
+    history.forEach(h => {
+        const topicKey = h.topic.trim();
+        if (!topicStats[topicKey]) {
+            topicStats[topicKey] = { totalPct: 0, count: 0 };
+        }
+        topicStats[topicKey].totalPct += (h.score / h.total_questions) * 100;
+        topicStats[topicKey].count++;
+    });
+    const labels = Object.keys(topicStats);
+    const dataValues = labels.map(topic => Math.round(topicStats[topic].totalPct / topicStats[topic].count));
+
+    new Chart(pdfRadarCtx, {
+        type: 'radar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: dataValues,
+                backgroundColor: 'rgba(231, 111, 81, 0.2)',
+                borderColor: 'rgba(231, 111, 81, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(231, 111, 81, 1)'
+            }]
+        },
+        options: {
+            responsive: false,
+            animation: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                r: {
+                    suggestedMin: 0,
+                    suggestedMax: 100,
+                    ticks: { display: false },
+                    pointLabels: { font: { size: 8, family: 'Inter' } }
+                }
+            }
+        }
+    });
+
+    new Chart(pdfBarCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: dataValues,
+                backgroundColor: 'rgba(42, 157, 143, 0.8)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            animation: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, max: 100, ticks: { font: { size: 8, family: 'Inter' } } },
+                x: { ticks: { font: { size: 8, family: 'Inter' } } }
+            }
+        }
+    });
+
+    setTimeout(() => {
+        const opt = {
+            margin: 10,
+            filename: `${childName.replace(/\s+/g, '_')}_Progress_Report.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(pdfContainer).save().then(() => {
+            document.body.removeChild(pdfContainer);
+            showToast('PDF report downloaded successfully!', 'success');
+        }).catch(err => {
+            console.error(err);
+            if (pdfContainer.parentNode) {
+                document.body.removeChild(pdfContainer);
+            }
+            showToast('Failed to generate PDF.', 'error');
+        });
+    }, 450);
+}
+
+function renderParentCharts(topics) {
+    if (!topics || topics.length === 0) return;
+
+    const labels = topics.map(t => t.topic);
+    const dataValues = topics.map(t => t.average);
+
+    const colors = [
+        'rgba(231, 111, 81, 0.8)',
+        'rgba(42, 157, 143, 0.8)',
+        'rgba(244, 162, 97, 0.8)',
+        'rgba(38, 70, 83, 0.8)',
+        'rgba(233, 196, 106, 0.8)',
+        'rgba(131, 56, 236, 0.8)',
+        'rgba(255, 0, 110, 0.8)',
+        'rgba(58, 125, 68, 0.8)'
+    ];
+    const borderColors = colors.map(c => c.replace('0.8', '1'));
+
+    // 1. Radar
+    const radarCtx = document.getElementById('parent-child-radar-chart').getContext('2d');
+    if (window.parentChildRadarChartInstance) {
+        window.parentChildRadarChartInstance.destroy();
+    }
+    window.parentChildRadarChartInstance = new Chart(radarCtx, {
+        type: 'radar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Topic Average Score (%)',
+                data: dataValues,
+                backgroundColor: 'rgba(231, 111, 81, 0.2)',
+                borderColor: 'rgba(231, 111, 81, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(231, 111, 81, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(0,0,0,0.05)' },
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    suggestedMin: 0,
+                    suggestedMax: 100,
+                    ticks: { display: false },
+                    pointLabels: {
+                        color: '#6c757d',
+                        font: { family: 'Inter', size: 9, weight: '600' }
+                    }
+                }
+            }
+        }
+    });
+
+    // 2. Bar
+    const barCtx = document.getElementById('parent-child-bar-chart').getContext('2d');
+    if (window.parentChildBarChartInstance) {
+        window.parentChildBarChartInstance.destroy();
+    }
+    window.parentChildBarChartInstance = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Topic Average Score (%)',
+                data: dataValues,
+                backgroundColor: colors.slice(0, topics.length),
+                borderColor: borderColors.slice(0, topics.length),
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(0,0,0,0.04)' },
+                    ticks: { color: '#6c757d', font: { family: 'Inter', size: 9 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#6c757d', font: { family: 'Inter', size: 9 } }
+                }
+            }
+        }
+    });
+
+    // 3. Doughnut
+    const doughnutCtx = document.getElementById('parent-child-doughnut-chart').getContext('2d');
+    if (window.parentChildDoughnutChartInstance) {
+        window.parentChildDoughnutChartInstance.destroy();
+    }
+    window.parentChildDoughnutChartInstance = new Chart(doughnutCtx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: dataValues,
+                backgroundColor: colors.slice(0, topics.length),
+                borderColor: borderColors.slice(0, topics.length),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: '#495057', font: { family: 'Inter', size: 9, weight: '500' } }
+                }
+            }
+        }
+    });
+}
+
 function renderChildAnalytics() {
     // 1. Render recent attempts table
     const recentBody = document.getElementById('parent-recent-tests-body');
@@ -406,6 +737,8 @@ function renderChildAnalytics() {
 
     // 2. Render topic-wise averages table
     const perfBody = document.getElementById('parent-subject-performance-body');
+    let topicsList = [];
+
     if (perfBody) {
         if (selectedChildQuizHistory.length === 0) {
             perfBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">No performance data available.</td></tr>`;
@@ -436,7 +769,16 @@ function renderChildAnalytics() {
                 }
             });
 
-            perfBody.innerHTML = Object.values(topicGroups).map(group => {
+            const computedGroups = Object.values(topicGroups);
+            topicsList = computedGroups.map(g => {
+                const total = g.scores.reduce((a, b) => a + b, 0);
+                return {
+                    topic: g.topic,
+                    average: Math.round(total / g.scores.length)
+                };
+            });
+
+            perfBody.innerHTML = computedGroups.map(group => {
                 const lastDateStr = group.lastDate && group.lastDate.getTime() > 0 ? group.lastDate.toLocaleDateString('en-IN', {
                     month: 'short', day: 'numeric'
                 }) : 'N/A';
@@ -450,6 +792,72 @@ function renderChildAnalytics() {
                     </tr>
                 `;
             }).join('');
+        }
+    }
+
+    // Toggle child performance card visibility and draw Chart.js
+    const perfCard = document.getElementById('parent-child-performance-card');
+    if (perfCard) {
+        if (selectedChildQuizHistory.length === 0) {
+            perfCard.style.display = 'none';
+        } else {
+            perfCard.style.display = 'block';
+            renderParentCharts(topicsList);
+
+            // Hook up switcher buttons
+            const btnRadar = document.getElementById('btn-parent-radar');
+            const btnBar = document.getElementById('btn-parent-bar');
+            const btnDoughnut = document.getElementById('btn-parent-doughnut');
+
+            const wrapperRadar = document.getElementById('parent-child-radar-wrapper');
+            const wrapperBar = document.getElementById('parent-child-bar-wrapper');
+            const wrapperDoughnut = document.getElementById('parent-child-doughnut-wrapper');
+
+            const tabs = [btnRadar, btnBar, btnDoughnut];
+            const wrappers = [wrapperRadar, wrapperBar, wrapperDoughnut];
+
+            function selectParentTab(activeBtn, activeWrapper) {
+                tabs.forEach(btn => {
+                    if (btn) {
+                        btn.style.color = 'var(--text-secondary)';
+                        btn.style.borderBottomColor = 'transparent';
+                        btn.classList.remove('active');
+                    }
+                });
+                wrappers.forEach(w => { if (w) w.style.display = 'none'; });
+
+                if (activeBtn) {
+                    activeBtn.style.color = 'var(--parent)';
+                    activeBtn.style.borderBottomColor = 'var(--parent)';
+                    activeBtn.classList.add('active');
+                }
+                if (activeWrapper) {
+                    activeWrapper.style.display = 'block';
+                }
+
+                if (activeBtn === btnRadar && window.parentChildRadarChartInstance) {
+                    window.parentChildRadarChartInstance.resize();
+                    window.parentChildRadarChartInstance.update();
+                }
+                if (activeBtn === btnBar && window.parentChildBarChartInstance) {
+                    window.parentChildBarChartInstance.resize();
+                    window.parentChildBarChartInstance.update();
+                }
+                if (activeBtn === btnDoughnut && window.parentChildDoughnutChartInstance) {
+                    window.parentChildDoughnutChartInstance.resize();
+                    window.parentChildDoughnutChartInstance.update();
+                }
+            }
+
+            if (btnRadar) btnRadar.onclick = () => selectParentTab(btnRadar, wrapperRadar);
+            if (btnBar) btnBar.onclick = () => selectParentTab(btnBar, wrapperBar);
+            if (btnDoughnut) btnDoughnut.onclick = () => selectParentTab(btnDoughnut, wrapperDoughnut);
+
+            // Bind PDF download
+            const btnDownload = document.getElementById('btn-download-parent-child-report');
+            if (btnDownload) {
+                btnDownload.onclick = downloadParentChildPDFReport;
+            }
         }
     }
 

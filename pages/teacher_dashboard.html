@@ -13,6 +13,9 @@
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <!-- Chart.js & html2pdf.js CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body class="dashboard-body">
@@ -447,8 +450,15 @@
                             </div>
                         </div>
 
-                        <!-- Real Quiz Score Timeline -->
-                        <div style="margin-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 1.5rem;">
+                        <!-- View Switcher Tabs -->
+                        <div class="view-switcher" style="display: flex; gap: 5px; margin-top: 1.5rem; margin-bottom: 12px; border-top: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.08); padding-top: 1rem; padding-bottom: 8px;">
+                            <button class="tab-btn active" id="btn-teacher-timeline" style="background: none; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--teacher); border-bottom: 2px solid var(--teacher); transition: all 0.2s;">📋 Quiz History Timeline</button>
+                            <button class="tab-btn" id="btn-teacher-progress-line" style="background: none; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; transition: all 0.2s;">📈 Score Progression</button>
+                            <button class="tab-btn" id="btn-teacher-topic-bar" style="background: none; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; transition: all 0.2s;">📊 Topic Averages</button>
+                        </div>
+
+                        <!-- Visual containers -->
+                        <div id="teacher-student-timeline-wrapper" class="teacher-student-view-content">
                             <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
                                 <i class='bx bx-time-five' style="color: var(--secondary);"></i> Quiz History Timeline
                             </h4>
@@ -456,6 +466,19 @@
                                 <p style="font-size: 0.8rem; color: var(--text-secondary);">No history available.</p>
                             </div>
                         </div>
+
+                        <div id="teacher-student-progress-line-wrapper" class="teacher-student-view-content" style="display: none; position: relative; height: 260px; width: 100%;">
+                            <canvas id="teacher-student-progress-line-chart"></canvas>
+                        </div>
+
+                        <div id="teacher-student-topic-bar-wrapper" class="teacher-student-view-content" style="display: none; position: relative; height: 260px; width: 100%;">
+                            <canvas id="teacher-student-topic-bar-chart"></canvas>
+                        </div>
+
+                        <!-- PDF Download Button -->
+                        <button id="btn-download-teacher-student-report" class="btn-primary" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; font-weight: 600; background: var(--teacher); border: none; color: white; cursor: pointer; box-shadow: var(--shadow-sm); transition: background 0.2s;">
+                            <i class='bx bxs-file-pdf' style="font-size: 1.1rem;"></i> Download Student Report (PDF)
+                        </button>
                     </div>
                 </div>
             </div>

@@ -13,6 +13,9 @@
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <!-- Chart.js & html2pdf.js CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body class="dashboard-body">
@@ -229,6 +232,41 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- Child Concept Mastery Insights Card -->
+                <div class="card" id="parent-child-performance-card" style="grid-column: span 2; display: none; margin-top: 1.5rem;">
+                    <h3 class="card-title" style="display: flex; align-items: center; gap: 6px;">
+                        <i class='bx bx-pie-chart-alt-2' style="color: var(--parent); font-size: 1.3rem;"></i>
+                        Child Concept Mastery Insights
+                    </h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">Visual analytics of your child's topic-wise performance levels</p>
+                    
+                    <!-- View Switcher Tabs -->
+                    <div class="view-switcher" style="display: flex; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 8px;">
+                        <button class="tab-btn active" id="btn-parent-radar" style="background: none; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--parent); border-bottom: 2px solid var(--parent); transition: all 0.2s;">🕸️ Radar Chart</button>
+                        <button class="tab-btn" id="btn-parent-bar" style="background: none; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; transition: all 0.2s;">📊 Bar Graph</button>
+                        <button class="tab-btn" id="btn-parent-doughnut" style="background: none; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; transition: all 0.2s;">🍩 Doughnut Chart</button>
+                    </div>
+
+                    <!-- Visual containers -->
+                    <div id="parent-child-radar-wrapper" class="parent-child-view-content" style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="parent-child-radar-chart"></canvas>
+                    </div>
+
+                    <div id="parent-child-bar-wrapper" class="parent-child-view-content" style="display: none; position: relative; height: 260px; width: 100%;">
+                        <canvas id="parent-child-bar-chart"></canvas>
+                    </div>
+
+                    <div id="parent-child-doughnut-wrapper" class="parent-child-view-content" style="display: none; position: relative; height: 260px; width: 100%;">
+                        <canvas id="parent-child-doughnut-chart"></canvas>
+                    </div>
+
+                    <!-- PDF Download Button -->
+                    <button id="btn-download-parent-child-report" class="btn-primary" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; font-weight: 600; background: var(--parent); border: none; color: white; cursor: pointer; box-shadow: var(--shadow-sm); transition: background 0.2s;">
+                        <i class='bx bxs-file-pdf' style="font-size: 1.1rem;"></i> Download Child Progress Report (PDF)
+                    </button>
+                </div>
+
                 <!-- AI Child Insights & Home Study Companion Card -->
                 <div class="card" id="child-ai-insights-card" style="grid-column: span 2; display: none; margin-top: 1.5rem;">
                     <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;">

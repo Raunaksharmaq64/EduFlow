@@ -587,9 +587,329 @@ async function selectClassroomForStudents(classCode, className) {
     }
 }
 
+window.teacherProgressLineChartInstance = null;
+window.teacherTopicBarChartInstance = null;
+window.teacherActiveStudentInfo = null;
+window.teacherActiveStudentHistory = [];
+
+async function downloadTeacherStudentPDFReport() {
+    if (!window.teacherActiveStudentInfo) {
+        showToast('No student details selected.', 'warning');
+        return;
+    }
+    
+    const info = window.teacherActiveStudentInfo;
+    const history = window.teacherActiveStudentHistory || [];
+    
+    if (history.length === 0) {
+        showToast('No quiz history found for this student to generate PDF report.', 'warning');
+        return;
+    }
+    
+    showToast('Compiling student report card...', 'info');
+    
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.padding = '35px';
+    pdfContainer.style.fontFamily = "'Inter', sans-serif";
+    pdfContainer.style.color = '#333';
+    pdfContainer.style.backgroundColor = '#fff';
+    pdfContainer.style.width = '750px';
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-9999px';
+    pdfContainer.style.top = '-9999px';
+    
+    let content = `
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #6c5ce7; padding-bottom: 15px; margin-bottom: 25px;">
+            <div>
+                <h1 style="margin: 0; color: #6c5ce7; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">EduFlow AI</h1>
+                <p style="margin: 3px 0 0 0; font-size: 13px; color: #666; font-weight: 500;">Academic Progress Report Card (Teacher Panel)</p>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 10px; color: #999; font-weight: 600; text-transform: uppercase;">Generated On</span>
+                <p style="margin: 3px 0 0 0; font-size: 13px; color: #333; font-weight: 600;">${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef;">
+                <h3 style="margin: 0 0 10px 0; font-size: 13px; color: #6c5ce7; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Student Information</h3>
+                <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 4px 0; color: #666; font-weight: 500; width: 80px;">Name:</td>
+                        <td style="padding: 4px 0; color: #333; font-weight: 600;">${info.name}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 4px 0; color: #666; font-weight: 500;">Email:</td>
+                        <td style="padding: 4px 0; color: #333; font-weight: 600;">${info.email}</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <span style="font-size: 9px; color: #666; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Total XP Points</span>
+                <p style="margin: 0; font-size: 20px; font-weight: 800; color: #2a9d8f;">${info.xp}</p>
+                <span style="font-size: 11px; font-weight: 700; color: #6c5ce7; margin-top: 4px;">${info.level}</span>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <h3 style="margin: 0 0 12px 0; font-size: 13px; color: #6c5ce7; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Quiz Attempt History Timeline</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid #dee2e6;">
+                <thead>
+                    <tr style="background-color: #f1f3f5; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 10px; text-align: left; font-weight: 700; color: #495057;">Topic / Chapter</th>
+                        <th style="padding: 10px; text-align: center; font-weight: 700; color: #495057; width: 100px;">Difficulty</th>
+                        <th style="padding: 10px; text-align: center; font-weight: 700; color: #495057; width: 150px;">Date & Time</th>
+                        <th style="padding: 10px; text-align: center; font-weight: 700; color: #495057; width: 100px;">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    history.forEach(h => {
+        const date = h.created_at ? new Date(h.created_at).toLocaleDateString('en-IN', {
+            month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        }) : '';
+        const isGood = (h.score / h.total_questions) >= 0.7;
+        
+        content += `
+            <tr style="border-bottom: 1px solid #dee2e6;">
+                <td style="padding: 10px; color: #212529; font-weight: 600;">${h.topic}</td>
+                <td style="padding: 10px; text-align: center; text-transform: capitalize; color: #495057;">${h.difficulty}</td>
+                <td style="padding: 10px; text-align: center; color: #6c757d;">${date}</td>
+                <td style="padding: 10px; text-align: center; font-weight: 700; color: ${isGood ? '#2a9d8f' : '#e76f51'};">
+                    ${h.score} / ${h.total_questions}
+                </td>
+            </tr>
+        `;
+    });
+    
+    content += `
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Add charts to PDF -->
+        <div style="margin-bottom: 25px; page-break-inside: avoid;">
+            <h3 style="margin: 0 0 15px 0; font-size: 13px; color: #6c5ce7; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Performance Visualizations</h3>
+            <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+                <div style="width: 320px; height: 260px; position: relative;">
+                    <h4 style="font-size: 11px; text-align: center; margin: 0 0 8px 0; color: #666; font-weight: 600;">Quiz-by-Quiz Score Progression</h4>
+                    <canvas id="pdf-teacher-line-chart" style="width: 100%; height: 100%;"></canvas>
+                </div>
+                <div style="width: 320px; height: 260px; position: relative;">
+                    <h4 style="font-size: 11px; text-align: center; margin: 0 0 8px 0; color: #666; font-weight: 600;">Average Score by Topic</h4>
+                    <canvas id="pdf-teacher-bar-chart" style="width: 100%; height: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div style="border-top: 1px dashed #ced4da; padding-top: 15px; text-align: center; font-size: 11px; color: #6c757d; margin-top: 35px;">
+            <p style="margin: 0;">This report card is generated on behalf of the teaching staff via the EduFlow AI Platform.</p>
+        </div>
+    `;
+    
+    pdfContainer.innerHTML = content;
+    document.body.appendChild(pdfContainer);
+    
+    // Draw charts on PDF containers
+    const pdfLineCtx = document.getElementById('pdf-teacher-line-chart').getContext('2d');
+    const pdfBarCtx = document.getElementById('pdf-teacher-bar-chart').getContext('2d');
+    
+    const chronologicalHistory = [...history].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    const lineLabels = chronologicalHistory.map((h, i) => {
+        return h.created_at ? new Date(h.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) : `Q${i+1}`;
+    });
+    const lineData = chronologicalHistory.map(h => Math.round((h.score / h.total_questions) * 100));
+
+    const topicStats = {};
+    history.forEach(h => {
+        const topicKey = h.topic.trim();
+        if (!topicStats[topicKey]) {
+            topicStats[topicKey] = { totalPct: 0, count: 0 };
+        }
+        topicStats[topicKey].totalPct += (h.score / h.total_questions) * 100;
+        topicStats[topicKey].count++;
+    });
+    const barLabels = Object.keys(topicStats);
+    const barData = barLabels.map(topic => Math.round(topicStats[topic].totalPct / topicStats[topic].count));
+
+    new Chart(pdfLineCtx, {
+        type: 'line',
+        data: {
+            labels: lineLabels,
+            datasets: [{
+                data: lineData,
+                borderColor: 'rgba(108, 92, 231, 1)',
+                backgroundColor: 'rgba(108, 92, 231, 0.1)',
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true,
+                pointRadius: 3
+            }]
+        },
+        options: {
+            responsive: false,
+            animation: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, max: 100, ticks: { font: { size: 8, family: 'Inter' } } },
+                x: { ticks: { font: { size: 7, family: 'Inter' } } }
+            }
+        }
+    });
+
+    new Chart(pdfBarCtx, {
+        type: 'bar',
+        data: {
+            labels: barLabels,
+            datasets: [{
+                data: barData,
+                backgroundColor: 'rgba(235, 77, 75, 0.8)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            animation: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, max: 100, ticks: { font: { size: 8, family: 'Inter' } } },
+                x: { ticks: { font: { size: 8, family: 'Inter' } } }
+            }
+        }
+    });
+
+    setTimeout(() => {
+        const opt = {
+            margin: 10,
+            filename: `${info.name.replace(/\s+/g, '_')}_Progress_Report.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(pdfContainer).save().then(() => {
+            document.body.removeChild(pdfContainer);
+            showToast('PDF report downloaded successfully!', 'success');
+        }).catch(err => {
+            console.error(err);
+            if (pdfContainer.parentNode) {
+                document.body.removeChild(pdfContainer);
+            }
+            showToast('Failed to generate PDF.', 'error');
+        });
+    }, 450);
+}
+
+function renderTeacherStudentCharts(history) {
+    if (!history || history.length === 0) return;
+
+    const chronologicalHistory = [...history].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    const lineLabels = chronologicalHistory.map((h, i) => {
+        return h.created_at ? new Date(h.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) : `Quiz ${i+1}`;
+    });
+    const lineData = chronologicalHistory.map(h => Math.round((h.score / h.total_questions) * 100));
+
+    const topicStats = {};
+    history.forEach(h => {
+        const topicKey = h.topic.trim();
+        if (!topicStats[topicKey]) {
+            topicStats[topicKey] = { totalPct: 0, count: 0 };
+        }
+        topicStats[topicKey].totalPct += (h.score / h.total_questions) * 100;
+        topicStats[topicKey].count++;
+    });
+    const barLabels = Object.keys(topicStats);
+    const barData = barLabels.map(topic => Math.round(topicStats[topic].totalPct / topicStats[topic].count));
+
+    // 1. Line Chart
+    const lineCtx = document.getElementById('teacher-student-progress-line-chart').getContext('2d');
+    if (window.teacherProgressLineChartInstance) {
+        window.teacherProgressLineChartInstance.destroy();
+    }
+    window.teacherProgressLineChartInstance = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+            labels: lineLabels,
+            datasets: [{
+                label: 'Quiz Score (%)',
+                data: lineData,
+                borderColor: 'rgba(108, 92, 231, 1)',
+                backgroundColor: 'rgba(108, 92, 231, 0.1)',
+                borderWidth: 2.5,
+                tension: 0.35,
+                fill: true,
+                pointBackgroundColor: 'rgba(108, 92, 231, 1)',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(0,0,0,0.04)' },
+                    ticks: { color: '#6c757d', font: { family: 'Inter', size: 9 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#6c757d', font: { family: 'Inter', size: 9 } }
+                }
+            }
+        }
+    });
+
+    // 2. Bar Chart
+    const barCtx = document.getElementById('teacher-student-topic-bar-chart').getContext('2d');
+    if (window.teacherTopicBarChartInstance) {
+        window.teacherTopicBarChartInstance.destroy();
+    }
+    window.teacherTopicBarChartInstance = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: barLabels,
+            datasets: [{
+                label: 'Topic Average (%)',
+                data: barData,
+                backgroundColor: 'rgba(235, 77, 75, 0.8)',
+                borderColor: 'rgba(235, 77, 75, 1)',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(0,0,0,0.04)' },
+                    ticks: { color: '#6c757d', font: { family: 'Inter', size: 9 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#6c757d', font: { family: 'Inter', size: 9 } }
+                }
+            }
+        }
+    });
+}
+
 async function viewStudentDetails(studentEmail) {
     const student = currentStudentsList.find(s => s.email === studentEmail);
     if (!student) return;
+
+    window.teacherActiveStudentInfo = student;
+    window.teacherActiveStudentHistory = [];
 
     document.getElementById('detail-student-name').textContent = student.name;
     document.getElementById('detail-student-email').textContent = student.email;
@@ -632,6 +952,8 @@ async function viewStudentDetails(studentEmail) {
         });
         if (res.ok) {
             const history = await res.json();
+            window.teacherActiveStudentHistory = history;
+
             if (history.length === 0) {
                 timeline.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-secondary);">No quiz attempts recorded in database.</p>`;
             } else {
@@ -651,6 +973,9 @@ async function viewStudentDetails(studentEmail) {
                         </div>
                     `;
                 }).join('');
+
+                // Render student charts
+                renderTeacherStudentCharts(history);
             }
         } else {
             timeline.innerHTML = `<p style="font-size: 0.8rem; color: var(--parent);">Failed to load history.</p>`;
@@ -659,6 +984,60 @@ async function viewStudentDetails(studentEmail) {
         console.error('Timeline fetch error:', err);
         timeline.innerHTML = `<p style="font-size: 0.8rem; color: var(--parent);">Error loading history.</p>`;
     }
+
+    // Hook up tab switcher click events for teacher student progress
+    const btnTimeline = document.getElementById('btn-teacher-timeline');
+    const btnProgressLine = document.getElementById('btn-teacher-progress-line');
+    const btnTopicBar = document.getElementById('btn-teacher-topic-bar');
+
+    const wrapperTimeline = document.getElementById('teacher-student-timeline-wrapper');
+    const wrapperProgressLine = document.getElementById('teacher-student-progress-line-wrapper');
+    const wrapperTopicBar = document.getElementById('teacher-student-topic-bar-wrapper');
+
+    const tabs = [btnTimeline, btnProgressLine, btnTopicBar];
+    const wrappers = [wrapperTimeline, wrapperProgressLine, wrapperTopicBar];
+
+    function selectTeacherTab(activeBtn, activeWrapper) {
+        tabs.forEach(btn => {
+            if (btn) {
+                btn.style.color = 'var(--text-secondary)';
+                btn.style.borderBottomColor = 'transparent';
+                btn.classList.remove('active');
+            }
+        });
+        wrappers.forEach(w => { if (w) w.style.display = 'none'; });
+
+        if (activeBtn) {
+            activeBtn.style.color = 'var(--teacher)';
+            activeBtn.style.borderBottomColor = 'var(--teacher)';
+            activeBtn.classList.add('active');
+        }
+        if (activeWrapper) {
+            activeWrapper.style.display = 'block';
+        }
+
+        if (activeBtn === btnProgressLine && window.teacherProgressLineChartInstance) {
+            window.teacherProgressLineChartInstance.resize();
+            window.teacherProgressLineChartInstance.update();
+        }
+        if (activeBtn === btnTopicBar && window.teacherTopicBarChartInstance) {
+            window.teacherTopicBarChartInstance.resize();
+            window.teacherTopicBarChartInstance.update();
+        }
+    }
+
+    if (btnTimeline) btnTimeline.onclick = () => selectTeacherTab(btnTimeline, wrapperTimeline);
+    if (btnProgressLine) btnProgressLine.onclick = () => selectTeacherTab(btnProgressLine, wrapperProgressLine);
+    if (btnTopicBar) btnTopicBar.onclick = () => selectTeacherTab(btnTopicBar, wrapperTopicBar);
+
+    // Bind PDF Download Button for teacher
+    const btnDownload = document.getElementById('btn-download-teacher-student-report');
+    if (btnDownload) {
+        btnDownload.onclick = downloadTeacherStudentPDFReport;
+    }
+
+    // Default to timeline tab on open
+    selectTeacherTab(btnTimeline, wrapperTimeline);
 
     document.getElementById('student-detail-card').style.display = 'block';
     document.getElementById('student-detail-card').scrollIntoView({ behavior: 'smooth' });
