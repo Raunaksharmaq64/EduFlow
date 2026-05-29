@@ -171,7 +171,13 @@
                     </form>
                 </div>
                 <div class="card" style="grid-column: span 2;">
-                    <h3 class="card-title"><i class='bx bx-layer'></i> My Classrooms</h3>
+                    <h3 class="card-title">
+                        <i class='bx bx-layer'></i> My Classrooms
+                        <span class="tooltip-help">
+                            <i class='bx bx-info-circle'></i>
+                            <span class="tooltip-text">Create and manage your subject classes. Distribute class codes for student registration.</span>
+                        </span>
+                    </h3>
                     <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem;">Share join codes with students to invite them (click code to copy).</p>
                     <div id="teacher-classrooms-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                         <p style="font-size: 0.85rem; color: var(--text-secondary);">No classrooms created yet.</p>
@@ -263,7 +269,13 @@
             <div style="display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; align-items: start;">
                 <!-- Left: Classrooms Selection List -->
                 <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
-                    <h3 class="card-title" style="margin-bottom: 0.5rem;"><i class='bx bx-school'></i> Select Class</h3>
+                    <h3 class="card-title" style="margin-bottom: 0.5rem;">
+                        <i class='bx bx-school'></i> Select Class
+                        <span class="tooltip-help">
+                            <i class='bx bx-info-circle'></i>
+                            <span class="tooltip-text">Select a classroom to display enrolled students, search rosters by phone or name, review scores, and contact parents.</span>
+                        </span>
+                    </h3>
                     <div id="students-classroom-selector" style="display: flex; flex-direction: column; gap: 8px;">
                         <!-- Classroom items here -->
                         <p style="font-size: 0.85rem; color: var(--text-secondary);">Create a class first.</p>
@@ -319,6 +331,10 @@
                         <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;">
                             <i class='bx bx-brain' style="color: var(--ai-accent); font-size: 1.5rem;"></i>
                             AI Class Insights & Lesson Architect
+                            <span class="tooltip-help">
+                                <i class='bx bx-info-circle'></i>
+                                <span class="tooltip-text">Automated analysis scanning all students' scores to detect collective weaknesses and generate tailored teacher worksheets.</span>
+                            </span>
                         </h3>
                         <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
                             AI scans the collective performance of all students in this class to identify weak concepts and construct a custom lesson plan.
@@ -461,7 +477,13 @@
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     <div class="card" id="assignments-view-card" style="display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 class="card-title" id="assignments-class-title" style="margin-bottom: 0;"><i class='bx bx-task'></i> Assignments</h3>
+                            <h3 class="card-title" id="assignments-class-title" style="margin-bottom: 0;">
+                                <i class='bx bx-task'></i> Assignments
+                                <span class="tooltip-help">
+                                    <i class='bx bx-info-circle'></i>
+                                    <span class="tooltip-text">Create and post classroom assignments, publish notifications on the Bulletin Board, and check the Leaderboard standings.</span>
+                                </span>
+                            </h3>
                             <button class="btn btn-primary btn-sm" id="btn-new-assignment-trigger" onclick="showCreateAssignmentForm()"><i class='bx bx-plus'></i> New Assignment</button>
                         </div>
                         
@@ -796,6 +818,66 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Floating Help / Feature Guide Button -->
+    <button class="floating-help-btn" onclick="toggleHelpModal()">
+        <i class='bx bx-help-circle'></i>
+        <span>Help Guide</span>
+    </button>
+
+    <!-- Interactive Help Guide Modal -->
+    <div class="help-modal-overlay" id="help-modal-overlay" onclick="toggleHelpModal()">
+        <div class="help-modal-card" onclick="event.stopPropagation()">
+            <div class="help-modal-header">
+                <h3><i class='bx bx-support'></i> Teacher Feature Guide</h3>
+                <button class="help-modal-close" onclick="toggleHelpModal()">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <div class="help-section">
+                    <h4><i class='bx bx-layer'></i> Managing Classrooms</h4>
+                    <ul class="help-steps">
+                        <li><i class='bx bx-chevron-right'></i> Click **My Classrooms** under overview. Enter a name to create a new class.</li>
+                        <li><i class='bx bx-chevron-right'></i> Share the generated 6-character Class Code with students so they can join.</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class='bx bx-group'></i> Student Directory & Search</h4>
+                    <ul class="help-steps">
+                        <li><i class='bx bx-chevron-right'></i> Go to the **Students** tab, click a classroom, and view enrolled students.</li>
+                        <li><i class='bx bx-chevron-right'></i> <strong>Search & Filter:</strong> Use the search bar to find students by Name, Email, or Phone Number (dashes/spaces are auto-normalized!).</li>
+                        <li><i class='bx bx-chevron-right'></i> Click **Stats** to view their academic timelines (showing their quiz scores and difficulty levels securely).</li>
+                        <li><i class='bx bx-chevron-right'></i> Click **Message Parent** to instantly open a chat conversation with their linked parent.</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class='bx bx-brain'></i> AI Lesson Planner</h4>
+                    <ul class="help-steps">
+                        <li><i class='bx bx-chevron-right'></i> In the student directory, when class history is populated, click **AI Class Insights & Lesson Architect**.</li>
+                        <li><i class='bx bx-chevron-right'></i> The AI will scan the entire classroom's history, find their collective weakest chapters, and generate a customized teaching lesson plan/worksheet.</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class='bx bx-task'></i> Assignments Hub & Bulletin Board</h4>
+                    <ul class="help-steps">
+                        <li><i class='bx bx-chevron-right'></i> Click **New Assignment** under the Assignments panel, choose a classroom, and enter questions and answers.</li>
+                        <li><i class='bx bx-chevron-right'></i> Toggle the sub-tabs to view submitted student files/answers, score them, and write feedback comments.</li>
+                        <li><i class='bx bx-chevron-right'></i> Use the **Bulletin Board** sub-tab to post notices or reminders to parents and students.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleHelpModal() {
+            const overlay = document.getElementById('help-modal-overlay');
+            if (overlay.style.display === 'flex') {
+                overlay.style.display = 'none';
+            } else {
+                overlay.style.display = 'flex';
+            }
+        }
+    </script>
+
     <!-- Centralized Configuration -->
     <script src="../js/config.js"></script>
     <script src="../js/teacher_dashboard.js"></script>

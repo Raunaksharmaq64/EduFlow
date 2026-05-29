@@ -116,7 +116,13 @@
             <div class="dashboard-grid">
                 <!-- Link Child Form -->
                 <div class="card">
-                    <h3 class="card-title"><i class='bx bx-link-alt'></i> Link Child Account</h3>
+                    <h3 class="card-title">
+                        <i class='bx bx-link-alt'></i> Link Child Account
+                        <span class="tooltip-help">
+                            <i class='bx bx-info-circle'></i>
+                            <span class="tooltip-text">Enter your child's registered student email to sync accounts. This authorizes real-time tracking of their scoreboards and activities.</span>
+                        </span>
+                    </h3>
                     <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem;">Enter your child's student email address to link their account and track progress in real time.</p>
                     <form id="link-child-form" style="display: flex; flex-direction: column; gap: 10px;">
                         <input type="email" id="link-student-email" class="form-input-db" placeholder="e.g. child@email.com" required>
@@ -126,7 +132,13 @@
 
                 <!-- Subject-wise Performance -->
                 <div class="card" style="grid-column: span 2;">
-                    <h3 class="card-title"><i class='bx bx-line-chart'></i> Child's Quiz Averages</h3>
+                    <h3 class="card-title">
+                        <i class='bx bx-line-chart'></i> Child's Quiz Averages
+                        <span class="tooltip-help">
+                            <i class='bx bx-info-circle'></i>
+                            <span class="tooltip-text">Summarizes the average scores, difficulty scaling, and high-score progression of your child's recently taken practice quizzes.</span>
+                        </span>
+                    </h3>
                     <div class="db-table-container">
                         <table class="db-table">
                             <thead>
@@ -193,7 +205,13 @@
                 </div>
 
                 <div class="card" style="grid-column: span 2;">
-                    <h3 class="card-title"><i class='bx bx-history'></i> Recent Test Results</h3>
+                    <h3 class="card-title">
+                        <i class='bx bx-history'></i> Recent Test Results
+                        <span class="tooltip-help">
+                            <i class='bx bx-info-circle'></i>
+                            <span class="tooltip-text">A full history log of quizzes taken by your child, displaying their score breakdown, dates, and difficulty settings.</span>
+                        </span>
+                    </h3>
                     <div class="db-table-container">
                         <table class="db-table">
                             <thead>
@@ -216,6 +234,10 @@
                     <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;">
                         <i class='bx bx-brain' style="color: var(--ai-accent); font-size: 1.5rem;"></i>
                         AI Child Insights & Home Study Companion
+                        <span class="tooltip-help">
+                            <i class='bx bx-info-circle'></i>
+                            <span class="tooltip-text">A custom analysis of your child's quiz data. Click "Generate" to receive parent-friendly tips and study prompts.</span>
+                        </span>
                     </h3>
                     <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
                         AI reviews your child's quiz performance to pinpoint their weakest concept and formats a customized, parent-friendly study guide and worksheet.
@@ -531,6 +553,64 @@
 
     <!-- Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Floating Help / Feature Guide Button -->
+    <button class="floating-help-btn" onclick="toggleHelpModal()" style="background-color: var(--parent); box-shadow: 0 4px 15px rgba(231, 111, 81, 0.4);">
+        <i class='bx bx-help-circle'></i>
+        <span>Help Guide</span>
+    </button>
+
+    <!-- Interactive Help Guide Modal -->
+    <div class="help-modal-overlay" id="help-modal-overlay" onclick="toggleHelpModal()">
+        <div class="help-modal-card" onclick="event.stopPropagation()">
+            <div class="help-modal-header" style="background-color: var(--parent);">
+                <h3><i class='bx bx-support'></i> Parent Feature Guide</h3>
+                <button class="help-modal-close" onclick="toggleHelpModal()">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <div class="help-section">
+                    <h4><i class='bx bx-link-alt' style="color: var(--parent);"></i> Linking Student Accounts</h4>
+                    <ul class="help-steps">
+                        <li><i class='bx bx-chevron-right' style="color: var(--parent);"></i> Enter your child's registered student email in the **Link Child Account** box on the main tab.</li>
+                        <li><i class='bx bx-chevron-right' style="color: var(--parent);"></i> Once linked, click the student switcher dropdown in the sidebar to change active child profiles.</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class='bx bx-trending-up' style="color: var(--parent);"></i> Tracking Real-Time Progress</h4>
+                    <ul class="help-steps">
+                        <li><i class='bx bx-chevron-right' style="color: var(--parent);"></i> Check the top statistics cards for your child's overall **XP** and **Academic Level**.</li>
+                        <li><i class='bx bx-chevron-right' style="color: var(--parent);"></i> Read the **Recent Test Results** table to monitor the scores, dates, and difficulty scaling of their practice quizzes.</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class='bx bx-brain' style="color: var(--parent);"></i> AI Child Insights & Home Revision</h4>
+                    <ul class="help-steps">
+                        <li><i class='bx bx-chevron-right' style="color: var(--parent);"></i> Navigate to the **Child Details** panel to view the **AI Child Insights & Home Study Companion**.</li>
+                        <li><i class='bx bx-chevron-right' style="color: var(--parent);"></i> The AI automatically extracts your child's weakest topic from their quiz history.</li>
+                        <li><i class='bx bx-chevron-right' style="color: var(--parent);"></i> Click **Generate Home Revision Guide** to receive custom study prompts, conceptual summaries, and guidance checklists to support your child at home.</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class='bx bx-message-rounded-detail' style="color: var(--parent);"></i> Contacting Classroom Teachers</h4>
+                    <ul class="help-steps">
+                        <li><i class='bx bx-chevron-right' style="color: var(--parent);"></i> Open the **My Profile** panel to see lists of your child's classroom teachers under **Child's Teachers**.</li>
+                        <li><i class='bx bx-chevron-right' style="color: var(--parent);"></i> Click the chat icon next to any teacher's card to instantly open a message thread with them.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleHelpModal() {
+            const overlay = document.getElementById('help-modal-overlay');
+            if (overlay.style.display === 'flex') {
+                overlay.style.display = 'none';
+            } else {
+                overlay.style.display = 'flex';
+            }
+        }
+    </script>
 
     <!-- Centralized Configuration -->
     <script src="../js/config.js"></script>
