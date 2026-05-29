@@ -49,6 +49,10 @@
                     <i class='bx bx-message-square-dots'></i>
                     <span>Messages</span>
                 </div>
+                <div class="menu-item" data-panel="profile-panel">
+                    <i class='bx bx-user-circle'></i>
+                    <span>My Profile</span>
+                </div>
             </nav>
         </div>
         <div class="sidebar-footer">
@@ -185,10 +189,6 @@
                 </p>
                 <form id="teacher-quiz-form">
                     <div class="form-group-db">
-                        <label for="tq-topic">Quiz Topic</label>
-                        <input type="text" id="tq-topic" class="form-input-db" placeholder="e.g., Newton's Laws of Motion" required>
-                    </div>
-                    <div class="form-group-db">
                         <label for="tq-grade">Class Level</label>
                         <select id="tq-grade" class="form-select-db" required>
                             <option value="" disabled selected>Select class</option>
@@ -199,6 +199,18 @@
                             <option value="10th Grade">Class 10</option>
                             <option value="11th Grade">Class 11</option>
                             <option value="12th Grade">Class 12</option>
+                        </select>
+                    </div>
+                    <div class="form-group-db">
+                        <label for="tq-subject">Subject</label>
+                        <select id="tq-subject" class="form-select-db" required>
+                            <option value="" disabled selected>Select class first</option>
+                        </select>
+                    </div>
+                    <div class="form-group-db">
+                        <label for="tq-chapter">Quiz Chapter/Topic (NCERT)</label>
+                        <select id="tq-chapter" class="form-select-db" required>
+                            <option value="" disabled selected>Select subject first</option>
                         </select>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -522,10 +534,33 @@
                             <!-- AI Mode Fields -->
                             <div id="asg-ai-group" style="display: none; background: rgba(108,52,131,0.03); border: 1px solid rgba(108,52,131,0.1); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.25rem;">
                                 <h4 style="font-size: 0.88rem; color: var(--ai-accent); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;"><i class='bx bx-brain'></i> AI Question Generator</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 10px;">
+                                    <div class="form-group-db">
+                                        <label for="asg-ai-grade">Grade Level</label>
+                                        <select id="asg-ai-grade" class="form-select-db">
+                                            <option value="" disabled selected>Select class</option>
+                                            <option value="6th Grade">Class 6</option>
+                                            <option value="7th Grade">Class 7</option>
+                                            <option value="8th Grade">Class 8</option>
+                                            <option value="9th Grade">Class 9</option>
+                                            <option value="10th Grade">Class 10</option>
+                                            <option value="11th Grade">Class 11</option>
+                                            <option value="12th Grade">Class 12</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group-db">
+                                        <label for="asg-ai-subject">Subject</label>
+                                        <select id="asg-ai-subject" class="form-select-db">
+                                            <option value="" disabled selected>Select class first</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                                     <div class="form-group-db">
-                                        <label for="asg-ai-topic">Topic for AI Questions</label>
-                                        <input type="text" id="asg-ai-topic" class="form-input-db" placeholder="e.g. Chemical Reactions Class 10">
+                                        <label for="asg-ai-chapter">Chapter / Topic</label>
+                                        <select id="asg-ai-chapter" class="form-select-db">
+                                            <option value="" disabled selected>Select subject first</option>
+                                        </select>
                                     </div>
                                     <div class="form-group-db">
                                         <label for="asg-ai-count">Number of MCQs</label>
@@ -668,6 +703,74 @@
                                 <i class='bx bx-send' style="font-size: 1.25rem;"></i>
                             </button>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL: MY PROFILE -->
+        <section id="profile-panel" class="dashboard-panel">
+            <div class="profile-grid">
+                <!-- Profile Settings Card -->
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-user'></i> Profile Settings</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.88rem;">Update your professional details and upload a profile picture.</p>
+                    
+                    <div class="profile-avatar-container">
+                        <div class="profile-avatar-wrapper" id="profile-pic-click-trigger" style="background-color: var(--teacher);">
+                            <div class="profile-avatar-placeholder" id="profile-pic-placeholder">T</div>
+                            <img src="" id="profile-pic-preview-img" class="profile-avatar-img" style="display: none;">
+                            <div class="profile-avatar-overlay">
+                                <i class='bx bx-camera'></i>
+                                <span>Change Photo</span>
+                            </div>
+                        </div>
+                        <span class="profile-avatar-hint">Click photo to upload (PNG, JPG)</span>
+                        <input type="file" id="profile-pic-file-input" accept="image/*" style="display: none;">
+                    </div>
+
+                    <form id="profile-update-form">
+                        <div class="form-group-db">
+                            <label for="profile-input-name">Full Name</label>
+                            <input type="text" id="profile-input-name" class="form-input-db" required>
+                        </div>
+                        <div class="form-group-db">
+                            <label for="profile-input-email">Email Address (Read-only)</label>
+                            <input type="email" id="profile-input-email" class="form-input-db" readonly style="background-color: rgba(0,0,0,0.03); color: var(--text-secondary); cursor: not-allowed;">
+                        </div>
+                        <div class="form-group-db">
+                            <label for="profile-input-phone">Phone Number</label>
+                            <input type="tel" id="profile-input-phone" class="form-input-db" placeholder="e.g. +91 98765 43210">
+                        </div>
+                        <div class="form-group-db">
+                            <label for="profile-input-bio">Bio / About Me</label>
+                            <textarea id="profile-input-bio" class="form-input-db" rows="3" placeholder="Tell us about yourself..." style="resize: vertical; font-family: inherit;"></textarea>
+                        </div>
+                        <div class="form-group-db">
+                            <label for="profile-input-qualification">Educational Qualifications</label>
+                            <input type="text" id="profile-input-qualification" class="form-input-db" placeholder="e.g. B.Ed, M.Sc in Physics">
+                        </div>
+                        <div class="form-group-db">
+                            <label for="profile-input-subject">Subject Specialization</label>
+                            <input type="text" id="profile-input-subject" class="form-input-db" placeholder="e.g. Physics, Mathematics">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; background-color: var(--teacher); border-color: var(--teacher);">Save Profile Details</button>
+                    </form>
+                </div>
+
+                <!-- Linked Accounts (Connections) Card -->
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-group'></i> Academic Connections</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.88rem;">Students and parents connected to your classrooms.</p>
+                    
+                    <h4 class="connections-section-title"><i class='bx bx-group'></i> Classroom Students</h4>
+                    <div class="connections-list" id="profile-students-list">
+                        <div style="font-size: 0.88rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;">No students joined your classrooms yet. Share classroom code to connect.</div>
+                    </div>
+
+                    <h4 class="connections-section-title"><i class='bx bx-user-pin'></i> Connected Parents</h4>
+                    <div class="connections-list" id="profile-parents-list">
+                        <div style="font-size: 0.88rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;">No parents linked to your students yet.</div>
                     </div>
                 </div>
             </div>

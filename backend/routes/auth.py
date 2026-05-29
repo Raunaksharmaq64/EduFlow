@@ -1,8 +1,10 @@
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, UploadFile, File
+import shutil
+import os
 from models.user import (
     UserCreate, UserLogin, UserResponse, Token,
-    LinkStudentRequest, CreateClassroomRequest, JoinClassroomRequest
+    LinkStudentRequest, CreateClassroomRequest, JoinClassroomRequest, ProfileUpdateRequest
 )
 import random
 import string
@@ -541,4 +543,266 @@ async def get_child_classrooms(
         })
         
     return classrooms
+
+@router.put("/profile", response_model=UserResponse)
+async def update_profile(
+    request: ProfileUpdateRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+    
+    # Filter out None fields from update
+    update_data = {k: v for k, v in request.dict().items() if v is not None}
+    
+    if not update_data:
+        current_user["id"] = str(current_user["_id"])
+        return current_user
+        
+    await db["users"].update_one(
+        {"_id": current_user["_id"]},
+        {"$set": update_data}
+    )
+    
+    # Fetch updated user doc
+    updated_user = await db["users"].find_one({"_id": current_user["_id"]})
+    updated_user["id"] = str(updated_user["_id"])
+    return updated_user
+
+@router.post("/profile/avatar")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file is not an image."
+        )
+        
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    # Ensure dir exists
+    upload_dir = "static/avatars"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Determine file extension
+    ext = os.path.splitext(file.filename)[1]
+    if not ext:
+        ext = ".png"
+        
+    # Create unique filename
+    filename = f"{current_user['id']}_avatar{ext}"
+    file_path = os.path.join(upload_dir, filename)
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    # Database update path
+    profile_pic_path = f"/static/avatars/{filename}"
+    await db["users"].update_one(
+        {"_id": current_user["_id"]},
+        {"$set": {"profile_pic": profile_pic_path}}
+    )
+    
+    return {"status": "success", "profile_pic": profile_pic_path}
+
+@router.get("/profile/connections")
+async def get_connections(
+    current_user: dict = Depends(get_current_user)
+):
+    from bson import ObjectId
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    role = current_user.get("role")
+    
+    if role == "student":
+        # 1. Parents
+        parents_cursor = db["users"].find({
+            "role": "parent",
+            "linked_student_emails": current_user["email"]
+        })
+        parents = []
+        async for p in parents_cursor:
+            parents.append({
+                "name": p["name"],
+                "email": p["email"],
+                "phone": p.get("phone"),
+                "profile_pic": p.get("profile_pic"),
+                "relationship": p.get("relationship")
+            })
+            
+        # 2. Teachers
+        class_codes = current_user.get("class_codes", []) or []
+        classrooms_cursor = db["classrooms"].find({"class_code": {"$in": class_codes}})
+        teacher_ids = []
+        classroom_map = {}
+        async for cl in classrooms_cursor:
+            t_id = cl.get("teacher_id")
+            if t_id:
+                teacher_ids.append(t_id)
+                classroom_map[t_id] = cl.get("class_name")
+                
+        teachers = []
+        if teacher_ids:
+            obj_ids = []
+            for tid in teacher_ids:
+                try:
+                    obj_ids.append(ObjectId(tid))
+                except:
+                    pass
+                    
+            teachers_cursor = db["users"].find({
+                "role": "teacher",
+                "_id": {"$in": obj_ids}
+            })
+            async for t in teachers_cursor:
+                t_id_str = str(t["_id"])
+                teachers.append({
+                    "name": t["name"],
+                    "email": t["email"],
+                    "phone": t.get("phone"),
+                    "profile_pic": t.get("profile_pic"),
+                    "subject": t.get("subject"),
+                    "classroom_name": classroom_map.get(t_id_str) or "Classroom"
+                })
+                
+        return {"parents": parents, "teachers": teachers}
+        
+    elif role == "parent":
+        # 1. Linked Students
+        student_emails = current_user.get("linked_student_emails", []) or []
+        students_cursor = db["users"].find({
+            "role": "student",
+            "email": {"$in": student_emails}
+        })
+        students = []
+        child_class_codes = []
+        student_names_map = {}
+        async for s in students_cursor:
+            students.append({
+                "name": s["name"],
+                "email": s["email"],
+                "phone": s.get("phone"),
+                "profile_pic": s.get("profile_pic"),
+                "grade": s.get("grade"),
+                "school": s.get("school")
+            })
+            codes = s.get("class_codes", []) or []
+            child_class_codes.extend(codes)
+            for code in codes:
+                student_names_map[code] = s["name"]
+                
+        # 2. Teachers of those students
+        teachers = []
+        if child_class_codes:
+            classrooms_cursor = db["classrooms"].find({"class_code": {"$in": child_class_codes}})
+            teacher_ids = []
+            classroom_map = {}
+            async for cl in classrooms_cursor:
+                t_id = cl.get("teacher_id")
+                if t_id:
+                    teacher_ids.append(t_id)
+                    code = cl.get("class_code")
+                    classroom_map[t_id] = {
+                        "class_name": cl.get("class_name"),
+                        "student_name": student_names_map.get(code) or "Child"
+                    }
+                    
+            if teacher_ids:
+                obj_ids = []
+                for tid in teacher_ids:
+                    try:
+                        obj_ids.append(ObjectId(tid))
+                    except:
+                        pass
+                        
+                teachers_cursor = db["users"].find({
+                    "role": "teacher",
+                    "_id": {"$in": obj_ids}
+                })
+                async for t in teachers_cursor:
+                    t_id_str = str(t["_id"])
+                    cl_info = classroom_map.get(t_id_str) or {}
+                    teachers.append({
+                        "name": t["name"],
+                        "email": t["email"],
+                        "phone": t.get("phone"),
+                        "profile_pic": t.get("profile_pic"),
+                        "subject": t.get("subject"),
+                        "classroom_name": cl_info.get("class_name", "Classroom"),
+                        "student_name": cl_info.get("student_name", "Child")
+                    })
+                    
+        return {"students": students, "teachers": teachers}
+        
+    elif role == "teacher":
+        # 1. Students in this teacher's classrooms
+        classrooms_cursor = db["classrooms"].find({"teacher_id": current_user["id"]})
+        student_emails = []
+        classroom_names_map = {}
+        async for cl in classrooms_cursor:
+            cl_name = cl.get("class_name")
+            for s in cl.get("students", []):
+                email = s.get("student_email")
+                if email:
+                    student_emails.append(email)
+                    classroom_names_map[email] = cl_name
+                    
+        students = []
+        parents = []
+        if student_emails:
+            students_cursor = db["users"].find({
+                "role": "student",
+                "email": {"$in": student_emails}
+            })
+            async for s in students_cursor:
+                students.append({
+                    "name": s["name"],
+                    "email": s["email"],
+                    "phone": s.get("phone"),
+                    "profile_pic": s.get("profile_pic"),
+                    "grade": s.get("grade"),
+                    "classroom_name": classroom_names_map.get(s["email"]) or "Classroom"
+                })
+                
+            # 2. Parents of those students
+            parents_cursor = db["users"].find({
+                "role": "parent",
+                "linked_student_emails": {"$in": student_emails}
+            })
+            student_name_by_email = {}
+            for s in students:
+                student_name_by_email[s["email"]] = s["name"]
+                
+            async for p in parents_cursor:
+                linked_children = p.get("linked_student_emails", [])
+                my_student_names = [student_name_by_email[email] for email in linked_children if email in student_name_by_email]
+                parents.append({
+                    "name": p["name"],
+                    "email": p["email"],
+                    "phone": p.get("phone"),
+                    "profile_pic": p.get("profile_pic"),
+                    "relationship": p.get("relationship"),
+                    "student_name": ", ".join(my_student_names) or "Student"
+                })
+                
+        return {"students": students, "parents": parents}
+        
+    return {"error": "Invalid role"}
 

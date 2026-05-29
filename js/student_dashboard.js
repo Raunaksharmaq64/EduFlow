@@ -159,7 +159,12 @@ async function syncUserStats() {
 
         // Sync overview profile fields
         document.getElementById('profile-name').textContent = updatedUser.name || 'Student';
-        document.getElementById('profile-avatar').textContent = (updatedUser.name || 'S').charAt(0).toUpperCase();
+        const avatarEl = document.getElementById('profile-avatar');
+        if (updatedUser.profile_pic) {
+            avatarEl.innerHTML = `<img src="${updatedUser.profile_pic.startsWith('http') ? updatedUser.profile_pic : BACKEND_URL + updatedUser.profile_pic}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            avatarEl.textContent = (updatedUser.name || 'S').charAt(0).toUpperCase();
+        }
 
         // Sync badge unlocked styles
         const badges = updatedUser.badges || [];
@@ -231,7 +236,8 @@ const panelTitles = {
     'quiz-panel': { title: 'Practice Quizzes', sub: 'Take AI-generated MCQ tests and sharpen your skills.' },
     'flashcards-panel': { title: '3D Flashcards', sub: 'Review key terms and practice active recall concepts.' },
     'assignments-panel': { title: 'Assignments Hub', sub: 'Solve homework worksheets, check Google Drive resources, and track performance grades.' },
-    'chat-panel': { title: 'Direct Messages', sub: 'Communicate with teachers of your classrooms.' }
+    'chat-panel': { title: 'Direct Messages', sub: 'Communicate with teachers of your classrooms.' },
+    'profile-panel': { title: 'My Profile', sub: 'Manage your settings, update details, and view linked connections.' }
 };
 
 function switchPanel(panelId) {
@@ -255,6 +261,10 @@ function switchPanel(panelId) {
     } else {
         stopChatPolling();
     }
+
+    if (panelId === 'profile-panel') {
+        initProfilePanel();
+    }
 }
 
 menuItems.forEach(item => {
@@ -266,40 +276,87 @@ menuItems.forEach(item => {
 window.switchPanel = switchPanel;
 
 /* ========================================
-   TAG INPUT — Weak Topics
+   DYNAMIC NCERT SYLLABUS LOADER HELPERS
    ======================================== */
-const weakTopics = [];
-const topicsInput = document.getElementById('study-topics-input');
-const topicsContainer = document.getElementById('study-topics-container');
-
-if (topicsInput) {
-    topicsInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const val = topicsInput.value.trim();
-            if (val && !weakTopics.includes(val)) {
-                weakTopics.push(val);
-                renderTopicTags();
-            }
-            topicsInput.value = '';
+async function loadSyllabusSubjects(gradeSelectId, subjectSelectId, checklistOrSelectId, isChecklist = false) {
+    const gradeSelect = document.getElementById(gradeSelectId);
+    const subjectSelect = document.getElementById(subjectSelectId);
+    const target = document.getElementById(checklistOrSelectId);
+    
+    if (!gradeSelect || !subjectSelect) return;
+    
+    const selectedGrade = gradeSelect.value;
+    if (!selectedGrade) {
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select class first</option>';
+        if (isChecklist) {
+            target.innerHTML = '<span style="font-size: 0.82rem; color: var(--text-secondary);">Select Class and Subject first...</span>';
+        } else {
+            target.innerHTML = '<option value="" disabled selected>Select subject first</option>';
         }
-    });
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_BASE}/syllabus/subjects?grade=${encodeURIComponent(selectedGrade)}`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const subjects = await res.json();
+        
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select subject</option>' + 
+            subjects.map(sub => `<option value="${sub}">${sub}</option>`).join('');
+            
+        if (isChecklist) {
+            target.innerHTML = '<span style="font-size: 0.82rem; color: var(--text-secondary);">Select Subject first...</span>';
+        } else {
+            target.innerHTML = '<option value="" disabled selected>Select subject first</option>';
+        }
+    } catch (err) {
+        console.error('Failed to load syllabus subjects:', err);
+        showToast('Error loading subjects.', 'error');
+    }
 }
 
-function renderTopicTags() {
-    topicsContainer.querySelectorAll('.tag-pill').forEach(t => t.remove());
-    weakTopics.forEach((topic, idx) => {
-        const pill = document.createElement('div');
-        pill.classList.add('tag-pill');
-        pill.innerHTML = `${topic} <i class='bx bx-x' data-idx="${idx}"></i>`;
-        topicsContainer.insertBefore(pill, topicsInput);
-    });
-    topicsContainer.querySelectorAll('.tag-pill i').forEach(icon => {
-        icon.addEventListener('click', () => {
-            weakTopics.splice(parseInt(icon.dataset.idx), 1);
-            renderTopicTags();
+async function loadSyllabusChapters(gradeSelectId, subjectSelectId, targetId, isChecklist = false) {
+    const gradeSelect = document.getElementById(gradeSelectId);
+    const subjectSelect = document.getElementById(subjectSelectId);
+    const target = document.getElementById(targetId);
+    
+    if (!gradeSelect || !subjectSelect || !target) return;
+    
+    const selectedGrade = gradeSelect.value;
+    const selectedSubject = subjectSelect.value;
+    
+    if (!selectedGrade || !selectedSubject) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/syllabus/chapters?grade=${encodeURIComponent(selectedGrade)}&subject=${encodeURIComponent(selectedSubject)}`, {
+            method: 'GET',
+            headers: authHeaders()
         });
-    });
+        if (!res.ok) throw new Error();
+        const chapters = await res.json();
+        
+        if (isChecklist) {
+            if (chapters.length === 0) {
+                target.innerHTML = '<span style="font-size: 0.82rem; color: var(--text-secondary);">No chapters found.</span>';
+                return;
+            }
+            target.innerHTML = chapters.map(ch => `
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-primary); margin-bottom: 4px;">
+                    <input type="checkbox" name="study-chapters" value="${ch.chapter_name}" style="accent-color: var(--secondary);">
+                    <span>Ch ${ch.chapter_number}. ${ch.chapter_name}</span>
+                </label>
+            `).join('');
+        } else {
+            target.innerHTML = '<option value="" disabled selected>Select chapter/topic</option>' + 
+                chapters.map(ch => `<option value="${ch.chapter_name}">Ch ${ch.chapter_number}. ${ch.chapter_name}</option>`).join('');
+        }
+    } catch (err) {
+        console.error('Failed to load syllabus chapters:', err);
+        showToast('Error loading chapters.', 'error');
+    }
 }
 
 /* ========================================
@@ -428,12 +485,15 @@ function initKanbanDragEvents() {
 document.getElementById('study-plan-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const subject = document.getElementById('study-subject').value.trim();
+    const subject = document.getElementById('study-subject').value;
     const grade = document.getElementById('study-grade').value;
     const goals = document.getElementById('study-goals').value.trim();
 
-    if (weakTopics.length === 0) {
-        showToast('Please add at least one weak topic.', 'warning');
+    const checkedBoxes = document.querySelectorAll('input[name="study-chapters"]:checked');
+    const selectedChapters = Array.from(checkedBoxes).map(cb => cb.value);
+
+    if (selectedChapters.length === 0) {
+        showToast('Please select at least one NCERT chapter.', 'warning');
         return;
     }
 
@@ -450,7 +510,7 @@ document.getElementById('study-plan-form').addEventListener('submit', async (e) 
             body: JSON.stringify({
                 subject,
                 grade,
-                weak_topics: weakTopics,
+                weak_topics: selectedChapters,
                 target_goals: goals || null
             })
         });
@@ -465,10 +525,11 @@ document.getElementById('study-plan-form').addEventListener('submit', async (e) 
         showToast('🎉 Study Kanban board generated successfully!', 'success');
         await addXP(80, 'plan');
 
-        document.getElementById('study-subject').value = '';
+        // Reset selections
+        document.getElementById('study-grade').value = '';
+        document.getElementById('study-subject').innerHTML = '<option value="" disabled selected>Select class first</option>';
+        document.getElementById('study-chapters-checklist').innerHTML = '<span style="font-size: 0.82rem; color: var(--text-secondary);">Select Class and Subject first...</span>';
         document.getElementById('study-goals').value = '';
-        weakTopics.length = 0;
-        renderTopicTags();
     } catch (err) {
         let errMsg = err.message || 'Error occurred';
         if (errMsg.includes('Failed to fetch') || errMsg.includes('fetch')) {
@@ -700,7 +761,12 @@ let secondsLeft = 15;
 document.getElementById('quiz-setup-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const topic = document.getElementById('quiz-topic').value.trim();
+    const topicSelect = document.getElementById('quiz-chapter');
+    const topic = topicSelect ? topicSelect.value : '';
+    if (!topic) {
+        showToast('Please select a quiz chapter.', 'warning');
+        return;
+    }
     const grade = document.getElementById('quiz-grade').value;
     const difficulty = document.getElementById('quiz-difficulty').value;
     const numQ = parseInt(document.getElementById('quiz-count').value);
@@ -1030,10 +1096,49 @@ function initFlashcards() {
     }
 
     if (setupForm) {
+        // Toggle fields based on mode
+        const modeSelect = document.getElementById('fc-mode');
+        const ncertGroup = document.getElementById('fc-ncert-group');
+        const customGroup = document.getElementById('fc-custom-group');
+        
+        if (modeSelect) {
+            modeSelect.addEventListener('change', () => {
+                if (modeSelect.value === 'ncert') {
+                    ncertGroup.style.display = 'block';
+                    customGroup.style.display = 'none';
+                    document.getElementById('fc-grade').required = true;
+                    document.getElementById('fc-subject').required = true;
+                    document.getElementById('fc-chapter').required = true;
+                    document.getElementById('fc-topic').required = false;
+                } else {
+                    ncertGroup.style.display = 'none';
+                    customGroup.style.display = 'block';
+                    document.getElementById('fc-grade').required = false;
+                    document.getElementById('fc-subject').required = false;
+                    document.getElementById('fc-chapter').required = false;
+                    document.getElementById('fc-topic').required = true;
+                }
+            });
+        }
+
         setupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const topic = document.getElementById('fc-topic').value.trim();
-            const grade = document.getElementById('fc-grade').value;
+            const mode = document.getElementById('fc-mode').value;
+            let topic = '';
+            let grade = '';
+            
+            if (mode === 'ncert') {
+                topic = document.getElementById('fc-chapter').value;
+                grade = document.getElementById('fc-grade').value;
+            } else {
+                topic = document.getElementById('fc-topic').value.trim();
+                grade = 'Custom Study Notes';
+            }
+            
+            if (!topic) {
+                showToast('Please specify a chapter or paste study notes.', 'warning');
+                return;
+            }
             const count = parseInt(document.getElementById('fc-count').value);
 
             setupBox.style.display = 'none';
@@ -1742,6 +1847,48 @@ async function loadClassroomsAndParent() {
         initFlashcards();
         initPomodoro();
 
+        // Setup syllabus selectors for AI Study Plan
+        const studyGrade = document.getElementById('study-grade');
+        const studySubject = document.getElementById('study-subject');
+        if (studyGrade) {
+            studyGrade.addEventListener('change', () => {
+                loadSyllabusSubjects('study-grade', 'study-subject', 'study-chapters-checklist', true);
+            });
+        }
+        if (studySubject) {
+            studySubject.addEventListener('change', () => {
+                loadSyllabusChapters('study-grade', 'study-subject', 'study-chapters-checklist', true);
+            });
+        }
+
+        // Setup syllabus selectors for Practice Quizzes
+        const quizGrade = document.getElementById('quiz-grade');
+        const quizSubject = document.getElementById('quiz-subject');
+        if (quizGrade) {
+            quizGrade.addEventListener('change', () => {
+                loadSyllabusSubjects('quiz-grade', 'quiz-subject', 'quiz-chapter', false);
+            });
+        }
+        if (quizSubject) {
+            quizSubject.addEventListener('change', () => {
+                loadSyllabusChapters('quiz-grade', 'quiz-subject', 'quiz-chapter', false);
+            });
+        }
+
+        // Setup syllabus selectors for Flashcards
+        const fcGrade = document.getElementById('fc-grade');
+        const fcSubject = document.getElementById('fc-subject');
+        if (fcGrade) {
+            fcGrade.addEventListener('change', () => {
+                loadSyllabusSubjects('fc-grade', 'fc-subject', 'fc-chapter', false);
+            });
+        }
+        if (fcSubject) {
+            fcSubject.addEventListener('change', () => {
+                loadSyllabusChapters('fc-grade', 'fc-subject', 'fc-chapter', false);
+            });
+        }
+
         const asgSubmitForm = document.getElementById('submit-assignment-answers-form');
         if (asgSubmitForm) {
             asgSubmitForm.addEventListener('submit', handleStudentAssignmentSubmissionSubmit);
@@ -2021,6 +2168,188 @@ async function loadClassroomsAndParent() {
         }
     }
 
+    async function initProfilePanel() {
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        // Fill form fields
+        document.getElementById('profile-input-name').value = storedUser.name || '';
+        document.getElementById('profile-input-email').value = storedUser.email || '';
+        document.getElementById('profile-input-phone').value = storedUser.phone || '';
+        document.getElementById('profile-input-bio').value = storedUser.bio || '';
+        document.getElementById('profile-input-grade').value = storedUser.grade || '';
+        document.getElementById('profile-input-school').value = storedUser.school || '';
+
+        // Render profile picture
+        const placeholderEl = document.getElementById('profile-pic-placeholder');
+        const imgEl = document.getElementById('profile-pic-preview-img');
+        
+        if (storedUser.profile_pic) {
+            imgEl.src = storedUser.profile_pic.startsWith('http') ? storedUser.profile_pic : BACKEND_URL + storedUser.profile_pic;
+            imgEl.style.display = 'block';
+            placeholderEl.style.display = 'none';
+        } else {
+            placeholderEl.textContent = (storedUser.name || 'S').charAt(0).toUpperCase();
+            placeholderEl.style.display = 'flex';
+            imgEl.style.display = 'none';
+        }
+
+        // Setup photo upload event triggers (only once)
+        const clickTrigger = document.getElementById('profile-pic-click-trigger');
+        const fileInput = document.getElementById('profile-pic-file-input');
+        
+        if (clickTrigger && fileInput && !clickTrigger.dataset.listenerAdded) {
+            clickTrigger.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', async () => {
+                if (fileInput.files.length === 0) return;
+                const file = fileInput.files[0];
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    showToast('Uploading profile picture...', 'info');
+                    const res = await fetch(`${API_BASE}/auth/profile/avatar`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        showToast('🎉 Profile picture updated successfully!', 'success');
+                        storedUser.profile_pic = data.profile_pic;
+                        localStorage.setItem('user', JSON.stringify(storedUser));
+                        
+                        // Update preview
+                        imgEl.src = data.profile_pic.startsWith('http') ? data.profile_pic : BACKEND_URL + data.profile_pic;
+                        imgEl.style.display = 'block';
+                        placeholderEl.style.display = 'none';
+                        
+                        // Sync stats (sidebar avatar)
+                        await syncUserStats();
+                    } else {
+                        showToast(data.detail || 'Failed to upload image.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Error uploading avatar:', err);
+                    showToast('Error uploading profile picture.', 'error');
+                }
+            });
+            clickTrigger.dataset.listenerAdded = 'true';
+        }
+
+        // Setup profile details form submit (only once)
+        const updateForm = document.getElementById('profile-update-form');
+        if (updateForm && !updateForm.dataset.listenerAdded) {
+            updateForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const name = document.getElementById('profile-input-name').value.trim();
+                const phone = document.getElementById('profile-input-phone').value.trim();
+                const bio = document.getElementById('profile-input-bio').value.trim();
+                const grade = document.getElementById('profile-input-grade').value;
+                const school = document.getElementById('profile-input-school').value.trim();
+                
+                try {
+                    const res = await fetch(`${API_BASE}/auth/profile`, {
+                        method: 'PUT',
+                        headers: authHeaders(),
+                        body: JSON.stringify({ name, phone, bio, grade, school })
+                    });
+                    const updatedUser = await res.json();
+                    if (res.ok) {
+                        showToast('🎉 Profile details saved successfully!', 'success');
+                        localStorage.setItem('user', JSON.stringify(updatedUser));
+                        await syncUserStats();
+                    } else {
+                        showToast(updatedUser.detail || 'Failed to update profile.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Error updating profile:', err);
+                    showToast('Error saving profile details.', 'error');
+                }
+            });
+            updateForm.dataset.listenerAdded = 'true';
+        }
+
+        // Load connections
+        await loadConnections();
+    }
+
+    async function loadConnections() {
+        const parentsList = document.getElementById('profile-parents-list');
+        const teachersList = document.getElementById('profile-teachers-list');
+        
+        if (!parentsList || !teachersList) return;
+        
+        parentsList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;"><i class='bx bx-loader-alt bx-spin'></i> Loading connections...</p>`;
+        teachersList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;"><i class='bx bx-loader-alt bx-spin'></i> Loading connections...</p>`;
+        
+        try {
+            const res = await fetch(`${API_BASE}/auth/profile/connections`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            
+            // Render Parents
+            if (!data.parents || data.parents.length === 0) {
+                parentsList.innerHTML = `<div style="font-size: 0.88rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;">No parents linked. Share your email with your parent to link accounts.</div>`;
+            } else {
+                parentsList.innerHTML = data.parents.map(p => {
+                    const initial = p.name.charAt(0).toUpperCase();
+                    const avatarHtml = p.profile_pic 
+                        ? `<img src="${p.profile_pic.startsWith('http') ? p.profile_pic : BACKEND_URL + p.profile_pic}" alt="Avatar">`
+                        : initial;
+                    const relation = p.relationship || 'Parent';
+                    return `
+                        <div class="connection-card">
+                            <div class="connection-avatar">${avatarHtml}</div>
+                            <div class="connection-info">
+                                <span class="connection-name">${p.name}</span>
+                                <span class="connection-detail"><i class='bx bx-envelope'></i> ${p.email}</span>
+                                ${p.phone ? `<span class="connection-detail"><i class='bx bx-phone'></i> ${p.phone}</span>` : ''}
+                            </div>
+                            <span class="connection-badge parent">${relation}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Render Teachers
+            if (!data.teachers || data.teachers.length === 0) {
+                teachersList.innerHTML = `<div style="font-size: 0.88rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;">No classrooms joined yet. Join a classroom from Overview to link with teachers.</div>`;
+            } else {
+                teachersList.innerHTML = data.teachers.map(t => {
+                    const initial = t.name.charAt(0).toUpperCase();
+                    const avatarHtml = t.profile_pic 
+                        ? `<img src="${t.profile_pic.startsWith('http') ? t.profile_pic : BACKEND_URL + t.profile_pic}" alt="Avatar">`
+                        : initial;
+                    const subject = t.subject || 'Teacher';
+                    return `
+                        <div class="connection-card">
+                            <div class="connection-avatar">${avatarHtml}</div>
+                            <div class="connection-info">
+                                <span class="connection-name">${t.name}</span>
+                                <span class="connection-detail"><i class='bx bx-book-bookmark'></i> Classroom: ${t.classroom_name}</span>
+                                <span class="connection-detail"><i class='bx bx-envelope'></i> ${t.email}</span>
+                                ${t.phone ? `<span class="connection-detail"><i class='bx bx-phone'></i> ${t.phone}</span>` : ''}
+                            </div>
+                            <span class="connection-badge teacher">${subject}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch (err) {
+            console.error('Failed to load connections:', err);
+            parentsList.innerHTML = `<div style="font-size: 0.85rem; color: var(--parent); text-align: center; padding: 1rem 0;">Error loading parents list.</div>`;
+            teachersList.innerHTML = `<div style="font-size: 0.85rem; color: var(--parent); text-align: center; padding: 1rem 0;">Error loading teachers list.</div>`;
+        }
+    }
+
     window.switchStudentClassroomTab = switchStudentClassroomTab;
     window.loadStudentClassroomAnnouncements = loadStudentClassroomAnnouncements;
     window.likeStudentAnnouncement = likeStudentAnnouncement;
@@ -2030,4 +2359,5 @@ async function loadClassroomsAndParent() {
     window.markStudentNotificationRead = markStudentNotificationRead;
     window.clearStudentNotifications = clearStudentNotifications;
     window.deleteStudentNotificationItem = deleteStudentNotificationItem;
+    window.initProfilePanel = initProfilePanel;
 }

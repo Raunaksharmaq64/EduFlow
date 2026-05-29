@@ -24,9 +24,28 @@ class UserResponse(UserBase):
     badges: Optional[List[str]] = []
     parent_email: Optional[EmailStr] = None
     class_codes: Optional[List[str]] = []
+    phone: Optional[str] = None
+    bio: Optional[str] = None
+    profile_pic: Optional[str] = None
+    grade: Optional[str] = None
+    school: Optional[str] = None
+    qualification: Optional[str] = None
+    subject: Optional[str] = None
+    relationship: Optional[str] = None
+    linked_student_emails: Optional[List[str]] = []
 
     class Config:
         from_attributes = True
+
+class ProfileUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    bio: Optional[str] = None
+    grade: Optional[str] = None
+    school: Optional[str] = None
+    qualification: Optional[str] = None
+    subject: Optional[str] = None
+    relationship: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str

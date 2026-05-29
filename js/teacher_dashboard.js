@@ -116,8 +116,29 @@ if (!token || !user || user.role !== 'teacher') {
 /* ========================================
    PROFILE RENDERING
    ======================================== */
-document.getElementById('profile-name').textContent = user.name || 'Teacher';
-document.getElementById('profile-avatar').textContent = (user.name || 'T').charAt(0).toUpperCase();
+async function syncUserStats() {
+    try {
+        const res = await fetch(`${API_BASE}/auth/me`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error();
+        const updatedUser = await res.json();
+        
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        document.getElementById('profile-name').textContent = updatedUser.name || 'Teacher';
+        const avatarEl = document.getElementById('profile-avatar');
+        if (updatedUser.profile_pic) {
+            avatarEl.innerHTML = `<img src="${updatedUser.profile_pic.startsWith('http') ? updatedUser.profile_pic : BACKEND_URL + updatedUser.profile_pic}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            avatarEl.textContent = (updatedUser.name || 'T').charAt(0).toUpperCase();
+        }
+    } catch (err) {
+        console.error('Failed to sync user stats:', err);
+    }
+}
+syncUserStats();
 
 const now = new Date();
 document.getElementById('current-date-string').textContent = now.toLocaleDateString('en-IN', {
@@ -145,7 +166,8 @@ const panelTitles = {
     'students-panel': { title: 'Student Performance', sub: 'View detailed performance reports of each student.' },
     'assignments-panel': { title: 'Assignments Hub', sub: 'Create, distribute, and grade assignments (Manual, AI, or Links).' },
     'alerts-panel': { title: 'Smart Alerts', sub: 'AI-generated alerts about students who need attention.' },
-    'chat-panel': { title: 'Direct Messages', sub: 'Communicate with students and parents.' }
+    'chat-panel': { title: 'Direct Messages', sub: 'Communicate with students and parents.' },
+    'profile-panel': { title: 'My Profile', sub: 'Manage your settings, update professional details, and view linked connections.' }
 };
 
 function switchPanel(panelId) {
@@ -164,6 +186,9 @@ function switchPanel(panelId) {
     } else {
         stopChatPolling();
     }
+    if (panelId === 'profile-panel') {
+        initProfilePanel();
+    }
 }
 
 menuItems.forEach(item => {
@@ -180,6 +205,73 @@ function authHeaders() {
 }
 
 /* ========================================
+   DYNAMIC NCERT SYLLABUS LOADER HELPERS
+   ======================================== */
+async function loadSyllabusSubjects(gradeSelectId, subjectSelectId, targetId) {
+    const gradeSelect = document.getElementById(gradeSelectId);
+    const subjectSelect = document.getElementById(subjectSelectId);
+    const target = document.getElementById(targetId);
+    
+    if (!gradeSelect || !subjectSelect) return;
+    
+    const selectedGrade = gradeSelect.value;
+    if (!selectedGrade) {
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select class first</option>';
+        if (target) {
+            target.innerHTML = '<option value="" disabled selected>Select subject first</option>';
+        }
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_BASE}/syllabus/subjects?grade=${encodeURIComponent(selectedGrade)}`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const subjects = await res.json();
+        
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select subject</option>' + 
+            subjects.map(sub => `<option value="${sub}">${sub}</option>`).join('');
+            
+        if (target) {
+            target.innerHTML = '<option value="" disabled selected>Select subject first</option>';
+        }
+    } catch (err) {
+        console.error('Failed to load syllabus subjects:', err);
+        showToast('Error loading subjects.', 'error');
+    }
+}
+
+async function loadSyllabusChapters(gradeSelectId, subjectSelectId, targetId) {
+    const gradeSelect = document.getElementById(gradeSelectId);
+    const subjectSelect = document.getElementById(subjectSelectId);
+    const target = document.getElementById(targetId);
+    
+    if (!gradeSelect || !subjectSelect || !target) return;
+    
+    const selectedGrade = gradeSelect.value;
+    const selectedSubject = subjectSelect.value;
+    
+    if (!selectedGrade || !selectedSubject) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/syllabus/chapters?grade=${encodeURIComponent(selectedGrade)}&subject=${encodeURIComponent(selectedSubject)}`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const chapters = await res.json();
+        
+        target.innerHTML = '<option value="" disabled selected>Select chapter/topic</option>' + 
+            chapters.map(ch => `<option value="${ch.chapter_name}">Ch ${ch.chapter_number}. ${ch.chapter_name}</option>`).join('');
+    } catch (err) {
+        console.error('Failed to load syllabus chapters:', err);
+        showToast('Error loading chapters.', 'error');
+    }
+}
+
+/* ========================================
    TEACHER QUIZ GENERATOR
    ======================================== */
 let generatedQuiz = null;
@@ -187,7 +279,12 @@ let generatedQuiz = null;
 document.getElementById('teacher-quiz-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const topic = document.getElementById('tq-topic').value.trim();
+    const topicSelect = document.getElementById('tq-chapter');
+    const topic = topicSelect ? topicSelect.value : '';
+    if (!topic) {
+        showToast('Please select a quiz chapter.', 'warning');
+        return;
+    }
     const grade = document.getElementById('tq-grade').value;
     const difficulty = document.getElementById('tq-difficulty').value;
     const numQ = parseInt(document.getElementById('tq-count').value);
@@ -779,11 +876,14 @@ function switchAssignmentTab(type) {
 }
 
 async function generateAIAssignmentQuestions() {
-    const topic = document.getElementById('asg-ai-topic').value.trim();
-    if (!topic) {
-        showToast('Please enter a topic for AI question generation.', 'warning');
+    const topicSelect = document.getElementById('asg-ai-chapter');
+    const gradeSelect = document.getElementById('asg-ai-grade');
+    if (!topicSelect || !topicSelect.value) {
+        showToast('Please select a chapter for AI question generation.', 'warning');
         return;
     }
+    const topic = topicSelect.value;
+    const grade = gradeSelect.value || 'Medium level practice sheet';
     
     const preview = document.getElementById('asg-ai-preview');
     preview.style.display = 'block';
@@ -795,7 +895,7 @@ async function generateAIAssignmentQuestions() {
         const res = await fetch(`${API_BASE}/ai/generate-quiz`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', ...authHeaders() },
-            body: JSON.stringify({ topic, grade: 'Medium level practice sheet', num_questions: numQ, difficulty: 'medium' })
+            body: JSON.stringify({ topic, grade, num_questions: numQ, difficulty: 'medium' })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || 'Failed to generate questions');
@@ -987,6 +1087,34 @@ async function handleGradingSubmit(e) {
 window.addEventListener('DOMContentLoaded', async () => {
     await loadTeacherClassrooms();
     await loadTeacherNotifications();
+
+    // Setup quiz selectors
+    const tqGrade = document.getElementById('tq-grade');
+    const tqSubject = document.getElementById('tq-subject');
+    if (tqGrade) {
+        tqGrade.addEventListener('change', () => {
+            loadSyllabusSubjects('tq-grade', 'tq-subject', 'tq-chapter');
+        });
+    }
+    if (tqSubject) {
+        tqSubject.addEventListener('change', () => {
+            loadSyllabusChapters('tq-grade', 'tq-subject', 'tq-chapter');
+        });
+    }
+
+    // Setup assignment selectors
+    const asgAIGrade = document.getElementById('asg-ai-grade');
+    const asgAISubject = document.getElementById('asg-ai-subject');
+    if (asgAIGrade) {
+        asgAIGrade.addEventListener('change', () => {
+            loadSyllabusSubjects('asg-ai-grade', 'asg-ai-subject', 'asg-ai-chapter');
+        });
+    }
+    if (asgAISubject) {
+        asgAISubject.addEventListener('change', () => {
+            loadSyllabusChapters('asg-ai-grade', 'asg-ai-subject', 'asg-ai-chapter');
+        });
+    }
     
     const genBtn = document.getElementById('generate-lesson-plan-btn');
     if (genBtn) {
@@ -1596,3 +1724,193 @@ window.deleteTeacherAssignmentItem = deleteTeacherAssignmentItem;
 window.deleteTeacherClassroom = deleteTeacherClassroom;
 window.clearTeacherNotifications = clearTeacherNotifications;
 window.deleteTeacherNotificationItem = deleteTeacherNotificationItem;
+
+async function initProfilePanel() {
+    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    // Fill form fields
+    document.getElementById('profile-input-name').value = storedUser.name || '';
+    document.getElementById('profile-input-email').value = storedUser.email || '';
+    document.getElementById('profile-input-phone').value = storedUser.phone || '';
+    document.getElementById('profile-input-bio').value = storedUser.bio || '';
+    document.getElementById('profile-input-qualification').value = storedUser.qualification || '';
+    document.getElementById('profile-input-subject').value = storedUser.subject || '';
+
+    // Render profile picture
+    const placeholderEl = document.getElementById('profile-pic-placeholder');
+    const imgEl = document.getElementById('profile-pic-preview-img');
+    
+    if (storedUser.profile_pic) {
+        imgEl.src = storedUser.profile_pic.startsWith('http') ? storedUser.profile_pic : BACKEND_URL + storedUser.profile_pic;
+        imgEl.style.display = 'block';
+        placeholderEl.style.display = 'none';
+    } else {
+        placeholderEl.textContent = (storedUser.name || 'T').charAt(0).toUpperCase();
+        placeholderEl.style.display = 'flex';
+        imgEl.style.display = 'none';
+    }
+
+    // Setup photo upload event triggers (only once)
+    const clickTrigger = document.getElementById('profile-pic-click-trigger');
+    const fileInput = document.getElementById('profile-pic-file-input');
+    
+    if (clickTrigger && fileInput && !clickTrigger.dataset.listenerAdded) {
+        clickTrigger.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', async () => {
+            if (fileInput.files.length === 0) return;
+            const file = fileInput.files[0];
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                showToast('Uploading profile picture...', 'info');
+                const res = await fetch(`${API_BASE}/auth/profile/avatar`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('🎉 Profile picture updated successfully!', 'success');
+                    storedUser.profile_pic = data.profile_pic;
+                    localStorage.setItem('user', JSON.stringify(storedUser));
+                    
+                    // Update preview
+                    imgEl.src = data.profile_pic.startsWith('http') ? data.profile_pic : BACKEND_URL + data.profile_pic;
+                    imgEl.style.display = 'block';
+                    placeholderEl.style.display = 'none';
+                    
+                    // Sync stats (sidebar avatar)
+                    await syncUserStats();
+                } else {
+                    showToast(data.detail || 'Failed to upload image.', 'error');
+                }
+            } catch (err) {
+                console.error('Error uploading avatar:', err);
+                showToast('Error uploading profile picture.', 'error');
+            }
+        });
+        clickTrigger.dataset.listenerAdded = 'true';
+    }
+
+    // Setup profile details form submit (only once)
+    const updateForm = document.getElementById('profile-update-form');
+    if (updateForm && !updateForm.dataset.listenerAdded) {
+        updateForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('profile-input-name').value.trim();
+            const phone = document.getElementById('profile-input-phone').value.trim();
+            const bio = document.getElementById('profile-input-bio').value.trim();
+            const qualification = document.getElementById('profile-input-qualification').value.trim();
+            const subject = document.getElementById('profile-input-subject').value.trim();
+            
+            try {
+                const res = await fetch(`${API_BASE}/auth/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, phone, bio, qualification, subject })
+                });
+                const updatedUser = await res.json();
+                if (res.ok) {
+                    showToast('🎉 Profile details saved successfully!', 'success');
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                    await syncUserStats();
+                } else {
+                    showToast(updatedUser.detail || 'Failed to update profile.', 'error');
+                }
+            } catch (err) {
+                console.error('Error updating profile:', err);
+                showToast('Error saving profile details.', 'error');
+            }
+        });
+        updateForm.dataset.listenerAdded = 'true';
+    }
+
+    // Load connections
+    await loadConnections();
+}
+
+async function loadConnections() {
+    const studentsList = document.getElementById('profile-students-list');
+    const parentsList = document.getElementById('profile-parents-list');
+    
+    if (!studentsList || !parentsList) return;
+    
+    studentsList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;"><i class='bx bx-loader-alt bx-spin'></i> Loading connections...</p>`;
+    parentsList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;"><i class='bx bx-loader-alt bx-spin'></i> Loading connections...</p>`;
+    
+    try {
+        const res = await fetch(`${API_BASE}/auth/profile/connections`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        
+        // Render Students
+        if (!data.students || data.students.length === 0) {
+            studentsList.innerHTML = `<div style="font-size: 0.88rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;">No students joined your classrooms yet. Share classroom code to connect.</div>`;
+        } else {
+            studentsList.innerHTML = data.students.map(s => {
+                const initial = s.name.charAt(0).toUpperCase();
+                const avatarHtml = s.profile_pic 
+                    ? `<img src="${s.profile_pic.startsWith('http') ? s.profile_pic : BACKEND_URL + s.profile_pic}" alt="Avatar">`
+                    : initial;
+                const grade = s.grade || 'Student';
+                return `
+                    <div class="connection-card">
+                        <div class="connection-avatar">${avatarHtml}</div>
+                        <div class="connection-info">
+                            <span class="connection-name">${s.name}</span>
+                            <span class="connection-detail"><i class='bx bx-envelope'></i> ${s.email}</span>
+                            <span class="connection-detail"><i class='bx bx-home-alt'></i> Classroom: ${s.classroom_name}</span>
+                            ${s.phone ? `<span class="connection-detail"><i class='bx bx-phone'></i> ${s.phone}</span>` : ''}
+                        </div>
+                        <span class="connection-badge student">${grade}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Render Parents
+        if (!data.parents || data.parents.length === 0) {
+            parentsList.innerHTML = `<div style="font-size: 0.88rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;">No parents linked to your students yet.</div>`;
+        } else {
+            parentsList.innerHTML = data.parents.map(p => {
+                const initial = p.name.charAt(0).toUpperCase();
+                const avatarHtml = p.profile_pic 
+                    ? `<img src="${p.profile_pic.startsWith('http') ? p.profile_pic : BACKEND_URL + p.profile_pic}" alt="Avatar">`
+                    : initial;
+                const relation = p.relationship || 'Parent';
+                return `
+                    <div class="connection-card">
+                        <div class="connection-avatar">${avatarHtml}</div>
+                        <div class="connection-info">
+                            <span class="connection-name">${p.name}</span>
+                            <span class="connection-detail"><i class='bx bx-smile'></i> Child: ${p.student_name}</span>
+                            <span class="connection-detail"><i class='bx bx-envelope'></i> ${p.email}</span>
+                            ${p.phone ? `<span class="connection-detail"><i class='bx bx-phone'></i> ${p.phone}</span>` : ''}
+                        </div>
+                        <span class="connection-badge parent">${relation}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+    } catch (err) {
+        console.error('Failed to load connections:', err);
+        studentsList.innerHTML = `<div style="font-size: 0.85rem; color: var(--parent); text-align: center; padding: 1rem 0;">Error loading students list.</div>`;
+        parentsList.innerHTML = `<div style="font-size: 0.85rem; color: var(--parent); text-align: center; padding: 1rem 0;">Error loading parents list.</div>`;
+    }
+}
+
+window.initProfilePanel = initProfilePanel;

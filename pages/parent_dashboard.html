@@ -49,6 +49,10 @@
                     <i class='bx bx-message-square-dots'></i>
                     <span>Messages</span>
                 </div>
+                <div class="menu-item" data-panel="profile-panel">
+                    <i class='bx bx-user-circle'></i>
+                    <span>My Profile</span>
+                </div>
             </nav>
         </div>
         <div class="sidebar-footer">
@@ -296,8 +300,33 @@
 
                 <form id="tips-form">
                     <div class="form-group-db">
+                        <label for="tips-grade">Grade / Class Level</label>
+                        <select id="tips-grade" class="form-select-db" required>
+                            <option value="" disabled selected>Select class</option>
+                            <option value="6th Grade">Class 6</option>
+                            <option value="7th Grade">Class 7</option>
+                            <option value="8th Grade">Class 8</option>
+                            <option value="9th Grade">Class 9</option>
+                            <option value="10th Grade">Class 10</option>
+                            <option value="11th Grade">Class 11</option>
+                            <option value="12th Grade">Class 12</option>
+                        </select>
+                    </div>
+                    <div class="form-group-db">
+                        <label for="tips-subject">Subject</label>
+                        <select id="tips-subject" class="form-select-db" required>
+                            <option value="" disabled selected>Select class first</option>
+                        </select>
+                    </div>
+                    <div class="form-group-db">
+                        <label for="tips-chapter">Chapter / Topic</label>
+                        <select id="tips-chapter" class="form-select-db" required>
+                            <option value="" disabled selected>Select subject first</option>
+                        </select>
+                    </div>
+                    <div class="form-group-db">
                         <label for="parent-concern">Your Concern (Optional)</label>
-                        <textarea id="parent-concern" class="form-input-db" rows="3" placeholder="e.g., My child is struggling with Maths and losing motivation. How can I help at home?"></textarea>
+                        <textarea id="parent-concern" class="form-input-db" rows="3" placeholder="e.g., losing motivation, struggling at home, etc."></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
                         <i class='bx bx-magic-wand'></i> Get AI Parenting Tips
@@ -424,6 +453,75 @@
                                 <i class='bx bx-send' style="font-size: 1.25rem;"></i>
                             </button>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL: MY PROFILE -->
+        <section id="profile-panel" class="dashboard-panel">
+            <div class="profile-grid">
+                <!-- Profile Settings Card -->
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-user'></i> Profile Settings</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.88rem;">Update your personal details and upload a profile picture.</p>
+                    
+                    <div class="profile-avatar-container">
+                        <div class="profile-avatar-wrapper" id="profile-pic-click-trigger" style="background-color: var(--parent);">
+                            <div class="profile-avatar-placeholder" id="profile-pic-placeholder">P</div>
+                            <img src="" id="profile-pic-preview-img" class="profile-avatar-img" style="display: none;">
+                            <div class="profile-avatar-overlay">
+                                <i class='bx bx-camera'></i>
+                                <span>Change Photo</span>
+                            </div>
+                        </div>
+                        <span class="profile-avatar-hint">Click photo to upload (PNG, JPG)</span>
+                        <input type="file" id="profile-pic-file-input" accept="image/*" style="display: none;">
+                    </div>
+
+                    <form id="profile-update-form">
+                        <div class="form-group-db">
+                            <label for="profile-input-name">Full Name</label>
+                            <input type="text" id="profile-input-name" class="form-input-db" required>
+                        </div>
+                        <div class="form-group-db">
+                            <label for="profile-input-email">Email Address (Read-only)</label>
+                            <input type="email" id="profile-input-email" class="form-input-db" readonly style="background-color: rgba(0,0,0,0.03); color: var(--text-secondary); cursor: not-allowed;">
+                        </div>
+                        <div class="form-group-db">
+                            <label for="profile-input-phone">Phone Number</label>
+                            <input type="tel" id="profile-input-phone" class="form-input-db" placeholder="e.g. +91 98765 43210">
+                        </div>
+                        <div class="form-group-db">
+                            <label for="profile-input-bio">Bio / About Me</label>
+                            <textarea id="profile-input-bio" class="form-input-db" rows="3" placeholder="Tell us about yourself..." style="resize: vertical; font-family: inherit;"></textarea>
+                        </div>
+                        <div class="form-group-db">
+                            <label for="profile-input-relationship">Relationship to Child</label>
+                            <select id="profile-input-relationship" class="form-select-db">
+                                <option value="" disabled selected>Select Relationship</option>
+                                <option value="Father">Father</option>
+                                <option value="Mother">Mother</option>
+                                <option value="Guardian">Guardian / Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; background-color: var(--parent); border-color: var(--parent);">Save Profile Details</button>
+                    </form>
+                </div>
+
+                <!-- Linked Accounts (Connections) Card -->
+                <div class="card">
+                    <h3 class="card-title"><i class='bx bx-group'></i> Linked Connections</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.88rem;">Children and their teachers connected to your profile.</p>
+                    
+                    <h4 class="connections-section-title"><i class='bx bx-smile'></i> Linked Children</h4>
+                    <div class="connections-list" id="profile-students-list">
+                        <div style="font-size: 0.88rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;">No children linked. Link a child from the Overview to connect.</div>
+                    </div>
+
+                    <h4 class="connections-section-title"><i class='bx bx-id-card'></i> Child's Teachers</h4>
+                    <div class="connections-list" id="profile-teachers-list">
+                        <div style="font-size: 0.88rem; color: var(--text-secondary); text-align: center; padding: 1rem 0;">No classroom teachers found. Connects automatically when your child joins a class.</div>
                     </div>
                 </div>
             </div>

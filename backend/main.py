@@ -1,12 +1,15 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 from config.db import connect_to_mongo, close_mongo_connection
 from routes.auth import router as auth_router
 from routes.ai import router as ai_router
 from routes.communication import router as communication_router
 from routes.assignments import router as assignments_router
 from routes.classrooms import router as classrooms_router
+from routes.syllabus import router as syllabus_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -41,12 +44,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Ensure upload directory exists and mount static route
+os.makedirs("static/avatars", exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 # Register routes
 app.include_router(auth_router)
 app.include_router(ai_router)
 app.include_router(communication_router)
 app.include_router(assignments_router)
 app.include_router(classrooms_router)
+app.include_router(syllabus_router)
 
 
 @app.get("/")
