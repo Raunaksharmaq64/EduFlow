@@ -32,7 +32,21 @@ body.dashboard-body {
     padding: 2rem 1.5rem;
     z-index: 100;
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
+
+.sidebar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+.sidebar-top {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
 
 .sidebar-brand {
     display: flex;
@@ -87,6 +101,7 @@ body.dashboard-body {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    flex-shrink: 0;
 }
 
 .user-profile {
@@ -747,6 +762,11 @@ body.dashboard-body {
         align-items: center;
     }
 
+    .pomodoro-widget {
+        display: none !important;
+    }
+
+
     .sidebar-brand span, .menu-item span, .user-info, .btn-logout span {
         display: none;
     }
@@ -1115,6 +1135,7 @@ body.dashboard-body {
     padding: 0.75rem 1rem;
     margin: 1.5rem 0;
     transition: var(--transition);
+    flex-shrink: 0;
 }
 
 .pomodoro-widget .widget-header {
@@ -1942,6 +1963,10 @@ body.dashboard-body {
         transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
         z-index: 999 !important;
         box-shadow: 6px 0 25px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .sidebar .pomodoro-widget {
+        display: block !important;
     }
     
     .sidebar.active {

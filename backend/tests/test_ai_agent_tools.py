@@ -158,7 +158,8 @@ async def run_ai_agent_tests():
         syllabus_doc = {
             "grade": "10th Grade",
             "subject": "Science",
-            "chapters": [{"chapter_name": "Chemical Reactions"}]
+            "chapters": [{"chapter_name": "Chemical Reactions"}],
+            "is_test": True
         }
         
         quizzes = [
@@ -205,14 +206,14 @@ async def run_ai_agent_tests():
         )
         assert len(history_page1) == 1, "Pagination limit enforcement failed!"
         print("[PASS] Test 5b: History timeline pagination limits verified successfully.")
-
+ 
         # Cleanup new test data
         await db["users"].delete_many({"_id": t_id})
         await db["classrooms"].delete_many({"class_code": "SCOPE1"})
-        await db["syllabus"].delete_many({"subject": "Science"})
+        await db["syllabus"].delete_many({"is_test": True})
         await db["quiz_history"].delete_many({"student_email": student_email})
         print("[CLEANUP] Deleted scoping test data.")
-
+ 
         # Cleanup student
         await db["users"].delete_many({"email": s_email})
         print("[CLEANUP] Deleted test student.")
@@ -227,7 +228,7 @@ async def run_ai_agent_tests():
         # Scope cleanup
         await db["users"].delete_many({"email": "teacher_scope@example.com"})
         await db["classrooms"].delete_many({"class_code": "SCOPE1"})
-        await db["syllabus"].delete_many({"subject": "Science"})
+        await db["syllabus"].delete_many({"is_test": True})
         await db["quiz_history"].delete_many({"student_email": "student_scope@example.com"})
         sys.exit(1)
     except Exception as e:
@@ -236,7 +237,7 @@ async def run_ai_agent_tests():
         # Scope cleanup
         await db["users"].delete_many({"email": "teacher_scope@example.com"})
         await db["classrooms"].delete_many({"class_code": "SCOPE1"})
-        await db["syllabus"].delete_many({"subject": "Science"})
+        await db["syllabus"].delete_many({"is_test": True})
         await db["quiz_history"].delete_many({"student_email": "student_scope@example.com"})
         sys.exit(1)
     finally:
