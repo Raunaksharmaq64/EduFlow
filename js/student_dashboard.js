@@ -1954,6 +1954,7 @@ async function loadClassroomsAndParent() {
             }
         }
     }
+}
 
     const joinClassForm = document.getElementById('join-classroom-form');
     if (joinClassForm) {
@@ -2929,4 +2930,3 @@ async function loadClassroomsAndParent() {
     window.clearStudentNotifications = clearStudentNotifications;
     window.deleteStudentNotificationItem = deleteStudentNotificationItem;
     window.initProfilePanel = initProfilePanel;
-}
