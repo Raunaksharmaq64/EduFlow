@@ -1285,6 +1285,45 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (chatForm) {
         chatForm.addEventListener('submit', sendChatMessage);
     }
+
+    // Setup mobile sidebar toggler and overlay
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    const sidebar = document.querySelector('.sidebar');
+    if (toggleBtn && sidebar) {
+        let overlay = document.querySelector('.sidebar-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            document.body.appendChild(overlay);
+        }
+        toggleBtn.onclick = (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        };
+        overlay.onclick = () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        };
+        const menuItems = sidebar.querySelectorAll('.menu-item, .btn-logout');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        });
+    }
+
+    // Setup back button for mobile chat
+    const chatBackBtn = document.getElementById('chat-mobile-back');
+    if (chatBackBtn) {
+        chatBackBtn.addEventListener('click', () => {
+            const chatContainer = document.querySelector('.chat-container');
+            if (chatContainer) {
+                chatContainer.classList.remove('active-chat-open');
+            }
+        });
+    }
 });
 
 /* ========================================
@@ -1351,6 +1390,11 @@ async function selectChatContact(contactId, contactName, contactRole) {
     document.getElementById('chat-empty-state').style.display = 'none';
     const feed = document.getElementById('chat-active-feed');
     feed.style.display = 'flex';
+    
+    const chatContainer = document.querySelector('.chat-container');
+    if (chatContainer) {
+        chatContainer.classList.add('active-chat-open');
+    }
     
     document.getElementById('active-chat-name').textContent = contactName;
     document.getElementById('active-chat-role').textContent = contactRole;

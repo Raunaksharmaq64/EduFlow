@@ -77,9 +77,14 @@
     <main class="main-content">
 
         <header class="dashboard-header">
-            <div class="header-title">
-                <h1 id="panel-title">Parent Dashboard</h1>
-                <p id="panel-subtitle">Monitor your child's academic journey in real time.</p>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" style="display: none;">
+                    <i class='bx bx-menu'></i>
+                </button>
+                <div class="header-title">
+                    <h1 id="panel-title">Parent Dashboard</h1>
+                    <p id="panel-subtitle">Monitor your child's academic journey in real time.</p>
+                </div>
             </div>
             <div class="header-date">
                 <span id="current-date-string" style="font-weight: 500; color: var(--text-secondary);"></span>
@@ -495,7 +500,10 @@
 
                     <!-- Active Chat Feed (Hidden by default) -->
                     <div id="chat-active-feed" style="display: none; height: 100%; flex-direction: column;">
-                        <div class="chat-active-header">
+                        <div class="chat-active-header" style="display: flex; align-items: center; gap: 10px;">
+                            <button class="chat-mobile-back" id="chat-mobile-back">
+                                <i class='bx bx-arrow-back'></i>
+                            </button>
                             <div class="chat-contact-avatar" id="active-chat-avatar">T</div>
                             <div class="chat-contact-info">
                                 <span class="chat-active-title" id="active-chat-name">Teacher Name</span>

@@ -131,9 +131,14 @@
         
         <!-- Header Banner -->
         <header class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-            <div class="header-title">
-                <h1 id="panel-title">Welcome Back!</h1>
-                <p id="panel-subtitle">Here is your learning summary for today.</p>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" style="display: none;">
+                    <i class='bx bx-menu'></i>
+                </button>
+                <div class="header-title">
+                    <h1 id="panel-title">Welcome Back!</h1>
+                    <p id="panel-subtitle">Here is your learning summary for today.</p>
+                </div>
             </div>
             
             <!-- User XP and Level Gamified progress indicators -->
@@ -925,7 +930,10 @@
 
                     <!-- Active Chat Feed (Hidden by default) -->
                     <div id="chat-active-feed" style="display: none; height: 100%; flex-direction: column;">
-                        <div class="chat-active-header">
+                        <div class="chat-active-header" style="display: flex; align-items: center; gap: 10px;">
+                            <button class="chat-mobile-back" id="chat-mobile-back">
+                                <i class='bx bx-arrow-back'></i>
+                            </button>
                             <div class="chat-contact-avatar" id="active-chat-avatar">T</div>
                             <div class="chat-contact-info">
                                 <span class="chat-active-title" id="active-chat-name">Teacher Name</span>
