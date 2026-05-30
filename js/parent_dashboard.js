@@ -105,10 +105,12 @@ function showToast(message, type = 'info') {
 /* ========================================
    AUTH GUARD
    ======================================== */
+let isAuthorized = true;
 const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user') || 'null');
 
 if (!token || !user || user.role !== 'parent') {
+    isAuthorized = false;
     alert('Please login as a Parent to access this dashboard.');
     window.location.href = 'login.html';
 }
@@ -1250,6 +1252,7 @@ window.loadChildClassroomsForAssignments = loadChildClassroomsForAssignments;
 
 // Load everything on DOM load & hook listeners
 window.addEventListener('DOMContentLoaded', async () => {
+    if (!isAuthorized) return;
     await loadLinkedChildren();
     await loadParentNotifications();
 

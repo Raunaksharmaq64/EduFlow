@@ -105,10 +105,12 @@ function showToast(message, type = 'info') {
 /* ========================================
    AUTH GUARD
    ======================================== */
+let isAuthorized = true;
 const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user') || 'null');
 
 if (!token || !user || user.role !== 'teacher') {
+    isAuthorized = false;
     alert('Please login as a Teacher to access this dashboard.');
     window.location.href = 'login.html';
 }
@@ -1594,6 +1596,7 @@ async function handleGradingSubmit(e) {
 
 // Fetch classrooms on DOM load & set up click listeners
 window.addEventListener('DOMContentLoaded', async () => {
+    if (!isAuthorized) return;
     await loadTeacherClassrooms();
     await loadTeacherNotifications();
 

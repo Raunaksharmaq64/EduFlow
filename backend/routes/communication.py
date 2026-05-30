@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from bson import ObjectId
 from controllers.auth_controller import get_current_user
 from config.db import get_database
@@ -153,6 +153,15 @@ async def get_messages(contact_id: str, current_user: dict = Depends(get_current
             detail="Database connection not initialized"
         )
         
+    # Verify contact is in the authorized contacts list
+    allowed_contacts = await get_contacts(current_user=current_user)
+    allowed_ids = {c["id"] for c in allowed_contacts}
+    if contact_id not in allowed_ids:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to access messages with this contact."
+        )
+        
     my_id = current_user["id"]
     
     # Query messages matching both directions
@@ -212,8 +221,17 @@ async def send_message(request: SendMessageRequest, current_user: dict = Depends
             detail="Recipient user not found."
         )
         
+    # Verify recipient is in the authorized contacts list
+    allowed_contacts = await get_contacts(current_user=current_user)
+    allowed_ids = {c["id"] for c in allowed_contacts}
+    if recipient_id not in allowed_ids:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to send messages to this recipient."
+        )
+        
     # Create the message document
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     message_doc = {
         "sender_id": current_user["id"],
         "sender_name": current_user["name"],

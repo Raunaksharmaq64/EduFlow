@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Depends, status, UploadFile, File
 import shutil
 import os
@@ -47,7 +47,7 @@ async def signup(user_data: UserCreate):
         "email": email_lower,
         "role": user_data.role,
         "password": hashed_pwd,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "xp": 0,
         "level": 1,
         "badges": []
@@ -114,11 +114,30 @@ async def add_xp(
             detail="Database connection not initialized"
         )
         
+    # Validate client-driven XP amounts based on action_type to prevent exploits
+    if action_type == "doubt":
+        validated_amount = 50
+    elif action_type == "plan":
+        validated_amount = 30
+    elif action_type == "quiz":
+        # Query latest quiz history to check the score and calculate XP
+        latest_quiz = await db["quiz_history"].find_one(
+            {"user_id": current_user["id"]},
+            sort=[("created_at", -1)]
+        )
+        if latest_quiz:
+            score = latest_quiz.get("score", 0)
+            validated_amount = min(score * 20, 200)
+        else:
+            validated_amount = 0
+    else:
+        validated_amount = 0
+
     current_xp = current_user.get("xp", 0)
     current_level = current_user.get("level", 1)
     current_badges = current_user.get("badges", [])
     
-    new_xp = current_xp + amount
+    new_xp = current_xp + validated_amount
     
     # Simple level up logic: every 500 XP is a level
     new_level = (new_xp // 500) + 1
@@ -300,7 +319,7 @@ async def create_classroom(
         "teacher_id": current_user["id"],
         "teacher_name": current_user["name"],
         "students": [],
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     }
     
     await db["classrooms"].insert_one(classroom_doc)
@@ -714,12 +733,16 @@ async def get_connections(
         class_codes = current_user.get("class_codes", []) or []
         classrooms_cursor = db["classrooms"].find({"class_code": {"$in": class_codes}})
         teacher_ids = []
-        classroom_map = {}
+        classroom_map = {}  # maps t_id -> list of classroom names to avoid overwrites
         async for cl in classrooms_cursor:
             t_id = cl.get("teacher_id")
             if t_id:
-                teacher_ids.append(t_id)
-                classroom_map[t_id] = cl.get("class_name")
+                if t_id not in classroom_map:
+                    classroom_map[t_id] = []
+                    teacher_ids.append(t_id)
+                cl_name = cl.get("class_name")
+                if cl_name not in classroom_map[t_id]:
+                    classroom_map[t_id].append(cl_name)
                 
         teachers = []
         if teacher_ids:
@@ -736,13 +759,14 @@ async def get_connections(
             })
             async for t in teachers_cursor:
                 t_id_str = str(t["_id"])
+                classrooms_list = classroom_map.get(t_id_str) or ["Classroom"]
                 teachers.append({
                     "name": t["name"],
                     "email": t["email"],
                     "phone": t.get("phone"),
                     "profile_pic": t.get("profile_pic"),
                     "subject": t.get("subject"),
-                    "classroom_name": classroom_map.get(t_id_str) or "Classroom"
+                    "classroom_name": ", ".join(classrooms_list)
                 })
                 
         return {"parents": parents, "teachers": teachers}
@@ -756,7 +780,7 @@ async def get_connections(
         })
         students = []
         child_class_codes = []
-        student_names_map = {}
+        student_names_map = {}  # maps class_code -> list of student names (supports multi-child)
         async for s in students_cursor:
             students.append({
                 "name": s["name"],
@@ -769,23 +793,32 @@ async def get_connections(
             codes = s.get("class_codes", []) or []
             child_class_codes.extend(codes)
             for code in codes:
-                student_names_map[code] = s["name"]
+                if code not in student_names_map:
+                    student_names_map[code] = []
+                if s["name"] not in student_names_map[code]:
+                    student_names_map[code].append(s["name"])
                 
         # 2. Teachers of those students
         teachers = []
         if child_class_codes:
             classrooms_cursor = db["classrooms"].find({"class_code": {"$in": child_class_codes}})
             teacher_ids = []
-            classroom_map = {}
+            classroom_map = {}  # maps t_id -> {"class_names": list, "student_names": list}
             async for cl in classrooms_cursor:
                 t_id = cl.get("teacher_id")
                 if t_id:
-                    teacher_ids.append(t_id)
+                    if t_id not in classroom_map:
+                        classroom_map[t_id] = {"class_names": [], "student_names": []}
+                        teacher_ids.append(t_id)
+                    
+                    cl_name = cl.get("class_name")
+                    if cl_name not in classroom_map[t_id]["class_names"]:
+                        classroom_map[t_id]["class_names"].append(cl_name)
+                    
                     code = cl.get("class_code")
-                    classroom_map[t_id] = {
-                        "class_name": cl.get("class_name"),
-                        "student_name": student_names_map.get(code) or "Child"
-                    }
+                    for name in (student_names_map.get(code) or []):
+                        if name not in classroom_map[t_id]["student_names"]:
+                            classroom_map[t_id]["student_names"].append(name)
                     
             if teacher_ids:
                 obj_ids = []
@@ -801,15 +834,15 @@ async def get_connections(
                 })
                 async for t in teachers_cursor:
                     t_id_str = str(t["_id"])
-                    cl_info = classroom_map.get(t_id_str) or {}
+                    cl_info = classroom_map.get(t_id_str) or {"class_names": [], "student_names": []}
                     teachers.append({
                         "name": t["name"],
                         "email": t["email"],
                         "phone": t.get("phone"),
                         "profile_pic": t.get("profile_pic"),
                         "subject": t.get("subject"),
-                        "classroom_name": cl_info.get("class_name", "Classroom"),
-                        "student_name": cl_info.get("student_name", "Child")
+                        "classroom_name": ", ".join(cl_info["class_names"]) if cl_info["class_names"] else "Classroom",
+                        "student_name": ", ".join(cl_info["student_names"]) if cl_info["student_names"] else "Child"
                     })
                     
         return {"students": students, "teachers": teachers}
@@ -818,14 +851,17 @@ async def get_connections(
         # 1. Students in this teacher's classrooms
         classrooms_cursor = db["classrooms"].find({"teacher_id": current_user["id"]})
         student_emails = []
-        classroom_names_map = {}
+        classroom_names_map = {}  # maps student_email -> list of classroom names (avoids overwriting if student is in multiple classes)
         async for cl in classrooms_cursor:
             cl_name = cl.get("class_name")
             for s in cl.get("students", []):
                 email = s.get("student_email")
                 if email:
-                    student_emails.append(email)
-                    classroom_names_map[email] = cl_name
+                    if email not in classroom_names_map:
+                        classroom_names_map[email] = []
+                        student_emails.append(email)
+                    if cl_name not in classroom_names_map[email]:
+                        classroom_names_map[email].append(cl_name)
                     
         students = []
         parents = []
@@ -835,13 +871,14 @@ async def get_connections(
                 "email": {"$in": student_emails}
             })
             async for s in students_cursor:
+                cl_list = classroom_names_map.get(s["email"]) or ["Classroom"]
                 students.append({
                     "name": s["name"],
                     "email": s["email"],
                     "phone": s.get("phone"),
                     "profile_pic": s.get("profile_pic"),
                     "grade": s.get("grade"),
-                    "classroom_name": classroom_names_map.get(s["email"]) or "Classroom"
+                    "classroom_name": ", ".join(cl_list)
                 })
                 
             # 2. Parents of those students

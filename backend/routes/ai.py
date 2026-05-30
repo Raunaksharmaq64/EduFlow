@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 from models.ai import (
     StudyPlanRequest, QuizRequest, QuizResponse,
     FlashcardRequest, FlashcardResponse,
@@ -295,7 +295,7 @@ async def save_quiz_score(
         "difficulty": request.difficulty,
         "score": request.score,
         "total_questions": request.total_questions,
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     }
     
     result = await db["quiz_history"].insert_one(score_doc)

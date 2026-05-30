@@ -112,10 +112,12 @@ function showToast(message, type = 'info') {
 /* ========================================
    AUTH GUARD — Redirect if not logged in
    ======================================== */
+let isAuthorized = true;
 const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user') || 'null');
 
 if (!token || !user || user.role !== 'student') {
+    isAuthorized = false;
     showToast('Please login as a Student to access this dashboard.', 'error');
     setTimeout(() => {
         window.location.href = 'login.html';
@@ -2358,6 +2360,7 @@ async function loadClassroomsAndParent() {
        INITIALIZE ON PAGE LOAD
        ======================================== */
     window.addEventListener('DOMContentLoaded', async () => {
+        if (!isAuthorized) return;
         await syncUserStats();
         await loadKanbanPlans();
         await loadDoubtHistory();

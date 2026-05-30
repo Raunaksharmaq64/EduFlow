@@ -2,7 +2,7 @@ import os
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # Load environment variables
 load_dotenv()
@@ -30,7 +30,7 @@ async def connect_to_mongo():
         print("MongoDB: Notification TTL index verified.")
         
         # 2. Delete read notifications older than 7 days
-        seven_days_ago = datetime.utcnow() - timedelta(days=7)
+        seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
         delete_result = await db["notifications"].delete_many({
             "read": True,
             "created_at": {"$lt": seven_days_ago}

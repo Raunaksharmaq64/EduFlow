@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
@@ -64,7 +64,7 @@ async def create_assignment(
         "gdrive_link": request.gdrive_link,
         "ai_questions": [q.dict() for q in request.ai_questions] if request.ai_questions else [],
         "teacher_id": current_user["id"],
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     }
     
     result = await db["assignments"].insert_one(new_assignment)
@@ -316,7 +316,7 @@ async def submit_assignment(
         "status": "submitted",
         "submission_text": request.submission_text,
         "answers": request.answers or [],
-        "submitted_at": datetime.utcnow(),
+        "submitted_at": datetime.now(timezone.utc),
         "grade": None,
         "teacher_remarks": None
     }
@@ -327,23 +327,29 @@ async def submit_assignment(
         upsert=True
     )
     
-    # Award 50 XP to student
-    current_xp = current_user.get("xp", 0)
-    new_xp = current_xp + 50
-    new_level = (new_xp // 500) + 1
-    
-    await db["users"].update_one(
-        {"_id": current_user["_id"]},
-        {"$set": {
-            "xp": new_xp,
-            "level": new_level
-        }}
-    )
+    # Award 50 XP only if this is the first submission
+    if not existing:
+        current_xp = current_user.get("xp", 0)
+        new_xp = current_xp + 50
+        new_level = (new_xp // 500) + 1
+        
+        await db["users"].update_one(
+            {"_id": current_user["_id"]},
+            {"$set": {
+                "xp": new_xp,
+                "level": new_level
+            }}
+        )
+        xp_earned = 50
+    else:
+        new_xp = current_user.get("xp", 0)
+        new_level = current_user.get("level", 1)
+        xp_earned = 0
     
     return {
         "status": "success",
-        "message": "Assignment submitted successfully! +50 XP Awarded.",
-        "xp_earned": 50,
+        "message": "Assignment submitted successfully!" if existing else "Assignment submitted successfully! +50 XP Awarded.",
+        "xp_earned": xp_earned,
         "new_xp": new_xp,
         "new_level": new_level
     }
@@ -469,7 +475,7 @@ async def grade_submission(
         "status": "graded",
         "grade": request.grade,
         "teacher_remarks": request.teacher_remarks,
-        "graded_at": datetime.utcnow()
+        "graded_at": datetime.now(timezone.utc)
     }
     
     await db["submissions"].update_one(

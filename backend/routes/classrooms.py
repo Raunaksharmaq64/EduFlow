@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
@@ -8,6 +8,19 @@ from models.classroom import AnnouncementCreate, CommentCreate
 
 router = APIRouter(prefix="/api/classrooms", tags=["Classrooms"])
 
+def is_user_in_classroom(classroom: dict, user: dict) -> bool:
+    role = user.get("role")
+    if role == "teacher":
+        return classroom.get("teacher_id") == user.get("id")
+    elif role == "student":
+        student_emails = [s["student_email"].lower() for s in classroom.get("students", [])]
+        return user.get("email", "").lower() in student_emails
+    elif role == "parent":
+        child_emails = [email.lower() for email in user.get("linked_student_emails", [])]
+        student_emails = [s["student_email"].lower() for s in classroom.get("students", [])]
+        return any(c_email in student_emails for c_email in child_emails)
+    return False
+
 # Helper function to create notification
 async def create_notification(db, user_id: str, recipient_role: str, title: str, content: str, notif_type: str, metadata: dict = None):
     notification_doc = {
@@ -16,7 +29,7 @@ async def create_notification(db, user_id: str, recipient_role: str, title: str,
         "title": title,
         "content": content,
         "type": notif_type,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "read": False,
         "metadata": metadata or {}
     }
@@ -62,7 +75,7 @@ async def create_announcement(
         "author_id": current_user["id"],
         "author_name": current_user["name"],
         "content": request.content,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "likes": [],
         "comments": []
     }
@@ -145,23 +158,7 @@ async def get_announcements(
             detail="Classroom not found."
         )
         
-    role = current_user.get("role")
-    authorized = False
-    
-    if role == "teacher":
-        if classroom["teacher_id"] == current_user["id"]:
-            authorized = True
-    elif role == "student":
-        student_emails = [s["student_email"].lower() for s in classroom.get("students", [])]
-        if current_user["email"].lower() in student_emails:
-            authorized = True
-    elif role == "parent":
-        child_emails = [email.lower() for email in current_user.get("linked_student_emails", [])]
-        student_emails = [s["student_email"].lower() for s in classroom.get("students", [])]
-        if any(c_email in student_emails for c_email in child_emails):
-            authorized = True
-            
-    if not authorized:
+    if not is_user_in_classroom(classroom, current_user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not authorized to view announcements for this classroom."
@@ -211,6 +208,20 @@ async def like_announcement(
             detail="Database connection not initialized"
         )
         
+    class_code_upper = class_code.upper()
+    classroom = await db["classrooms"].find_one({"class_code": class_code_upper})
+    if not classroom:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Classroom not found."
+        )
+        
+    if not is_user_in_classroom(classroom, current_user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized for this classroom."
+        )
+
     try:
         announcement_oid = ObjectId(announcement_id)
     except Exception:
@@ -219,7 +230,7 @@ async def like_announcement(
             detail="Invalid announcement ID."
         )
         
-    announcement = await db["announcements"].find_one({"_id": announcement_oid})
+    announcement = await db["announcements"].find_one({"_id": announcement_oid, "class_code": class_code_upper})
     if not announcement:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -265,6 +276,20 @@ async def comment_announcement(
             detail="Database connection not initialized"
         )
         
+    class_code_upper = class_code.upper()
+    classroom = await db["classrooms"].find_one({"class_code": class_code_upper})
+    if not classroom:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Classroom not found."
+        )
+        
+    if not is_user_in_classroom(classroom, current_user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized for this classroom."
+        )
+
     try:
         announcement_oid = ObjectId(announcement_id)
     except Exception:
@@ -273,7 +298,7 @@ async def comment_announcement(
             detail="Invalid announcement ID."
         )
         
-    announcement = await db["announcements"].find_one({"_id": announcement_oid})
+    announcement = await db["announcements"].find_one({"_id": announcement_oid, "class_code": class_code_upper})
     if not announcement:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -287,7 +312,7 @@ async def comment_announcement(
         "user_name": current_user["name"],
         "user_role": current_user["role"],
         "content": request.content,
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     }
     
     await db["announcements"].update_one(
@@ -322,6 +347,12 @@ async def get_classroom_leaderboard(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Classroom not found."
+        )
+        
+    if not is_user_in_classroom(classroom, current_user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized for this classroom."
         )
         
     # Get student emails from classroom
