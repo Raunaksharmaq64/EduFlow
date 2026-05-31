@@ -378,3 +378,245 @@ async def generate_parent_revision_guide_ai(topic: str, grade: str, weak_topics:
         )
 
 
+async def generate_pyq_exam_ai(
+    grade: str,
+    subject: str,
+    pattern_type: str,
+    num_mcq: int = 0,
+    num_short: int = 0,
+    num_long: int = 0,
+    pattern_text: str = None,
+    image_bytes: bytes = None
+) -> dict:
+    if not is_api_key_configured():
+        raise HTTPException(
+            status_code=status.HTTP_533_SERVICE_UNAVAILABLE,
+            detail="Gemini API Key not configured. Please add GEMINI_API_KEY in your backend/.env file."
+        )
+    
+    contents = []
+    
+    if pattern_type == "upload" and image_bytes:
+        try:
+            image = Image.open(io.BytesIO(image_bytes))
+            contents.append(image)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid image file uploaded: {str(e)}"
+            )
+
+    # Enforce a minimum balanced total of exactly 30 questions
+    total_q = num_mcq + num_short + num_long
+    if total_q < 30:
+        if total_q == 0:
+            num_mcq = 15
+            num_short = 10
+            num_long = 5
+        else:
+            # Scale proportionally to reach exactly 30 questions
+            factor = 30.0 / total_q
+            num_mcq = max(0, int(round(num_mcq * factor)))
+            num_short = max(0, int(round(num_short * factor)))
+            num_long = max(0, int(round(num_long * factor)))
+            
+            # Adjust rounding differences
+            new_total = num_mcq + num_short + num_long
+            if new_total < 30:
+                diff = 30 - new_total
+                num_mcq += diff
+            elif new_total > 30:
+                diff = new_total - 30
+                if num_mcq >= diff:
+                    num_mcq -= diff
+                elif num_short >= diff:
+                    num_short -= diff
+                else:
+                    num_long -= diff
+
+    pattern_instruction = ""
+    if pattern_type == "cbse_curriculum":
+        if subject.lower() == "science":
+            pattern_instruction = (
+                "You must construct a complete, authentic 80-mark Class 10 Science question paper conforming to the latest official CBSE curriculum pattern. "
+                "The paper MUST contain exactly 39 questions divided into 5 sections as follows:\n"
+                "- Section A: 20 Multiple Choice Questions (MCQs) carrying 1 mark each (ids: sci_gen_q1 to sci_gen_q20).\n"
+                "- Section B: 6 Very Short Answer (VSA) questions carrying 2 marks each (ids: sci_gen_q21 to sci_gen_q26).\n"
+                "- Section C: 7 Short Answer (SA) questions carrying 3 marks each (ids: sci_gen_q27 to sci_gen_q33).\n"
+                "- Section D: 3 Long Answer (LA) questions carrying 5 marks each (ids: sci_gen_q34 to sci_gen_q36).\n"
+                "- Section E: 3 Case-Based questions carrying 4 marks each (ids: sci_gen_q37 to sci_gen_q39).\n"
+                "Provide correct options for Section A and detailed model answers for Sections B, C, D, and E."
+            )
+        else: # Mathematics
+            pattern_instruction = (
+                "You must construct a complete, authentic 80-mark Class 10 Mathematics question paper conforming to the latest official CBSE curriculum pattern. "
+                "The paper MUST contain exactly 38 questions divided into 5 sections as follows:\n"
+                "- Section A: 20 Multiple Choice Questions (MCQs) carrying 1 mark each (ids: mat_gen_q1 to mat_gen_q20).\n"
+                "- Section B: 5 Very Short Answer (VSA) questions carrying 2 marks each (ids: mat_gen_q21 to mat_gen_q25).\n"
+                "- Section C: 6 Short Answer (SA) questions carrying 3 marks each (ids: mat_gen_q26 to mat_gen_q31).\n"
+                "- Section D: 4 Long Answer (LA) questions carrying 5 marks each (ids: mat_gen_q32 to mat_gen_q35).\n"
+                "- Section E: 3 Case-Based questions carrying 4 marks each (ids: mat_gen_q36 to mat_gen_q38).\n"
+                "Provide correct options for Section A and detailed model answers for Sections B, C, D, and E."
+            )
+    elif pattern_type == "manual":
+        pattern_instruction = f"Generate exactly: {num_mcq} MCQs (1 mark each), {num_short} Short Answer questions (3 marks each), and {num_long} Long Answer questions (5 marks each)."
+    elif pattern_type == "text":
+        pattern_instruction = (
+            f"Analyze the following previous year paper text/description and replicate its question count, types, and mark distribution: {pattern_text}\n"
+            "CRITICAL: If the input pattern specifies or results in fewer than 30 questions in total, you MUST pad and scale the paper to contain EXACTLY 30 questions in total (e.g. 15 MCQs, 10 Short, 5 Long), maintaining a balanced and standard exam structure."
+        )
+    elif pattern_type == "upload":
+        pattern_instruction = (
+            "Analyze the uploaded previous year paper image. Replicate its question count, types (MCQs, short answer, long answer), and mark distribution.\n"
+            "CRITICAL: If the image pattern contains fewer than 30 questions in total, you MUST pad and scale the paper to contain EXACTLY 30 questions in total (e.g. 15 MCQs, 10 Short, 5 Long), maintaining a balanced and standard exam structure."
+        )
+    
+    prompt = f"""
+    You are an expert CBSE/NCERT examiner and question paper designer.
+    Create a complete practice question paper for:
+    - Grade/Class: {grade}
+    - Subject: {subject}
+    
+    {pattern_instruction}
+    
+    Guidelines:
+    1. Ensure all questions are high quality, cover key chapters in the syllabus, and match the difficulty of standard board exams.
+    2. Tag each question with a specific topic name from the syllabus (e.g. "Chemical Reactions and Equations", "Quadratic Equations", "Electricity", "Trigonometry", "Arithmetic Progressions"). This is critical for progress tracking!
+    3. Include a detailed, correct model answer/solution (`model_answer`) for short and long answer questions, and the `correct_option` for MCQs.
+    
+    You MUST respond with a valid JSON object matching this schema exactly:
+    {{
+        "exam_title": "e.g. CBSE Class 10 Science Practice Paper",
+        "subject": "{subject}",
+        "grade": "{grade}",
+        "sections": [
+            {{
+                "section_name": "Section A: Multiple Choice Questions",
+                "questions": [
+                    {{
+                        "id": "q_1",
+                        "question_text": "Write the question text here",
+                        "question_type": "mcq",
+                        "options": ["Option A", "Option B", "Option C", "Option D"],
+                        "correct_option": "The correct option from the options list",
+                        "marks": 1,
+                        "topic": "Syllabus topic name"
+                    }}
+                ]
+            }},
+            {{
+                "section_name": "Section B: Short Answer Questions",
+                "questions": [
+                    {{
+                        "id": "q_5",
+                        "question_text": "Write short answer question here",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Complete detail answer/solution",
+                        "topic": "Syllabus topic name"
+                    }}
+                ]
+            }},
+            {{
+                "section_name": "Section C: Long Answer Questions",
+                "questions": [
+                    {{
+                        "id": "q_7",
+                        "question_text": "Write long answer question here",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "Complete comprehensive solution",
+                        "topic": "Syllabus topic name"
+                    }}
+                ]
+            }}
+        ]
+    }}
+    """
+    contents.append(prompt)
+    
+    try:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        response = model.generate_content(
+            contents,
+            generation_config={"response_mime_type": "application/json"}
+        )
+        return json.loads(response.text)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate exam from Gemini API: {str(e)}"
+        )
+
+
+async def evaluate_pyq_exam_ai(
+    sections: list,
+    student_answers: dict
+) -> dict:
+    if not is_api_key_configured():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Gemini API Key not configured. Please add GEMINI_API_KEY in your backend/.env file."
+        )
+    
+    prompt = f"""
+    You are an expert CBSE/NCERT evaluator. Grade the student's exam sheet.
+    
+    Here are the exam sections and questions:
+    {json.dumps(sections)}
+    
+    Here are the student's submitted answers:
+    {json.dumps(student_answers)}
+    
+    Evaluation Rules:
+    1. For MCQs (question_type = "mcq"), compare the student's answer to the correct_option. If it matches exactly, award full marks (1 mark). Otherwise, award 0.
+    2. For Short/Long answer questions, grade their written answer out of the allocated marks based on accuracy, key terms, and clarity. Provide constructive feedback/rubric review.
+    3. Calculate the overall total_score, max_score, and percentage.
+    4. Isolate the students' strengths (topics where they scored well) and weaknesses (topics where they struggled).
+    
+    You MUST respond with a valid JSON object matching this schema exactly:
+    {{
+        "total_score": 45,
+        "max_score": 80,
+        "percentage": 56.25,
+        "feedback": "Overall exam feedback comment...",
+        "results": [
+            {{
+                "question_id": "q_1",
+                "question_text": "...",
+                "student_answer": "...",
+                "correct_answer": "...",
+                "score": 1,
+                "max_score": 1,
+                "is_correct": true,
+                "feedback": "..."
+            }}
+        ],
+        "strengths": ["Topic A", "Topic B"],
+        "weaknesses": ["Topic C", "Topic D"]
+    }}
+    """
+    
+    try:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        response = model.generate_content(
+            prompt,
+            generation_config={"response_mime_type": "application/json"}
+        )
+        return json.loads(response.text)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to evaluate exam from Gemini API: {str(e)}"
+        )
+
+
+

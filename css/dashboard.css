@@ -2117,3 +2117,54 @@ body.dashboard-body {
         font-size: 0.75rem !important;
     }
 }
+
+/* ========================================
+   PYQ SIMULATOR NAVIGATION TABS STYLING
+   ======================================== */
+.db-tabs {
+    display: flex;
+    gap: 1.5rem;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    padding-bottom: 0.2rem;
+    flex-wrap: wrap;
+}
+
+.db-tab-btn {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-secondary);
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    outline: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.db-tab-btn i {
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+.db-tab-btn:hover {
+    color: var(--secondary);
+    background-color: rgba(42, 157, 143, 0.04);
+}
+
+.db-tab-btn:hover i {
+    transform: translateY(-2px);
+}
+
+.db-tab-btn.active {
+    color: var(--secondary);
+    border-bottom-color: var(--secondary);
+    font-weight: 600;
+    background-color: rgba(42, 157, 143, 0.08);
+}
+

@@ -1,0 +1,1862 @@
+[
+    {
+        "year": 2023,
+        "subject": "Science",
+        "grade": "10th Grade",
+        "exam_title": "CBSE Class 10 Science Board Paper 2023",
+        "sections": [
+            {
+                "section_name": "Section A: Multiple Choice Questions",
+                "questions": [
+                    {
+                        "id": "sci_2023_q1",
+                        "question_text": "A student mixes a solution of lead(II) nitrate with a solution of potassium iodide. What type of reaction is this, and what is the primary observation?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Combination reaction; formation of a gas",
+                            "Decomposition reaction; change in colour",
+                            "Double displacement reaction; formation of a yellow precipitate",
+                            "Displacement reaction; formation of a white precipitate"
+                        ],
+                        "correct_option": "Double displacement reaction; formation of a yellow precipitate",
+                        "marks": 1,
+                        "topic": "Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2023_q2",
+                        "question_text": "Which of the following events does *not* occur in the light-dependent reactions of photosynthesis?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Absorption of light energy by chlorophyll",
+                            "Conversion of light energy to chemical energy",
+                            "Reduction of carbon dioxide to carbohydrates",
+                            "Splitting of water molecules"
+                        ],
+                        "correct_option": "Reduction of carbon dioxide to carbohydrates",
+                        "marks": 1,
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2023_q3",
+                        "question_text": "An object is placed at a distance of 10 cm from a convex lens of focal length 15 cm. The nature of the image formed will be:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Real, inverted, and magnified",
+                            "Virtual, erect, and magnified",
+                            "Real, inverted, and diminished",
+                            "Virtual, erect, and diminished"
+                        ],
+                        "correct_option": "Virtual, erect, and magnified",
+                        "marks": 1,
+                        "topic": "Light – Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2023_q4",
+                        "question_text": "Which of the following compounds is commonly used as an antacid to relieve indigestion?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Sodium chloride",
+                            "Calcium carbonate",
+                            "Sodium hydroxide",
+                            "Acetic acid"
+                        ],
+                        "correct_option": "Calcium carbonate",
+                        "marks": 1,
+                        "topic": "Acids, Bases and Salts"
+                    },
+                    {
+                        "id": "sci_2023_q5",
+                        "question_text": "The junction or gap between two successive neurons across which nerve impulses are transmitted is called a:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Dendrite",
+                            "Axon",
+                            "Synapse",
+                            "Myelin sheath"
+                        ],
+                        "correct_option": "Synapse",
+                        "marks": 1,
+                        "topic": "Control and Coordination"
+                    },
+                    {
+                        "id": "sci_2023_q6",
+                        "question_text": "If the current (I) flowing through a resistor and the potential difference (V) across its ends are known, which of the following expressions correctly represents the power (P) dissipated by the resistor?",
+                        "question_type": "mcq",
+                        "options": [
+                            "P = I/V",
+                            "P = V/I",
+                            "P = V * I",
+                            "P = I^2 * V"
+                        ],
+                        "correct_option": "P = V * I",
+                        "marks": 1,
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2023_q7",
+                        "question_text": "Which of the following metals exists in a liquid state at room temperature (approximately 25°C)?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Sodium",
+                            "Mercury",
+                            "Gallium",
+                            "Aluminium"
+                        ],
+                        "correct_option": "Mercury",
+                        "marks": 1,
+                        "topic": "Metals and Non-metals"
+                    },
+                    {
+                        "id": "sci_2023_q8",
+                        "question_text": "Vegetative propagation is a method of asexual reproduction in plants where new plants are produced from:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Seeds only",
+                            "Flowers and fruits",
+                            "Roots, stems, and leaves",
+                            "Spores only"
+                        ],
+                        "correct_option": "Roots, stems, and leaves",
+                        "marks": 1,
+                        "topic": "How do Organisms Reproduce?"
+                    },
+                    {
+                        "id": "sci_2023_q9",
+                        "question_text": "A student places a compass needle near a straight current-carrying conductor. The needle deflects. This observation primarily demonstrates:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Electromagnetic induction",
+                            "Magnetic effect of electric current",
+                            "Heating effect of electric current",
+                            "Chemical effect of electric current"
+                        ],
+                        "correct_option": "Magnetic effect of electric current",
+                        "marks": 1,
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2023_q10",
+                        "question_text": "Butanone is a four-carbon compound. Its functional group is a:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Carboxylic acid",
+                            "Aldehyde",
+                            "Ketone",
+                            "Alcohol"
+                        ],
+                        "correct_option": "Ketone",
+                        "marks": 1,
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2023_q11",
+                        "question_text": "Which of the following statements correctly describes homologous organs?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Organs that have a different basic structural design but similar function",
+                            "Organs that have a similar basic structural design but different functions",
+                            "Organs that perform identical functions in different organisms",
+                            "Organs that are vestigial and have no function"
+                        ],
+                        "correct_option": "Organs that have a similar basic structural design but different functions",
+                        "marks": 1,
+                        "topic": "Heredity and Evolution"
+                    },
+                    {
+                        "id": "sci_2023_q12",
+                        "question_text": "A person suffering from myopia (nearsightedness) can have their vision corrected by using spectacles containing a:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Convex lens",
+                            "Concave lens",
+                            "Bifocal lens",
+                            "Cylindrical lens"
+                        ],
+                        "correct_option": "Concave lens",
+                        "marks": 1,
+                        "topic": "Human Eye and Colourful World"
+                    },
+                    {
+                        "id": "sci_2023_q13",
+                        "question_text": "An element belongs to Group 1 (alkali metals) and Period 3 of the Modern Periodic Table. What is its atomic number?",
+                        "question_type": "mcq",
+                        "options": [
+                            "11",
+                            "12",
+                            "19",
+                            "20"
+                        ],
+                        "correct_option": "11",
+                        "marks": 1,
+                        "topic": "Periodic Classification of Elements"
+                    },
+                    {
+                        "id": "sci_2023_q14",
+                        "question_text": "In a terrestrial food chain, if 10,000 J of energy is available at the producer level, how much energy will be available to the secondary consumers according to the 10% law?",
+                        "question_type": "mcq",
+                        "options": [
+                            "10 J",
+                            "100 J",
+                            "1000 J",
+                            "10000 J"
+                        ],
+                        "correct_option": "100 J",
+                        "marks": 1,
+                        "topic": "Our Environment"
+                    },
+                    {
+                        "id": "sci_2023_q15",
+                        "question_text": "Three resistors R1, R2, and R3 are connected in parallel to a voltage source. If R1 > R2 > R3, which resistor will have the most current flowing through it?",
+                        "question_type": "mcq",
+                        "options": [
+                            "R1",
+                            "R2",
+                            "R3",
+                            "Current will be equal in all resistors"
+                        ],
+                        "correct_option": "R3",
+                        "marks": 1,
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2023_q16",
+                        "question_text": "The rusting of iron is a chemical process that can be categorized as:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Decomposition reaction",
+                            "Displacement reaction",
+                            "Redox reaction",
+                            "Neutralization reaction"
+                        ],
+                        "correct_option": "Redox reaction",
+                        "marks": 1,
+                        "topic": "Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2023_q17",
+                        "question_text": "The blood leaving the lungs and returning to the heart is characterized by being:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Rich in carbon dioxide and poor in oxygen",
+                            "Rich in oxygen and poor in carbon dioxide",
+                            "Rich in both oxygen and carbon dioxide",
+                            "Poor in both oxygen and carbon dioxide"
+                        ],
+                        "correct_option": "Rich in oxygen and poor in carbon dioxide",
+                        "marks": 1,
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2023_q18",
+                        "question_text": "The refractive index of water is approximately 1.33. This value implies that:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Light travels faster in water than in vacuum",
+                            "Light travels slower in water than in vacuum",
+                            "Light travels at the same speed in water and in vacuum",
+                            "Water is optically rarer than air"
+                        ],
+                        "correct_option": "Light travels slower in water than in vacuum",
+                        "marks": 1,
+                        "topic": "Light – Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2023_q19",
+                        "question_text": "When dilute hydrochloric acid is added to sodium hydrogen carbonate solution, the gas evolved is:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Hydrogen",
+                            "Oxygen",
+                            "Carbon dioxide",
+                            "Chlorine"
+                        ],
+                        "correct_option": "Carbon dioxide",
+                        "marks": 1,
+                        "topic": "Acids, Bases and Salts"
+                    },
+                    {
+                        "id": "sci_2023_q20",
+                        "question_text": "Which of the following plant hormones is primarily responsible for promoting the ripening of fruits?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Auxin",
+                            "Gibberellin",
+                            "Cytokinin",
+                            "Ethylene"
+                        ],
+                        "correct_option": "Ethylene",
+                        "marks": 1,
+                        "topic": "Control and Coordination"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section B: Very Short Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2023_q21",
+                        "question_text": "Why is respiration considered an exothermic reaction?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Respiration is considered an exothermic reaction because energy is released during this process. Glucose, a carbohydrate, combines with oxygen in the cells of our body to produce carbon dioxide and water, along with the release of a significant amount of energy in the form of ATP. This energy release makes it an exothermic reaction.",
+                        "topic": "Life Processes / Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2023_q22",
+                        "question_text": "Name the components of the transport system in highly organised plants.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "The components of the transport system in highly organised plants are:\n1.  **Xylem**: Transports water and minerals from roots to other parts of the plant.\n2.  **Phloem**: Transports food (products of photosynthesis) from leaves to other parts of the plant.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2023_q23",
+                        "question_text": "Define the power of a lens. What is its S.I. unit?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "The power of a lens is defined as the reciprocal of its focal length (f) in metres. It is a measure of the degree of convergence or divergence of light rays achieved by the lens.\nMathematically, P = 1/f.\nIts S.I. unit is **dioptre (D)**. (1D = 1 m⁻¹)",
+                        "topic": "Light – Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2023_q24",
+                        "question_text": "List two advantages of sexual reproduction over asexual reproduction.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Two advantages of sexual reproduction over asexual reproduction are:\n1.  **Genetic variation**: It introduces variation in the population due to the fusion of gametes from two different parents and crossing over during meiosis, which leads to better adaptability to changing environments.\n2.  **Evolution**: The variations accumulated over generations provide the raw material for evolution, allowing species to adapt and survive better.",
+                        "topic": "How do Organisms Reproduce? / Heredity and Evolution"
+                    },
+                    {
+                        "id": "sci_2023_q25",
+                        "question_text": "Give two reasons why carbon generally forms compounds by covalent bonding.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Carbon generally forms compounds by covalent bonding for the following reasons:\n1.  **Valency**: Carbon has four electrons in its outermost shell (valency = 4). It is difficult for carbon to either gain four electrons (forming C⁴⁻) or lose four electrons (forming C⁴⁺) because of the large amount of energy required for these processes and the instability of the resulting highly charged ions.\n2.  **Small size**: Due to its small atomic size, the nucleus holds the electrons strongly. Forming C⁴⁺ would require a large amount of energy to remove four electrons, and forming C⁴⁻ would be difficult due to repulsion between the incoming electrons and existing electrons in the small atom. Therefore, carbon shares its valence electrons to achieve a stable noble gas configuration.",
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2023_q26",
+                        "question_text": "An electric kettle consumes 1 kW of electric power when operated at 220 V. What is the current drawn by it?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Given:\nPower (P) = 1 kW = 1000 W\nVoltage (V) = 220 V\nWe know that Power (P) = Voltage (V) × Current (I)\nSo, Current (I) = P / V\nI = 1000 W / 220 V\nI ≈ 4.545 A\nThe current drawn by the electric kettle is approximately **4.55 A**.",
+                        "topic": "Electricity"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section C: Short Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2023_q27",
+                        "question_text": "a) Why does an aqueous solution of an acid conduct electricity?\nb) What happens when nitric acid is added to an eggshell?",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "a) An aqueous solution of an acid conducts electricity because acids dissociate in water to produce hydrogen ions (H⁺) and corresponding anions. These ions are mobile and act as charge carriers, allowing the solution to conduct electricity. For example, HCl (aq) → H⁺ (aq) + Cl⁻ (aq).\nb) Eggshell is primarily made up of calcium carbonate (CaCO₃). When nitric acid (HNO₃) is added to an eggshell, a vigorous reaction occurs, producing calcium nitrate, water, and carbon dioxide gas. The CO₂ gas causes effervescence.\nCaCO₃(s) + 2HNO₃(aq) → Ca(NO₃)₂(aq) + H₂O(l) + CO₂(g)",
+                        "topic": "Acids, Bases and Salts / Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2023_q28",
+                        "question_text": "Differentiate between aerobic and anaerobic respiration.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "| Feature         | Aerobic Respiration                               | Anaerobic Respiration                                 |\n| :-------------- | :------------------------------------------------ | :---------------------------------------------------- |\n| **Oxygen**      | Occurs in the presence of oxygen.                 | Occurs in the absence of oxygen.                      |\n| **Site**        | Cytoplasm (glycolysis) and mitochondria (Krebs cycle, ETC) | Cytoplasm                                             |\n| **End products**| Carbon dioxide (CO₂) and water (H₂O)           | Ethanol and CO₂ (in yeast), Lactic acid (in muscles) |\n| **Energy yield**| High (36 or 38 ATP molecules per glucose molecule) | Low (2 ATP molecules per glucose molecule)           |\n| **Organisms**   | Most living organisms (animals, plants)           | Some bacteria, yeast, human muscle cells (temporarily) |",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2023_q29",
+                        "question_text": "State Fleming's Left-Hand Rule. How is it used to determine the direction of force on a current-carrying conductor placed in a magnetic field?",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "**Fleming's Left-Hand Rule**: Stretch the thumb, forefinger, and middle finger of your left hand such that they are mutually perpendicular to each other. If the forefinger points in the direction of the magnetic field, and the middle finger points in the direction of the current, then the thumb will point in the direction of the force (or motion) acting on the conductor.\n**Usage**: This rule is used to determine the direction of the force experienced by a current-carrying conductor when it is placed in an external magnetic field. By aligning the forefinger with the magnetic field direction and the middle finger with the current direction, the thumb directly indicates the resultant direction of the force. This principle is fundamental to the working of electric motors.",
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2023_q30",
+                        "question_text": "Draw the electron dot structure for:\na) Methane (CH₄)\nb) Carbon dioxide (CO₂)",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "a) **Methane (CH₄)**:\nCarbon (C) has 4 valence electrons and each Hydrogen (H) has 1 valence electron. In methane, the carbon atom shares one electron with each of the four hydrogen atoms, and each hydrogen atom shares one electron with the carbon atom. This results in four single covalent bonds, achieving a stable octet for carbon and a stable duplet for each hydrogen.\n(Visual representation in text: H\n                                       | \n                                     H-C-H \n                                       | \n                                       H , where each line represents a shared pair of electrons).\n\nb) **Carbon dioxide (CO₂)**:\nCarbon (C) has 4 valence electrons and each Oxygen (O) has 6 valence electrons. In carbon dioxide, the central carbon atom forms two double covalent bonds, one with each oxygen atom. Each oxygen atom shares two electrons with carbon, and carbon shares two electrons with each oxygen atom, completing stable octets for all three atoms, along with two lone pairs on each oxygen atom.\n(Visual representation in text:  ..   .. \n                                  :O::C::O: \n                                  ..   .. , where each pair of ':' represents a shared electron pair, and lone pairs on Oxygen are also shown).",
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2023_q31",
+                        "question_text": "\"Damage to the ozone layer is a serious concern.\" Justify this statement.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Damage to the ozone layer is a serious concern because:\n1.  **UV Radiation Protection**: The ozone layer in the stratosphere absorbs most of the harmful ultraviolet (UV) radiation from the sun. UV radiation is highly damaging to living organisms.\n2.  **Health Impacts**: Depletion of the ozone layer allows more UV radiation to reach the Earth's surface, leading to an increased risk of skin cancer, cataracts, and damage to the immune system in humans.\n3.  **Environmental Impacts**: Increased UV radiation can harm marine life (e.g., phytoplankton, which form the base of the marine food web), reduce agricultural crop yields, and damage forests.\n4.  **Climate Change**: Ozone depletion can also influence atmospheric circulation and temperature patterns, indirectly affecting climate.\nThe primary cause of ozone layer depletion is the emission of human-made chemicals like chlorofluorocarbons (CFCs) and halons.",
+                        "topic": "Our Environment"
+                    },
+                    {
+                        "id": "sci_2023_q32",
+                        "question_text": "An object is placed 15 cm in front of a concave mirror of focal length 10 cm. Find the position and nature of the image.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Given:\nObject distance, u = -15 cm (object is always placed to the left of the mirror)\nFocal length of concave mirror, f = -10 cm (focal length of concave mirror is negative)\nUsing the mirror formula: 1/f = 1/v + 1/u\n1/v = 1/f - 1/u\n1/v = 1/(-10) - 1/(-15)\n1/v = -1/10 + 1/15\nTo add these fractions, find a common denominator, which is 30.\n1/v = (-3/30) + (2/30)\n1/v = -1/30\nv = -30 cm\n**Position of the image**: The image is formed at 30 cm in front of the mirror (on the same side as the object).\n**Nature of the image**:\nSince v is negative, the image is real.\nMagnification (m) = -v/u\nm = -(-30) / (-15)\nm = 30 / -15\nm = -2\nSince m is negative, the image is inverted.\nSince |m| > 1, the image is magnified.\nTherefore, the image is **Real, Inverted, and Magnified**.",
+                        "topic": "Light – Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2023_q33",
+                        "question_text": "List three methods of contraception. Explain one of them in brief.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Three methods of contraception are:\n1.  **Barrier methods**: E.g., Condoms, Diaphragms.\n2.  **Chemical methods**: E.g., Oral contraceptive pills, Vaginal pills.\n3.  **Intrauterine Contraceptive Devices (IUCDs)**: E.g., Copper-T.\n4.  **Surgical methods**: E.g., Vasectomy (male sterilization), Tubectomy (female sterilization).\n\n**Explanation of one method (e.g., Oral Contraceptive Pills)**:\nOral contraceptive pills are chemical methods of contraception. These pills contain hormones (estrogen and progesterone) that primarily work by preventing ovulation (the release of an egg from the ovary). They can also make the cervical mucus thicker, hindering sperm entry, and alter the uterine lining, making it unsuitable for implantation. They are highly effective when taken regularly.",
+                        "topic": "How do Organisms Reproduce?"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section D: Long Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2023_q34",
+                        "question_text": "a) Draw a labelled diagram of the human excretory system.\nb) Explain the process of urine formation in the human kidney.",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "a) **Diagram of Human Excretory System**: \nA well-labelled diagram of the human excretory system should be drawn, including the following parts:\n*   Left Kidney\n*   Right Kidney\n*   Renal artery (carrying blood to kidneys)\n*   Renal vein (carrying blood away from kidneys)\n*   Ureter (connecting kidney to urinary bladder)\n*   Urinary bladder (stores urine)\n*   Urethra (tube for expelling urine)\n*   Aorta (main artery supplying oxygenated blood)\n*   Vena Cava (main vein collecting deoxygenated blood)\n\nb) **Process of Urine Formation in the Human Kidney**:\nUrine formation involves three main steps occurring in the nephrons (functional units of the kidney):\n1.  **Glomerular Filtration (Ultrafiltration)**: Blood enters the glomerulus (a tuft of capillaries within Bowman's capsule) under high pressure. This pressure forces water, salts, glucose, amino acids, urea, and other small solutes from the blood into the Bowman's capsule, forming the glomerular filtrate. Proteins and blood cells, being large, remain in the blood.\n2.  **Tubular Reabsorption (Selective Reabsorption)**: As the glomerular filtrate flows through the renal tubule (Proximal Convoluted Tubule, Loop of Henle, Distal Convoluted Tubule), essential substances like most of the water, all the glucose, amino acids, and required salts are selectively reabsorbed back into the blood capillaries surrounding the tubule. The amount of water reabsorbed depends on the body's hydration level and the amount of dissolved waste to be excreted.\n3.  **Tubular Secretion**: Waste products and excess ions (like K⁺, H⁺) and certain drugs are actively secreted from the blood capillaries into the filtrate in the renal tubule. This step is crucial for maintaining the body's acid-base balance and removing substances not effectively filtered initially.\nThe fluid remaining in the collecting duct after these processes is urine, which then passes into the ureters, is stored in the urinary bladder, and eventually expelled from the body through the urethra.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2023_q35",
+                        "question_text": "a) State Ohm's law. Draw a circuit diagram to verify Ohm's law in the laboratory.\nb) Why is an ammeter connected in series and a voltmeter in parallel in an electric circuit?",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "a) **Ohm's Law**: It states that the current (I) flowing through a metallic conductor is directly proportional to the potential difference (V) across its ends, provided its temperature and other physical conditions remain constant. Mathematically, V ∝ I or V = IR, where R is the constant of proportionality known as resistance.\n**Circuit diagram to verify Ohm's law**: (Description of components and connections)\nA circuit diagram for verifying Ohm's law would typically include:\n*   A resistor (R) or a nichrome wire (the conductor whose resistance is to be measured).\n*   An ammeter (A) connected in series with the resistor to measure current.\n*   A voltmeter (V) connected in parallel across the resistor to measure potential difference.\n*   A battery or power supply (B) to provide voltage.\n*   A rheostat (Rh) to vary the current and voltage in the circuit.\n*   A switch (K) to control the circuit.\n*   Connecting wires.\nBy adjusting the rheostat, different values of voltage (V) and corresponding current (I) are measured. Plotting V against I should yield a straight line passing through the origin, confirming Ohm's law.\n\nb) **Connection of ammeter and voltmeter**:\n*   **Ammeter in series**: An ammeter is always connected in series with the component through which the current is to be measured because it has a very low internal resistance. If connected in parallel, it would shunt most of the current away from the main circuit, thereby altering the actual current flowing through the component and potentially damaging the ammeter due to high current. In series, it measures the full current without significantly changing the circuit's overall resistance.\n*   **Voltmeter in parallel**: A voltmeter is always connected in parallel across the two points between which the potential difference is to be measured because it has a very high internal resistance. If connected in series, it would significantly increase the total resistance of the circuit, drastically reducing the current and hence the potential difference across other components. When in parallel, it draws negligible current from the main circuit, thus accurately measuring the potential difference without affecting the circuit's normal operation.",
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2023_q36",
+                        "question_text": "a) What are hormones? State their characteristics.\nb) Name the endocrine gland associated with the brain. Which hormone does it secrete? What is its function?",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "a) **Hormones**: Hormones are chemical messengers secreted by endocrine glands (ductless glands) directly into the bloodstream. They are transported to target cells, tissues, or organs throughout the body, where they bind to specific receptors and exert specific regulatory effects on physiological processes.\n**Characteristics of hormones**:\n1.  **Chemical messengers**: They are organic chemical substances that transmit signals and information.\n2.  **Produced in minute quantities**: Even very small concentrations of hormones can elicit significant biological responses.\n3.  **Specific action**: They act on specific target cells, tissues, or organs that possess specific receptors for them.\n4.  **Secreted by endocrine glands**: They are released directly into the blood without ducts.\n5.  **Regulators**: They regulate various vital bodily functions such as growth, development, metabolism, reproduction, mood, and stress response.\n6.  **Non-nutrient chemicals**: They do not provide energy or serve as building blocks but regulate cellular activities.\n\nb) **Endocrine gland associated with the brain**: The endocrine gland associated with the brain is the **Pituitary Gland**.\n**Hormone secreted**: The pituitary gland secretes several hormones. A key hormone relevant for growth and development, commonly discussed in Class 10, is **Growth Hormone (GH)**.\n**Function of Growth Hormone (GH)**: Its primary function is to stimulate growth and development of the body, particularly promoting the growth of bones and muscles in children and adolescents. It also plays a role in metabolism (protein synthesis, fat breakdown). Abnormal secretion can lead to disorders like gigantism (excessive GH) or dwarfism (deficient GH) in children.",
+                        "topic": "Control and Coordination"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section E: Case-Based Questions",
+                "questions": [
+                    {
+                        "id": "sci_2023_q37",
+                        "question_text": "Case Study: Metals and non-metals are broadly classified based on their physical and chemical properties. Metals are generally malleable, ductile, lustrous, good conductors of heat and electricity, and form positive ions by losing electrons. Non-metals are usually brittle, non-lustrous, poor conductors of heat and electricity, and tend to form negative ions by gaining electrons or form covalent bonds by sharing electrons. The reactivity of elements dictates their presence in nature and their extraction methods. Gold, silver, and platinum are found in the free state, while most metals are found as compounds.\n\nBased on the above information, answer the following questions:\na) Give one reason why metals are good conductors of electricity. (1 mark)\nb) Which of the following metals is found in the free state in nature? (Select one from: Iron, Copper, Gold, Aluminum) (1 mark)\nc) An element 'X' reacts with oxygen to form an oxide X₂O₃. When this oxide is dissolved in water, it forms a solution that turns blue litmus red. Identify element 'X'. Is it a metal or non-metal? Justify your answer. (2 marks)",
+                        "question_type": "case_based",
+                        "marks": 4,
+                        "model_answer": "a) Metals are good conductors of electricity due to the presence of **free or mobile electrons** (delocalised electrons) in their metallic lattice structure. These electrons can move freely throughout the metal, carrying electric charge.\nb) **Gold** is found in the free state in nature.\nc) The oxide X₂O₃ forms a solution that turns blue litmus red, which indicates that the oxide is **acidic** in nature. Generally, **non-metallic oxides are acidic**. Therefore, element 'X' is a **non-metal**. (For example, an oxide like N₂O₃ is acidic and forms HNO₂ in water. Although X₂O₃ is often associated with metal oxides like Al₂O₃, the property of turning blue litmus red specifically points to acidic nature, characteristic of non-metal oxides in a Class 10 context.)",
+                        "topic": "Metals and Non-metals"
+                    },
+                    {
+                        "id": "sci_2023_q38",
+                        "question_text": "Case Study: The Earth's atmosphere consists of a mixture of gases and fine particles. When sunlight enters the atmosphere, it undergoes various phenomena such as refraction, scattering, and dispersion. These interactions give rise to several beautiful natural phenomena, including the twinkling of stars, the blue colour of the sky, and the formation of a rainbow. The human eye, a complex optical instrument, is also affected by these atmospheric conditions.\n\nBased on the above information, answer the following questions:\na) Why do stars twinkle but planets do not? (1 mark)\nb) Explain why the sky appears blue. (1 mark)\nc) A person suffering from myopia can see nearby objects clearly but cannot see distant objects clearly. Explain what causes myopia and how it can be corrected. (2 marks)",
+                        "question_type": "case_based",
+                        "marks": 4,
+                        "model_answer": "a) Stars twinkle but planets do not because stars are very distant point sources of light, whereas planets are relatively closer and appear as extended sources. The light from a star undergoes continuous changes in its path due to varying refractive indices of the turbulent Earth's atmosphere (atmospheric refraction). This causes fluctuations in the apparent position and intensity of light from the star, leading to twinkling. Planets, being extended sources, appear as a collection of point sources. The total variation in light coming from different points of the planet averages out, thus they do not appear to twinkle.\nb) The sky appears blue due to the **scattering of light** by fine particles (like air molecules) in the atmosphere. Blue light, having a shorter wavelength, is scattered more intensely than red light (longer wavelength). When sunlight passes through the atmosphere, the blue light is preferentially scattered in all directions, and this scattered blue light reaches our eyes from all directions, making the sky appear blue.\nc) **Myopia (Nearsightedness)**:\n*   **Cause**: Myopia is caused when the eyeball is too long or the focal length of the eye lens is too short (excessive curvature of the cornea or eye lens). This causes the light rays from distant objects to converge in front of the retina, resulting in a blurred image.\n*   **Correction**: Myopia can be corrected by using a **concave lens** of appropriate power. A concave lens diverges the incoming light rays slightly before they enter the eye, thereby increasing the effective focal length of the eye's lens system and ensuring that the image is formed precisely on the retina.",
+                        "topic": "Human Eye and Colourful World"
+                    },
+                    {
+                        "id": "sci_2023_q39",
+                        "question_text": "Case Study: Sexual reproduction in flowering plants involves the fusion of male and female gametes, typically occurring within specialized structures called flowers. Flowers are the reproductive organs of angiosperms, containing structures like stamens (male) and carpels (female). Pollination, the transfer of pollen grains, is a crucial step that precedes fertilization, leading to the formation of seeds and fruits. The successful continuity of plant species relies on these intricate reproductive processes.\n\nBased on the above information, answer the following questions:\na) Name the male and female reproductive parts of a flower. (1 mark)\nb) What is pollination? Differentiate between self-pollination and cross-pollination. (2 marks)\nc) What is the role of the ovary after fertilization in a flowering plant? (1 mark)",
+                        "question_type": "case_based",
+                        "marks": 4,
+                        "model_answer": "a) **Male reproductive part**: Stamen (consisting of anther and filament).\n**Female reproductive part**: Carpel/Pistil (consisting of stigma, style, and ovary).\nb) **Pollination**: Pollination is the transfer of pollen grains from the anther (male reproductive part) to the stigma (female reproductive part) of a flower.\n**Differentiation**:\n*   **Self-pollination**: Occurs when pollen grains are transferred from the anther to the stigma of the same flower or to the stigma of another flower on the same plant.\n*   **Cross-pollination**: Occurs when pollen grains are transferred from the anther of one flower to the stigma of a flower on a different plant of the same species.\nc) After fertilization, the **ovary develops into the fruit** containing the seeds. The ovules inside the ovary develop into seeds.",
+                        "topic": "How do Organisms Reproduce?"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "year": 2022,
+        "subject": "Science",
+        "grade": "10th Grade",
+        "exam_title": "CBSE Class 10 Science Board Paper 2022",
+        "sections": [
+            {
+                "section_name": "Section A: Multiple Choice Questions",
+                "questions": [
+                    {
+                        "id": "sci_2022_q1",
+                        "question_text": "A solution of a substance 'X' is used for white-washing. The substance 'X' reacts with water to form 'Y'. What is 'X' and 'Y' respectively?",
+                        "question_type": "mcq",
+                        "options": [
+                            "X = CaO, Y = Ca(OH)₂",
+                            "X = Ca(OH)₂, Y = CaO",
+                            "X = CaCO₃, Y = Ca(OH)₂",
+                            "X = Ca(OH)₂, Y = CaCO₃"
+                        ],
+                        "correct_option": "X = CaO, Y = Ca(OH)₂",
+                        "marks": 1,
+                        "topic": "Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2022_q2",
+                        "question_text": "Which of the following statements about autotrophs is incorrect?",
+                        "question_type": "mcq",
+                        "options": [
+                            "They synthesize carbohydrates using carbon dioxide and water in the presence of sunlight.",
+                            "They store carbohydrates in the form of starch.",
+                            "They convert light energy into chemical energy.",
+                            "They convert carbon dioxide and water into oxygen."
+                        ],
+                        "correct_option": "They convert carbon dioxide and water into oxygen.",
+                        "marks": 1,
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2022_q3",
+                        "question_text": "An object is placed in front of a convex mirror. The image formed will be:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Real, inverted, and diminished.",
+                            "Virtual, erect, and diminished.",
+                            "Real, inverted, and enlarged.",
+                            "Virtual, erect, and enlarged."
+                        ],
+                        "correct_option": "Virtual, erect, and diminished.",
+                        "marks": 1,
+                        "topic": "Light - Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2022_q4",
+                        "question_text": "Which of the following is an example of a strong acid?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Acetic acid",
+                            "Citric acid",
+                            "Hydrochloric acid",
+                            "Lactic acid"
+                        ],
+                        "correct_option": "Hydrochloric acid",
+                        "marks": 1,
+                        "topic": "Acids, Bases and Salts"
+                    },
+                    {
+                        "id": "sci_2022_q5",
+                        "question_text": "Which part of the brain is responsible for precision of voluntary actions and maintaining the posture and balance of the body?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Cerebrum",
+                            "Cerebellum",
+                            "Medulla",
+                            "Pons"
+                        ],
+                        "correct_option": "Cerebellum",
+                        "marks": 1,
+                        "topic": "Control and Coordination"
+                    },
+                    {
+                        "id": "sci_2022_q6",
+                        "question_text": "The resistance of a uniform metallic conductor is directly proportional to its:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Length",
+                            "Area of cross-section",
+                            "Temperature",
+                            "Material"
+                        ],
+                        "correct_option": "Length",
+                        "marks": 1,
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2022_q7",
+                        "question_text": "Which of the following non-metal is liquid at room temperature?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Carbon",
+                            "Iodine",
+                            "Bromine",
+                            "Chlorine"
+                        ],
+                        "correct_option": "Bromine",
+                        "marks": 1,
+                        "topic": "Metals and Non-metals"
+                    },
+                    {
+                        "id": "sci_2022_q8",
+                        "question_text": "Spirogyra reproduces by:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Budding",
+                            "Fragmentation",
+                            "Spore formation",
+                            "Regeneration"
+                        ],
+                        "correct_option": "Fragmentation",
+                        "marks": 1,
+                        "topic": "How do Organisms Reproduce?"
+                    },
+                    {
+                        "id": "sci_2022_q9",
+                        "question_text": "A current-carrying conductor is placed in a magnetic field. The direction of force experienced by the conductor is given by:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Fleming's Right-Hand Rule",
+                            "Fleming's Left-Hand Rule",
+                            "Maxwell's Right-Hand Thumb Rule",
+                            "Ohm's Law"
+                        ],
+                        "correct_option": "Fleming's Left-Hand Rule",
+                        "marks": 1,
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2022_q10",
+                        "question_text": "Which of the following elements has the largest atomic radius?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Na",
+                            "Mg",
+                            "K",
+                            "Ca"
+                        ],
+                        "correct_option": "K",
+                        "marks": 1,
+                        "topic": "Periodic Classification of Elements"
+                    },
+                    {
+                        "id": "sci_2022_q11",
+                        "question_text": "Which of the following is an example of homologous organs?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Wings of bat and wings of bird",
+                            "Forelimb of human and forelimb of lizard",
+                            "Eye of octopus and eye of human",
+                            "Stem tendril of pea and leaf tendril of Lathyrus"
+                        ],
+                        "correct_option": "Forelimb of human and forelimb of lizard",
+                        "marks": 1,
+                        "topic": "Heredity and Evolution"
+                    },
+                    {
+                        "id": "sci_2022_q12",
+                        "question_text": "The power of accommodation of the eye refers to:",
+                        "question_type": "mcq",
+                        "options": [
+                            "The ability to see objects at different distances.",
+                            "The ability to adjust to varying light intensities.",
+                            "The ability to distinguish between colors.",
+                            "The ability to focus on two objects simultaneously."
+                        ],
+                        "correct_option": "The ability to see objects at different distances.",
+                        "marks": 1,
+                        "topic": "Human Eye and Colourful World"
+                    },
+                    {
+                        "id": "sci_2022_q13",
+                        "question_text": "Which of the following will show addition reactions?",
+                        "question_type": "mcq",
+                        "options": [
+                            "C₂H₆",
+                            "C₃H₈",
+                            "C₂H₄",
+                            "CH₄"
+                        ],
+                        "correct_option": "C₂H₄",
+                        "marks": 1,
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2022_q14",
+                        "question_text": "In which part of the alimentary canal is food finally digested?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Stomach",
+                            "Mouth",
+                            "Large intestine",
+                            "Small intestine"
+                        ],
+                        "correct_option": "Small intestine",
+                        "marks": 1,
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2022_q15",
+                        "question_text": "How is a voltmeter connected in the circuit to measure the potential difference across a component?",
+                        "question_type": "mcq",
+                        "options": [
+                            "In series",
+                            "In parallel",
+                            "Either in series or in parallel",
+                            "In a combination of series and parallel"
+                        ],
+                        "correct_option": "In parallel",
+                        "marks": 1,
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2022_q16",
+                        "question_text": "When hydrogen sulphide gas is passed through a blue solution of copper sulphate, a black precipitate of copper sulphide is formed and sulphuric acid is produced. The reaction is an example of:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Combination reaction",
+                            "Displacement reaction",
+                            "Decomposition reaction",
+                            "Double displacement reaction"
+                        ],
+                        "correct_option": "Double displacement reaction",
+                        "marks": 1,
+                        "topic": "Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2022_q17",
+                        "question_text": "The gap between two neurons is called a:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Dendrite",
+                            "Axon",
+                            "Synapse",
+                            "Impulse"
+                        ],
+                        "correct_option": "Synapse",
+                        "marks": 1,
+                        "topic": "Control and Coordination"
+                    },
+                    {
+                        "id": "sci_2022_q18",
+                        "question_text": "A ray of light traveling from a rarer medium to a denser medium:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Bends away from the normal.",
+                            "Bends towards the normal.",
+                            "Goes undeviated.",
+                            "Reflects back into the rarer medium."
+                        ],
+                        "correct_option": "Bends towards the normal.",
+                        "marks": 1,
+                        "topic": "Light - Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2022_q19",
+                        "question_text": "Sodium carbonate is a basic salt because it is a salt of:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Strong acid and strong base",
+                            "Weak acid and weak base",
+                            "Strong acid and weak base",
+                            "Weak acid and strong base"
+                        ],
+                        "correct_option": "Weak acid and strong base",
+                        "marks": 1,
+                        "topic": "Acids, Bases and Salts"
+                    },
+                    {
+                        "id": "sci_2022_q20",
+                        "question_text": "Which of the following practices will help in protecting our environment?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Washing clothes in rivers and ponds.",
+                            "Using plastic bags for shopping.",
+                            "Planting more trees.",
+                            "Burning fossil fuels without filters."
+                        ],
+                        "correct_option": "Planting more trees.",
+                        "marks": 1,
+                        "topic": "Our Environment"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section B: Very Short Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2022_q21",
+                        "question_text": "A student added zinc granules to dilute hydrochloric acid. Write the chemical equation for the reaction that occurs and state one observation that confirms a chemical reaction has taken place.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "The chemical equation for the reaction is:\nZn(s) + 2HCl(aq) → ZnCl₂(aq) + H₂(g)\n\nOne observation that confirms a chemical reaction has taken place is the evolution of a gas (hydrogen gas) which can be observed as bubbles around the zinc granules.",
+                        "topic": "Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2022_q22",
+                        "question_text": "Distinguish between aerobic and anaerobic respiration in terms of their end products and energy release.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Aerobic respiration occurs in the presence of oxygen and its end products are carbon dioxide, water, and a large amount of energy (around 38 ATP molecules). Anaerobic respiration occurs in the absence of oxygen and its end products are ethanol and carbon dioxide (in yeast) or lactic acid (in muscles), and a much smaller amount of energy (2 ATP molecules).",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2022_q23",
+                        "question_text": "An electric iron of 1.5 kW operates at 220 V. Calculate the current flowing through it. What safety precaution is necessary for such high-power appliances?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Given: Power (P) = 1.5 kW = 1500 W, Voltage (V) = 220 V\nWe know that P = V × I\nSo, I = P / V = 1500 W / 220 V ≈ 6.82 A\n\nA necessary safety precaution for high-power appliances is to connect them to the mains using a fuse of appropriate rating or a Miniature Circuit Breaker (MCB) to prevent damage due to overloading or short-circuiting.",
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2022_q24",
+                        "question_text": "Name the two components of the phloem tissue in plants that are responsible for the transport of food. What is the direction of transport in phloem?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "The two components of the phloem tissue responsible for the transport of food are sieve tubes and companion cells.\n\nThe direction of transport in phloem is bidirectional (upward and downward), transporting food from the leaves (sites of synthesis) to all other parts of the plant, including storage organs and growing regions.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2022_q25",
+                        "question_text": "What is meant by homologous series? Give an example of a homologous series with its first two members.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "A homologous series is a series of organic compounds that have the same functional group and similar chemical properties, in which successive members differ by a CH₂ group.\n\nExample: Alkane series\nFirst member: Methane (CH₄)\nSecond member: Ethane (C₂H₆)",
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2022_q26",
+                        "question_text": "State the laws of refraction of light.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "The laws of refraction of light are:\n1.  The incident ray, the refracted ray, and the normal to the interface of two transparent media at the point of incidence, all lie in the same plane.\n2.  The ratio of the sine of the angle of incidence to the sine of the angle of refraction is a constant for a given pair of media. This constant is called the refractive index (Snell's Law): sin i / sin r = constant.",
+                        "topic": "Light – Reflection and Refraction"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section C: Short Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2022_q27",
+                        "question_text": "What is an acid rain? How does it affect aquatic life and buildings?",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Acid rain refers to rain or any other form of precipitation that is unusually acidic, meaning that it possesses elevated levels of hydrogen ions (low pH). It is primarily caused by emissions of sulfur dioxide (SO₂) and nitrogen oxides (NOₓ) into the atmosphere, which react with water, oxygen, and other chemicals to form sulfuric and nitric acids.\n\nEffects:\n1.  **Aquatic life**: Acid rain lowers the pH of lakes and rivers, making the water too acidic for many aquatic animals and plants to survive. It can lead to the death of fish populations, insects, and other aquatic organisms, disrupting the entire food web.\n2.  **Buildings**: Acid rain reacts with calcium carbonate present in marble and limestone, which are commonly used in buildings and statues. This reaction causes corrosion and gradual damage to these structures, leading to their deterioration and loss of aesthetic value (e.g., historical monuments like the Taj Mahal).",
+                        "topic": "Acids, Bases and Salts"
+                    },
+                    {
+                        "id": "sci_2022_q28",
+                        "question_text": "Draw a neat labelled diagram of the longitudinal section of a flower. List two functions of the ovary in a flower.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "A neat labelled diagram of the longitudinal section of a flower showing parts like sepals, petals, stamens (anther and filament), pistil/carpel (stigma, style, ovary, ovules) would be required.\n\nTwo functions of the ovary in a flower are:\n1.  It contains the ovules, which after fertilization develop into seeds.\n2.  It develops into the fruit after fertilization, protecting the developing seeds and aiding in their dispersal.",
+                        "topic": "How do Organisms Reproduce?"
+                    },
+                    {
+                        "id": "sci_2022_q29",
+                        "question_text": "State Fleming's Left-Hand Rule. On what principle does an electric motor work?",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Fleming's Left-Hand Rule states that if we stretch the thumb, forefinger, and middle finger of our left hand such that they are mutually perpendicular to each other, and if the forefinger points in the direction of the magnetic field, and the middle finger points in the direction of the current, then the thumb will point in the direction of the force (or motion) experienced by the conductor.\n\nAn electric motor works on the principle that when a current-carrying conductor is placed in a magnetic field, it experiences a force. This force causes the conductor to rotate, converting electrical energy into mechanical energy.",
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2022_q30",
+                        "question_text": "Explain why carbon forms a large number of compounds. Give two reasons.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Carbon forms a large number of compounds due to two main reasons:\n1.  **Catenation**: Carbon has the unique ability to form bonds with other carbon atoms, forming long chains, branched chains, and ring structures. This self-linking property is called catenation. It allows carbon atoms to form stable covalent bonds with each other, leading to an immense variety of compounds.\n2.  **Tetravalency**: Carbon has a valency of four, meaning it can form four covalent bonds with other carbon atoms or with atoms of other elements like oxygen, hydrogen, nitrogen, sulfur, chlorine, etc. This allows carbon to bond with a wide range of atoms in diverse combinations, further increasing the number of possible compounds.",
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2022_q31",
+                        "question_text": "What is the role of the placenta in human females? Why is it essential?",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "The placenta is a specialized tissue that develops in the uterus of a pregnant human female, forming a connection between the mother and the developing embryo/fetus.\n\nIts role and essentiality are:\n1.  **Nutrient and Oxygen Supply**: The placenta provides a large surface area for glucose, oxygen, and other essential nutrients to pass from the mother's blood to the embryo's blood.\n2.  **Waste Removal**: It facilitates the removal of waste products such as urea and carbon dioxide from the embryo's blood into the mother's blood for excretion.\n3.  **Hormone Production**: The placenta also produces hormones necessary for maintaining pregnancy.\nWithout the placenta, the embryo would not be able to receive adequate nutrients and oxygen, nor would it be able to eliminate its waste products, which would be detrimental to its development and survival.",
+                        "topic": "How do Organisms Reproduce?"
+                    },
+                    {
+                        "id": "sci_2022_q32",
+                        "question_text": "An object is placed at a distance of 10 cm from a convex mirror of focal length 15 cm. Find the position and nature of the image.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Given:\nObject distance, u = -10 cm (always negative)\nFocal length of convex mirror, f = +15 cm (positive for convex mirror)\n\nUsing the mirror formula: 1/f = 1/v + 1/u\n1/v = 1/f - 1/u\n1/v = 1/15 - 1/(-10)\n1/v = 1/15 + 1/10\n1/v = (2 + 3) / 30\n1/v = 5 / 30\nv = 30 / 5 = +6 cm\n\nPosition of the image: The image is formed at 6 cm behind the mirror.\n\nNature of the image: Since 'v' is positive, the image is virtual. Also, for a convex mirror, the image is always erect and diminished.",
+                        "topic": "Light – Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2022_q33",
+                        "question_text": "Why is the transfer of energy in a food chain always unidirectional? Justify your answer.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "The transfer of energy in a food chain is always unidirectional (flows in one direction) for the following reasons:\n1.  **Sun as Primary Source**: The primary source of energy for almost all ecosystems is the sun. Producers (green plants) capture solar energy and convert it into chemical energy through photosynthesis.\n2.  **Flow from Producer to Consumer**: This chemical energy then flows from producers to primary consumers (herbivores), then to secondary consumers (carnivores feeding on herbivores), and so on.\n3.  **Energy Loss at Each Trophic Level**: At each successive trophic level, a significant amount of energy (about 90%) is lost to the environment as heat during metabolic processes (respiration, digestion, growth, reproduction). Only about 10% of the energy is transferred to the next trophic level. This loss makes it impossible for energy to flow backward.\n4.  **No Reverse Conversion**: Energy once utilized by an organism at a particular trophic level cannot be converted back to the previous level. For example, the energy in a deer cannot be converted back into grass by the deer itself. Therefore, the flow is irreversible and unidirectional.",
+                        "topic": "Our Environment"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section D: Long Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2022_q34",
+                        "question_text": "An electric lamp and a conductor of 4 Ω are connected to a 6 V battery as shown in the circuit diagram:\n\n[Imagine a circuit diagram here: A 6V battery. Connected in series are an ammeter, then an electric lamp, then a 4 Ohm resistor, then a voltmeter connected in parallel across the lamp.]\n\nIf the reading of the ammeter is 0.25 A, find:\n(a) The resistance of the electric lamp.\n(b) The potential difference across the conductor.\n(c) The potential difference across the electric lamp.\n(d) The power of the electric lamp.",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "Given:\nTotal voltage (V_total) = 6 V\nResistance of conductor (R_conductor) = 4 Ω\nCurrent (I) = 0.25 A (since components are in series, current is same through all)\n\n(a) **The resistance of the electric lamp (R_lamp):**\nTotal resistance in the circuit (R_total) = V_total / I = 6 V / 0.25 A = 24 Ω\nIn a series circuit, R_total = R_lamp + R_conductor\n24 Ω = R_lamp + 4 Ω\nR_lamp = 24 Ω - 4 Ω = 20 Ω\n\n(b) **The potential difference across the conductor (V_conductor):**\nV_conductor = I × R_conductor\nV_conductor = 0.25 A × 4 Ω = 1 V\n\n(c) **The potential difference across the electric lamp (V_lamp):**\nV_lamp = I × R_lamp\nV_lamp = 0.25 A × 20 Ω = 5 V\n(Alternatively, V_lamp = V_total - V_conductor = 6 V - 1 V = 5 V)\n\n(d) **The power of the electric lamp (P_lamp):**\nP_lamp = V_lamp × I\nP_lamp = 5 V × 0.25 A = 1.25 W\n(Alternatively, P_lamp = I²R_lamp = (0.25 A)² × 20 Ω = 0.0625 × 20 = 1.25 W)",
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2022_q35",
+                        "question_text": "Explain the process of digestion of food in humans. Draw a neat labelled diagram of the human alimentary canal.",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "A neat labelled diagram of the human alimentary canal showing the mouth, pharynx, esophagus, stomach, small intestine, large intestine, rectum, anus, and associated glands (salivary glands, liver, pancreas) would be required.\n\n**Process of Digestion in Humans:**\nDigestion is the process of breaking down complex food substances into simpler, absorbable forms. It involves both mechanical and chemical processes and occurs in the alimentary canal.\n\n1.  **Mouth**: Food is ingested. Mechanical digestion (chewing) breaks food into smaller pieces. Salivary amylase (a digestive enzyme in saliva) begins the chemical digestion of carbohydrates (starch).\n2.  **Esophagus**: The chewed food (bolus) is pushed down to the stomach by peristaltic movements (rhythmic contractions of muscles).\n3.  **Stomach**: Food mixes with gastric juices. Pepsin (an enzyme) begins protein digestion, and hydrochloric acid creates an acidic medium, kills bacteria, and activates pepsin. Food is churned into a semi-digested paste called chyme.\n4.  **Small Intestine**: This is the primary site for complete digestion and absorption. It receives:\n    *   **Bile from the liver**: Emulsifies fats, breaking them into smaller globules.\n    *   **Pancreatic juice from the pancreas**: Contains amylase (for carbohydrates), trypsin (for proteins), and lipase (for fats).\n    *   **Intestinal juice from intestinal walls**: Contains enzymes that complete the digestion of carbohydrates into glucose, proteins into amino acids, and fats into fatty acids and glycerol.\n    The inner lining of the small intestine has villi, which increase the surface area for efficient absorption of digested food into the bloodstream.\n5.  **Large Intestine**: Undigested food and water pass into the large intestine. Water is absorbed, and the remaining waste material (faeces) is stored until defecation.\n6.  **Anus**: Faeces are expelled from the body through the anus.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2022_q36",
+                        "question_text": "Based on the Group 17 (Halogen family) elements, answer the following questions:\n(a) Name the most electronegative element.\n(b) What is the common valency of these elements?\n(c) Arrange the first three elements in increasing order of their atomic size.\n(d) Write the general electronic configuration of these elements.\n(e) Why do these elements exist as diatomic molecules?",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "(a) The most electronegative element in Group 17 (and in the entire periodic table) is **Fluorine (F)**.\n\n(b) The common valency of these elements is **1**. They tend to gain one electron to achieve a stable octet configuration.\n\n(c) The first three elements of Group 17 are Fluorine (F), Chlorine (Cl), and Bromine (Br). Their increasing order of atomic size is:\n**F < Cl < Br**\n(Atomic size increases down a group due to the addition of new shells).\n\n(d) The general electronic configuration of these elements is **ns²np⁵**.\n\n(e) These elements exist as diatomic molecules (e.g., F₂, Cl₂, Br₂, I₂) because they have 7 valence electrons and need one more electron to achieve a stable noble gas configuration (octet). By sharing one electron with another atom of the same element, they form a single covalent bond, thus completing their outermost shell and existing as diatomic molecules.",
+                        "topic": "Periodic Classification of Elements"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section E: Case-Based Questions",
+                "questions": [
+                    {
+                        "id": "sci_2022_q37",
+                        "question_text": "A student sets up an experiment to trace the path of a ray of light passing through a rectangular glass slab. She uses a protractor to measure the angle of incidence (∠i) and the angle of refraction (∠r) at the air-glass interface and then at the glass-air interface. She repeats the experiment for different angles of incidence.\n\n(a) What is the relationship between the angle of incidence and the angle of emergence at the two interfaces for a glass slab?\n(b) If the angle of incidence in air is 45° and the angle of refraction in the glass slab is 30°, calculate the refractive index of the glass material. (Given: sin 45° = 1/√2, sin 30° = 1/2)\n(c) Why does the light ray bend when it enters the glass slab from air? State one factor that affects the amount of bending.",
+                        "question_type": "case-based",
+                        "marks": 4,
+                        "model_answer": "(a) For a rectangular glass slab, the angle of incidence (∠i) at the air-glass interface is equal to the angle of emergence (∠e) at the glass-air interface. The emergent ray is parallel to the incident ray but laterally displaced.\n\n(b) According to Snell's Law, the refractive index (n) = sin i / sin r\nGiven: ∠i = 45°, ∠r = 30°\nn = sin 45° / sin 30°\nn = (1/√2) / (1/2)\nn = 2/√2 = √2\nTherefore, the refractive index of the glass material is √2 (approximately 1.414).\n\n(c) The light ray bends when it enters the glass slab from air because light travels at different speeds in different media. When light passes from a rarer medium (air) to a denser medium (glass), its speed decreases, causing it to bend towards the normal. Conversely, when it passes from glass to air, its speed increases, and it bends away from the normal.\n\nOne factor that affects the amount of bending (refraction) is the refractive index of the two media. A larger difference in refractive indices between the two media results in a greater amount of bending.",
+                        "topic": "Light – Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2022_q38",
+                        "question_text": "A group of students visited a nearby lake that was covered with a thick growth of green algae. They noticed a foul smell and some dead fish floating on the surface. The village elder informed them that the excessive growth of algae started after a nearby agricultural field began using chemical fertilizers extensively.\n\n(a) What is the phenomenon described here known as? Explain its effect on aquatic life.\n(b) Why do chemical fertilizers lead to such a situation?\n(c) Suggest one sustainable practice that farmers can adopt to avoid this problem.",
+                        "question_type": "case-based",
+                        "marks": 4,
+                        "model_answer": "(a) The phenomenon described here is known as **eutrophication**. It occurs when excessive nutrients, such as nitrates and phosphates, accumulate in a water body, leading to an abnormal increase in the growth of algae and aquatic plants (algal bloom).\n\nIts effect on aquatic life is severe: The algal bloom blocks sunlight from reaching other submerged aquatic plants, causing them to die. When the algae themselves die, decomposers (bacteria) rapidly multiply to break them down. These decomposers consume a large amount of dissolved oxygen in the water, leading to a drastic reduction in oxygen levels (hypoxia or anoxia). This lack of oxygen causes the death of other aquatic organisms like fish, leading to an imbalance in the ecosystem and foul smells.\n\n(b) Chemical fertilizers are rich in nutrients like nitrates and phosphates. When these fertilizers are used excessively on agricultural fields, rainwater runoff washes a significant portion of them into nearby water bodies like lakes and rivers. These excess nutrients act as food for algae and other aquatic plants, promoting their rapid and uncontrolled growth, thus initiating eutrophication.\n\n(c) One sustainable practice farmers can adopt to avoid this problem is to use **organic manure** (e.g., compost, farmyard manure) instead of or in conjunction with chemical fertilizers. Organic manure releases nutrients slowly and does not get washed away as easily, reducing nutrient runoff. Other practices include crop rotation, planting buffer strips along water bodies, or using precision farming techniques to apply fertilizers efficiently.",
+                        "topic": "Our Environment"
+                    },
+                    {
+                        "id": "sci_2022_q39",
+                        "question_text": "Rakesh took three test tubes A, B, and C. He filled test tube A with distilled water, B with an acidic solution, and C with a basic solution. He then added a few drops of universal indicator solution to each test tube.\n\n(a) What color would Rakesh observe in test tube A, B, and C respectively?\n(b) Explain why an aqueous solution of an acid conducts electricity while an aqueous solution of alcohol does not.\n(c) Write the chemical equation for the reaction of sodium carbonate with hydrochloric acid. How can you test the gas evolved?",
+                        "question_type": "case-based",
+                        "marks": 4,
+                        "model_answer": "(a) A universal indicator shows different colors at different pH values:\n*   In test tube A (distilled water, neutral pH ≈ 7): Rakesh would observe a **green** color.\n*   In test tube B (acidic solution, pH < 7): Rakesh would observe a **red/orange** color (depending on the strength of the acid).\n*   In test tube C (basic solution, pH > 7): Rakesh would observe a **blue/violet** color (depending on the strength of the base).\n\n(b) An aqueous solution of an acid conducts electricity because acids dissociate in water to produce hydrogen ions (H⁺) (which exist as hydronium ions, H₃O⁺) and corresponding anions. These free moving ions are responsible for carrying electric current through the solution.\n\nAn aqueous solution of alcohol (e.g., ethanol) does not conduct electricity because alcohols do not dissociate into ions in water. They are covalent compounds and remain as neutral molecules in solution, hence there are no free charge carriers to conduct electricity.\n\n(c) The chemical equation for the reaction of sodium carbonate with hydrochloric acid is:\nNa₂CO₃(s) + 2HCl(aq) → 2NaCl(aq) + H₂O(l) + CO₂(g)\n\nTo test the gas evolved (carbon dioxide): Pass the gas through lime water (calcium hydroxide solution). Carbon dioxide will turn lime water milky due to the formation of insoluble calcium carbonate: CaCO₃(s). \nCa(OH)₂(aq) + CO₂(g) → CaCO₃(s) + H₂O(l)",
+                        "topic": "Acids, Bases and Salts"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "year": 2020,
+        "subject": "Science",
+        "grade": "10th Grade",
+        "exam_title": "CBSE Class 10 Science Board Paper 2020",
+        "sections": [
+            {
+                "section_name": "Section A: Multiple Choice Questions",
+                "questions": [
+                    {
+                        "id": "sci_2020_q1",
+                        "question_text": "When an iron nail is dipped in a copper sulphate solution, the colour of the solution changes from blue to greenish-blue. This is an example of a:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Combination reaction",
+                            "Double displacement reaction",
+                            "Decomposition reaction",
+                            "Displacement reaction"
+                        ],
+                        "correct_option": "Displacement reaction",
+                        "marks": 1,
+                        "topic": "Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2020_q2",
+                        "question_text": "A solution turns red litmus paper blue. Its pH is likely to be:",
+                        "question_type": "mcq",
+                        "options": [
+                            "2",
+                            "5",
+                            "7",
+                            "10"
+                        ],
+                        "correct_option": "10",
+                        "marks": 1,
+                        "topic": "Acids, Bases and Salts"
+                    },
+                    {
+                        "id": "sci_2020_q3",
+                        "question_text": "Which of the following metals does not react with cold or hot water but reacts with steam?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Sodium",
+                            "Potassium",
+                            "Calcium",
+                            "Iron"
+                        ],
+                        "correct_option": "Iron",
+                        "marks": 1,
+                        "topic": "Metals and Non-metals"
+                    },
+                    {
+                        "id": "sci_2020_q4",
+                        "question_text": "Which of the following is an unsaturated hydrocarbon?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Ethane",
+                            "Propane",
+                            "Butane",
+                            "Ethene"
+                        ],
+                        "correct_option": "Ethene",
+                        "marks": 1,
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2020_q5",
+                        "question_text": "An element 'X' forms an oxide X₂O₃. In which group of the Modern Periodic Table is this element most likely to be placed?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Group 1",
+                            "Group 2",
+                            "Group 13",
+                            "Group 14"
+                        ],
+                        "correct_option": "Group 13",
+                        "marks": 1,
+                        "topic": "Periodic Classification of Elements"
+                    },
+                    {
+                        "id": "sci_2020_q6",
+                        "question_text": "In the reaction: MnO₂ + 4HCl → MnCl₂ + 2H₂O + Cl₂, the substance undergoing oxidation is:",
+                        "question_type": "mcq",
+                        "options": [
+                            "MnO₂",
+                            "HCl",
+                            "MnCl₂",
+                            "H₂O"
+                        ],
+                        "correct_option": "HCl",
+                        "marks": 1,
+                        "topic": "Chemical Reactions and Equations (Redox)"
+                    },
+                    {
+                        "id": "sci_2020_q7",
+                        "question_text": "In anaerobic respiration in yeast, glucose is broken down into:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Lactic acid and water",
+                            "Carbon dioxide and water",
+                            "Ethanol and carbon dioxide",
+                            "Pyruvate and water"
+                        ],
+                        "correct_option": "Ethanol and carbon dioxide",
+                        "marks": 1,
+                        "topic": "Life Processes (Respiration)"
+                    },
+                    {
+                        "id": "sci_2020_q8",
+                        "question_text": "Which plant hormone promotes cell division?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Auxin",
+                            "Gibberellin",
+                            "Cytokinin",
+                            "Abscisic acid"
+                        ],
+                        "correct_option": "Cytokinin",
+                        "marks": 1,
+                        "topic": "Control and Coordination (Plant Hormones)"
+                    },
+                    {
+                        "id": "sci_2020_q9",
+                        "question_text": "Which of the following is a sexually transmitted disease caused by a bacterium?",
+                        "question_type": "mcq",
+                        "options": [
+                            "AIDS",
+                            "Gonorrhea",
+                            "Warts",
+                            "Hepatitis B"
+                        ],
+                        "correct_option": "Gonorrhea",
+                        "marks": 1,
+                        "topic": "How do Organisms Reproduce? (Reproductive Health)"
+                    },
+                    {
+                        "id": "sci_2020_q10",
+                        "question_text": "The phenotypic ratio of a monohybrid cross between two heterozygous parents (e.g., Tt x Tt) for a trait showing complete dominance is:",
+                        "question_type": "mcq",
+                        "options": [
+                            "1:2:1",
+                            "3:1",
+                            "9:3:3:1",
+                            "1:1"
+                        ],
+                        "correct_option": "3:1",
+                        "marks": 1,
+                        "topic": "Heredity and Evolution (Mendel's Laws)"
+                    },
+                    {
+                        "id": "sci_2020_q11",
+                        "question_text": "In a food chain, the maximum amount of energy is present at the level of:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Producers",
+                            "Primary Consumers",
+                            "Secondary Consumers",
+                            "Tertiary Consumers"
+                        ],
+                        "correct_option": "Producers",
+                        "marks": 1,
+                        "topic": "Our Environment (Food Chains and Energy Flow)"
+                    },
+                    {
+                        "id": "sci_2020_q12",
+                        "question_text": "Which component of blood helps in the transport of oxygen?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Platelets",
+                            "Plasma",
+                            "Red Blood Cells",
+                            "White Blood Cells"
+                        ],
+                        "correct_option": "Red Blood Cells",
+                        "marks": 1,
+                        "topic": "Life Processes (Transportation in Humans)"
+                    },
+                    {
+                        "id": "sci_2020_q13",
+                        "question_text": "The structural and functional unit of the kidney is called a:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Neuron",
+                            "Alveolus",
+                            "Nephron",
+                            "Bronchiole"
+                        ],
+                        "correct_option": "Nephron",
+                        "marks": 1,
+                        "topic": "Life Processes (Excretion)"
+                    },
+                    {
+                        "id": "sci_2020_q14",
+                        "question_text": "When a ray of light passes from a rarer medium (e.g., air) to a denser medium (e.g., glass), which of the following characteristics of the light wave remains unchanged?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Wavelength",
+                            "Frequency",
+                            "Speed",
+                            "Amplitude"
+                        ],
+                        "correct_option": "Frequency",
+                        "marks": 1,
+                        "topic": "Light - Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2020_q15",
+                        "question_text": "If the magnification produced by a spherical mirror is +2, the image formed is:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Real, inverted, magnified",
+                            "Virtual, erect, diminished",
+                            "Real, erect, magnified",
+                            "Virtual, erect, magnified"
+                        ],
+                        "correct_option": "Virtual, erect, magnified",
+                        "marks": 1,
+                        "topic": "Light - Reflection and Refraction (Spherical Mirrors)"
+                    },
+                    {
+                        "id": "sci_2020_q16",
+                        "question_text": "For a metallic conductor, a V-I graph is a straight line passing through the origin. The slope of this V-I graph represents:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Current",
+                            "Power",
+                            "Resistance",
+                            "Voltage"
+                        ],
+                        "correct_option": "Resistance",
+                        "marks": 1,
+                        "topic": "Electricity (Ohm's Law)"
+                    },
+                    {
+                        "id": "sci_2020_q17",
+                        "question_text": "An electric bulb is rated 220V and 100W. When it is operated on 110V, the power consumed will be:",
+                        "question_type": "mcq",
+                        "options": [
+                            "100W",
+                            "75W",
+                            "50W",
+                            "25W"
+                        ],
+                        "correct_option": "25W",
+                        "marks": 1,
+                        "topic": "Electricity (Electric Power)"
+                    },
+                    {
+                        "id": "sci_2020_q18",
+                        "question_text": "A current-carrying conductor is placed perpendicular to a uniform magnetic field. The direction of the force experienced by the conductor is determined by:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Right-Hand Thumb Rule",
+                            "Fleming's Right-Hand Rule",
+                            "Fleming's Left-Hand Rule",
+                            "Maxwell's Corkscrew Rule"
+                        ],
+                        "correct_option": "Fleming's Left-Hand Rule",
+                        "marks": 1,
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2020_q19",
+                        "question_text": "The least distance of distinct vision for a normal human eye is approximately:",
+                        "question_type": "mcq",
+                        "options": [
+                            "2.5 cm",
+                            "25 cm",
+                            "2.5 m",
+                            "25 m"
+                        ],
+                        "correct_option": "25 cm",
+                        "marks": 1,
+                        "topic": "The Human Eye and the Colourful World"
+                    },
+                    {
+                        "id": "sci_2020_q20",
+                        "question_text": "Which of the following is a non-renewable source of energy?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Solar energy",
+                            "Wind energy",
+                            "Biomass energy",
+                            "Coal"
+                        ],
+                        "correct_option": "Coal",
+                        "marks": 1,
+                        "topic": "Sources of Energy"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section B: Very Short Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2020_q21",
+                        "question_text": "Name the gas produced when dilute hydrochloric acid is added to a reactive metal like zinc. Write the chemical equation for the reaction. How would you test for the presence of this gas?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "When dilute hydrochloric acid is added to a reactive metal like zinc, Hydrogen gas (H₂) is produced.\nChemical Equation: Zn(s) + 2HCl(aq) → ZnCl₂(aq) + H₂(g)\nTest for Hydrogen gas: Bring a burning splinter or candle near the mouth of the test tube containing the gas. The gas burns with a 'pop' sound, confirming the presence of hydrogen.",
+                        "topic": "Acids, Bases and Salts / Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2020_q22",
+                        "question_text": "What is the role of the diaphragm in human respiration?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "The diaphragm is a muscular septum that separates the thoracic cavity from the abdominal cavity. Its role in human respiration is:\n1.  **Inhalation:** During inhalation, the diaphragm contracts and flattens, increasing the volume of the thoracic cavity. This reduces the pressure inside the lungs, causing air to rush in.\n2.  **Exhalation:** During exhalation, the diaphragm relaxes and moves upwards, decreasing the volume of the thoracic cavity. This increases the pressure inside the lungs, forcing air out.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2020_q23",
+                        "question_text": "State two properties of a magnetic field line.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Two properties of a magnetic field line are:\n1.  Magnetic field lines emerge from the North pole and merge at the South pole (outside the magnet). Inside the magnet, their direction is from the South pole to the North pole.\n2.  No two magnetic field lines intersect each other. If they did, it would mean that at the point of intersection, the compass needle would point in two directions, which is not possible.",
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2020_q24",
+                        "question_text": "Why do covalent compounds generally have low melting and boiling points?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Covalent compounds generally have low melting and boiling points because:\n1.  They are formed by the sharing of electrons between atoms, resulting in discrete molecules.\n2.  The forces of attraction between these individual molecules (intermolecular forces) are very weak. Therefore, a small amount of energy is required to overcome these weak intermolecular forces, leading to low melting and boiling points.",
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2020_q25",
+                        "question_text": "Define absolute refractive index. State its S.I. unit.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "The absolute refractive index of a medium is defined as the ratio of the speed of light in vacuum (or air) to the speed of light in that medium.\nMathematically, n = c/v, where 'c' is the speed of light in vacuum and 'v' is the speed of light in the medium.\nIt is a ratio of two similar quantities (speeds) and therefore has no S.I. unit; it is a dimensionless quantity.",
+                        "topic": "Light - Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2020_q26",
+                        "question_text": "What are decomposers? Give an example and state their role in the ecosystem.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Decomposers are microorganisms, such as bacteria and fungi, that obtain nutrients by breaking down the dead remains and waste products of other organisms.\nExample: Bacteria, Fungi.\nTheir role in the ecosystem is crucial for:\n1.  **Recycling Nutrients:** They break down complex organic matter into simpler inorganic substances (like CO₂, water, and nutrients) that are released back into the soil, water, and air, making them available for producers (plants).\n2.  **Cleaning the Environment:** They help in cleaning the environment by decomposing dead bodies and waste materials, thus preventing their accumulation.",
+                        "topic": "Our Environment"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section C: Short Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2020_q27",
+                        "question_text": "A student collected a solution 'X' from a roadside drain and observed that it turned red litmus blue and phenolphthalein indicator pink. \n(a) What can be inferred about the nature of solution 'X'?\n(b) Write the chemical equation for the reaction that occurs when solution 'X' is treated with an acid like HCl.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "(a) Since solution 'X' turns red litmus blue and phenolphthalein indicator pink, it can be inferred that solution 'X' is basic in nature.\n(b) Assuming solution 'X' is a common base like sodium hydroxide (NaOH) found in some industrial effluents or decaying organic matter:\nNaOH(aq) + HCl(aq) → NaCl(aq) + H₂O(l)\n(A neutralization reaction occurs, forming salt and water.)",
+                        "topic": "Acids, Bases and Salts"
+                    },
+                    {
+                        "id": "sci_2020_q28",
+                        "question_text": "List three differences between arteries and veins.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Three differences between arteries and veins are:\n\n| Feature        | Arteries                                    | Veins                                       |\n|----------------|---------------------------------------------|---------------------------------------------|\n| **1. Wall**    | Thick, elastic, and muscular                | Thin and less elastic                       |\n| **2. Blood Flow** | Carry blood away from the heart          | Carry blood towards the heart               |\n| **3. Valves**  | No valves (except at the heart exit)        | Have valves to prevent backflow of blood    |\n| **4. Lumen**   | Narrow lumen                                | Wide lumen                                  |\n| **5. Pressure** | Blood flows under high pressure             | Blood flows under low pressure              |\n(Any three of these differences would be acceptable.)",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2020_q29",
+                        "question_text": "Draw a neat labelled diagram of the magnetic field lines around a current-carrying straight conductor. Mark the direction of the magnetic field lines.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "The diagram should show:\n1.  A straight conductor (wire) carrying current, usually vertically.\n2.  Concentric circles around the wire representing magnetic field lines.\n3.  Arrows on the concentric circles indicating the direction of the magnetic field, determined by the Right-Hand Thumb Rule (e.g., if current is upwards, field lines are anti-clockwise).\n4.  Labels for 'Current direction' and 'Magnetic field lines'.\n\n*(Self-correction: Cannot draw a diagram in JSON. I will describe the expected diagram. The question asks for a drawing, so the model answer should reflect what would be expected in a drawing.)*\n\n**Expected Diagram Description:**\n-   A straight vertical line representing the current-carrying conductor.\n-   An upward arrow on the line to indicate the direction of current.\n-   Several concentric circles drawn around the conductor, centered on it.\n-   Curved arrows on these concentric circles, all pointing in the same direction (either clockwise or anti-clockwise, consistent with the Right-Hand Thumb Rule for the given current direction) to show the direction of the magnetic field lines.\n-   Labels: 'Current (I)', 'Conductor', 'Magnetic Field Lines'.",
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2020_q30",
+                        "question_text": "Explain how the sex of a child is determined in human beings.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "In human beings, the sex of a child is determined by the combination of sex chromosomes inherited from the parents:\n1.  **Chromosomes:** Humans have 23 pairs of chromosomes. Out of these, 22 pairs are autosomes, and one pair consists of sex chromosomes.\n2.  **Female:** Females have two X chromosomes (XX).\n3.  **Male:** Males have one X and one Y chromosome (XY).\n4.  **Gametes:** During gamete formation (meiosis), an egg cell (from the mother) will always carry an X chromosome. A sperm cell (from the father) can carry either an X chromosome or a Y chromosome (in approximately equal proportions).\n5.  **Fertilization:**\n    *   If a sperm carrying an X chromosome fertilizes the egg, the resulting zygote will have XX chromosomes, developing into a female child.\n    *   If a sperm carrying a Y chromosome fertilizes the egg, the resulting zygote will have XY chromosomes, developing into a male child.\nTherefore, the sex of the child is determined by the type of sperm that fertilizes the egg, making the father responsible for determining the sex of the child.",
+                        "topic": "Heredity and Evolution"
+                    },
+                    {
+                        "id": "sci_2020_q31",
+                        "question_text": "Give reasons for the following:\n(a) Ionic compounds have high melting points.\n(b) Carbonate and sulphide ores are converted into oxides during the process of extraction.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "(a) **Ionic compounds have high melting points:** Ionic compounds are formed by the transfer of electrons, resulting in the formation of strong electrostatic forces of attraction between positively charged ions (cations) and negatively charged ions (anions). These strong inter-ionic forces require a significant amount of energy to overcome, leading to high melting points.\n\n(b) **Carbonate and sulphide ores are converted into oxides during the process of extraction:** It is easier to reduce metal oxides to pure metal compared to metal carbonates or sulphides. Therefore:\n    *   Carbonate ores are converted to oxides by calcination (heating strongly in limited air).\n    *   Sulphide ores are converted to oxides by roasting (heating strongly in excess air).\n    The resulting metal oxides can then be easily reduced using reducing agents like carbon to obtain the metal.",
+                        "topic": "Metals and Non-metals"
+                    },
+                    {
+                        "id": "sci_2020_q32",
+                        "question_text": "Draw a labelled ray diagram to show the formation of an image by a convex lens when an object is placed at 2F₁.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "The diagram should include:\n1.  A convex lens with its optical centre (O), principal axis, and principal foci (F₁, F₂) and centres of curvature (2F₁, 2F₂) marked on both sides.\n2.  An object (e.g., an arrow) placed at 2F₁.\n3.  At least two principal rays originating from the top of the object:\n    *   A ray parallel to the principal axis passing through F₂ after refraction.\n    *   A ray passing through the optical centre (O) without deviation.\n    *   (Optional: A ray passing through F₁ becoming parallel to the principal axis after refraction).\n4.  The intersection of refracted rays forming an image at 2F₂.\n5.  The image formed should be:\n    *   At 2F₂\n    *   Real and inverted\n    *   Same size as the object\n6.  Labels for 'Object', 'Image', 'Convex Lens', 'Principal Axis', 'F₁', 'F₂', '2F₁', '2F₂', 'O'.\n\n*(Self-correction: Cannot draw a diagram in JSON. I will describe the expected diagram and its characteristics.)*\n\n**Expected Diagram Description:**\n-   A double convex lens centrally placed on a horizontal principal axis.\n-   Markings: Optical centre 'O', Foci 'F₁' and 'F₂' (equidistant from O on either side), and '2F₁' and '2F₂' (at twice the focal length from O).\n-   An upright object (e.g., an arrow AB) placed vertically at 2F₁.\n-   **Ray 1:** A ray from A parallel to the principal axis, passing through F₂ after refraction.\n-   **Ray 2:** A ray from A passing through the optical centre 'O', going undeviated.\n-   These two refracted rays converge at a point 'A'' which is vertically below 2F₂.\n-   An inverted image A'B' is formed at 2F₂.\n-   **Characteristics of the image:** Real, Inverted, Same size as the object, Formed at 2F₂.",
+                        "topic": "Light - Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2020_q33",
+                        "question_text": "What is meant by homologous series? List any two characteristics of a homologous series with an example.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "A **homologous series** is a series of organic compounds in which all members have the same functional group and similar chemical properties, and successive members differ by a -CH₂ unit.\n\n**Characteristics of a homologous series:**\n1.  **Same General Formula:** All members of a particular homologous series can be represented by a common general formula (e.g., alkanes C₂H₂n+2, alkenes C₂H₂n, alkynes C₂H₂n-2, alcohols C₂H₂n+1OH).\n2.  **Successive members differ by -CH₂ unit:** Any two adjacent members in a homologous series differ by one -CH₂ group in their molecular formula and by 14 amu in their molecular mass.\n3.  **Similar Chemical Properties:** Due to the presence of the same functional group, all members exhibit similar chemical properties.\n4.  **Gradation in Physical Properties:** As the molecular mass increases in the series, there is a gradual change in physical properties such as melting point, boiling point, and density.\n\n**Example:** The alcohol homologous series:\n*   Methanol (CH₃OH)\n*   Ethanol (CH₃CH₂OH)\n*   Propanol (CH₃CH₂CH₂OH)",
+                        "topic": "Carbon and its Compounds"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section D: Long Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2020_q34",
+                        "question_text": "An electric lamp of 100 Ω, a toaster of 50 Ω, and a water filter of 500 Ω are connected in parallel to a 220 V source.\n(a) What is the resistance of an electric iron connected to the same source that takes as much current as all three appliances?\n(b) What is the current flowing through the electric iron?\n(c) Calculate the total power consumed by the three appliances.",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "(a) Let R₁ = 100 Ω (electric lamp)\n    Let R₂ = 50 Ω (toaster)\n    Let R₃ = 500 Ω (water filter)\n    These are connected in parallel to a 220 V source.\n\n    The equivalent resistance (R_eq) of parallel combination is given by:\n    1/R_eq = 1/R₁ + 1/R₂ + 1/R₃\n    1/R_eq = 1/100 + 1/50 + 1/500\n    1/R_eq = (5 + 10 + 1) / 500\n    1/R_eq = 16 / 500\n    R_eq = 500 / 16 = 31.25 Ω\n\n    The total current (I_total) drawn by the three appliances is:\n    I_total = V / R_eq = 220 V / 31.25 Ω = 7.04 A\n\n    The electric iron takes as much current as all three appliances, so the current flowing through the iron (I_iron) is 7.04 A.\n    The resistance of the electric iron (R_iron) is:\n    R_iron = V / I_iron = 220 V / 7.04 A = 31.25 Ω\n\n    **Answer (a): The resistance of the electric iron is 31.25 Ω.**\n\n(b) From part (a), the total current drawn by the three appliances is 7.04 A. Since the electric iron takes as much current as all three appliances:\n    **Answer (b): The current flowing through the electric iron is 7.04 A.**\n\n(c) The total power consumed by the three appliances is:\n    P_total = V × I_total  OR  P_total = V² / R_eq\n    P_total = 220 V × 7.04 A = 1548.8 W\n    OR\n    P_total = (220 V)² / 31.25 Ω = 48400 / 31.25 = 1548.8 W\n\n    **Answer (c): The total power consumed by the three appliances is 1548.8 W.**",
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2020_q35",
+                        "question_text": "Draw a well-labelled diagram of the human excretory system. Briefly describe the structure and function of the nephrons.",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "*(Self-correction: Cannot draw a diagram in JSON. I will describe the expected diagram and then the requested explanation.)*\n\n**Expected Diagram Description:**\n-   The diagram should show two kidneys, located on either side of the backbone.\n-   Renal artery entering each kidney and renal vein exiting each kidney.\n-   Two ureters originating from the kidneys and descending to the urinary bladder.\n-   A single urinary bladder.\n-   A urethra originating from the bladder.\n-   Labels: Kidney, Renal artery, Renal vein, Ureter, Urinary bladder, Urethra, Aorta, Vena Cava.\n\n**Structure and Function of Nephrons:**\n**Structure:**\n1.  **Nephron:** Each kidney contains millions of microscopic filtering units called nephrons. Each nephron consists of two main parts: a renal corpuscle and a renal tubule.\n2.  **Renal Corpuscle:** Comprises:\n    *   **Glomerulus:** A tuft of capillaries through which blood is filtered.\n    *   **Bowman's Capsule:** A cup-shaped structure that encloses the glomerulus.\n3.  **Renal Tubule:** A long, convoluted tube extending from Bowman's capsule, divided into:\n    *   **Proximal Convoluted Tubule (PCT)**\n    *   **Loop of Henle** (descending and ascending limbs)\n    *   **Distal Convoluted Tubule (DCT)**\n    *   The DCT opens into a **Collecting Duct**, which receives urine from many nephrons and eventually leads to the ureters.\n\n**Function:**\n1.  **Filtration (in Glomerulus and Bowman's Capsule):** Blood enters the glomerulus under high pressure. Water, salts, glucose, amino acids, urea, etc., are filtered out from the blood into Bowman's capsule, forming the glomerular filtrate. Large proteins and blood cells are retained in the blood.\n2.  **Reabsorption (in PCT, Loop of Henle, DCT):** As the filtrate passes through the renal tubule, essential substances like glucose, amino acids, most of the water, and some salts are selectively reabsorbed back into the blood capillaries surrounding the tubule. The amount of water reabsorbed depends on how much excess water there is in the body and on the amount of dissolved waste to be excreted.\n3.  **Tubular Secretion (in DCT):** Waste products like excess ions (K+, H+), and some drugs are secreted from the blood into the filtrate in the DCT, ensuring efficient removal of wastes.\n4.  **Urine Formation:** The remaining filtrate, now highly concentrated with waste products like urea, creatinine, and excess salts, is called urine. It passes into the collecting duct, then to the ureter, urinary bladder, and is finally expelled from the body via the urethra.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2020_q36",
+                        "question_text": "(a) With the help of suitable ray diagrams, explain the formation of image by a concave mirror when an object is placed:\n    (i) between pole and focus (P and F)\n    (ii) at the centre of curvature (C)\n(b) State the nature and magnification of the image formed in each case.",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "*(Self-correction: Cannot draw diagrams in JSON. I will describe the expected diagrams and then the characteristics.)*\n\n**(a) Ray Diagrams for Concave Mirror:**\n\n**(i) Object placed between Pole (P) and Focus (F):**\n    **Expected Diagram Description:**\n    -   A concave mirror with Pole (P), Focus (F), and Centre of Curvature (C) marked on the principal axis.\n    -   An object (e.g., arrow AB) placed upright between P and F.\n    -   **Ray 1:** A ray from A parallel to the principal axis, reflecting through F.\n    -   **Ray 2:** A ray from A passing through C, reflecting back along the same path.\n    -   These reflected rays appear to diverge from each other. Extend them backwards (dashed lines) behind the mirror.\n    -   The extended rays intersect behind the mirror, forming a virtual, upright image A'B'.\n\n    **Image characteristics:**\n    *   **Position:** Behind the mirror\n    *   **Nature:** Virtual and erect\n    *   **Size:** Magnified (larger than the object)\n\n**(ii) Object placed at the Centre of Curvature (C):**\n    **Expected Diagram Description:**\n    -   A concave mirror with P, F, and C marked on the principal axis.\n    -   An object (e.g., arrow AB) placed upright at C.\n    -   **Ray 1:** A ray from A parallel to the principal axis, reflecting through F.\n    -   **Ray 2:** A ray from A passing through F, reflecting parallel to the principal axis.\n    -   These reflected rays intersect at C, forming a real, inverted image A'B' at C.\n\n    **Image characteristics:**\n    *   **Position:** At C\n    *   **Nature:** Real and inverted\n    *   **Size:** Same size as the object\n\n**(b) Nature and Magnification of the image formed:**\n\n(i) **Object between P and F:**\n    *   **Nature:** Virtual and erect\n    *   **Magnification:** Positive and greater than 1 (m > +1)\n\n(ii) **Object at C:**\n    *   **Nature:** Real and inverted\n    *   **Magnification:** Negative and equal to 1 (m = -1)",
+                        "topic": "Light - Reflection and Refraction"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section E: Case-Based Questions",
+                "questions": [
+                    {
+                        "id": "sci_2020_q37",
+                        "question_text": "The nervous system is a complex network of nerves and cells that carry messages to and from the brain and spinal cord to various parts of the body. It is responsible for controlling all body activities, including voluntary and involuntary actions. Reflex actions are sudden, involuntary responses to stimuli. They are controlled by the spinal cord and do not involve conscious thought by the brain, although the brain receives information about the reflex action after it has occurred.\n\n(a) Give one example of a reflex action in humans.\n(b) What is a 'reflex arc'? Draw a flow chart showing the components of a reflex arc.\n(c) How are messages transmitted across a synapse?",
+                        "question_type": "case_based",
+                        "marks": 4,
+                        "model_answer": "(a) One example of a reflex action in humans is: Withdrawal of hand/leg immediately upon touching a hot object; blinking of eyes; coughing; sneezing.\n\n(b) A 'reflex arc' is the pathway followed by a nerve impulse during a reflex action. It is the neural path that mediates a reflex action.\n\n    **Flow Chart of Reflex Arc Components:**\n    Stimulus → Receptor (sense organ) → Sensory neuron → Spinal cord (relay neuron) → Motor neuron → Effector (muscle/gland) → Response\n\n(c) Messages are transmitted across a synapse in the following way:\n    1.  When an electrical impulse (nerve impulse) reaches the end of an axon (presynaptic terminal) of a neuron, it triggers the release of chemical substances called neurotransmitters.\n    2.  These neurotransmitters cross the synaptic cleft (the tiny gap between two neurons).\n    3.  They bind to specific receptor proteins on the dendrite (postsynaptic terminal) of the next neuron.\n    4.  This binding generates a new electrical impulse in the next neuron, thereby transmitting the message.",
+                        "topic": "Control and Coordination"
+                    },
+                    {
+                        "id": "sci_2020_q38",
+                        "question_text": "A student sets up an experiment to study the magnetic effect of current. He passes a current through a straight conductor and places a compass needle nearby. He observes that the compass needle deflects. He then tries to determine the direction of the magnetic field lines around the conductor.\n\n(a) What rule can be used to determine the direction of the magnetic field lines around a straight current-carrying conductor?\n(b) How does the strength of the magnetic field change if the current through the conductor is increased?\n(c) If the direction of current in the conductor is reversed, how will the deflection of the compass needle change?\n(d) Why does a freely suspended current-carrying solenoid behave like a bar magnet?",
+                        "question_type": "case_based",
+                        "marks": 4,
+                        "model_answer": "(a) The **Right-Hand Thumb Rule** (or Maxwell's Corkscrew Rule) can be used to determine the direction of the magnetic field lines around a straight current-carrying conductor.\n\n(b) The strength of the magnetic field is directly proportional to the current flowing through the conductor. Therefore, if the current through the conductor is increased, the **strength of the magnetic field also increases**.\n\n(c) If the direction of current in the conductor is reversed, the direction of the magnetic field will also reverse. Consequently, the **deflection of the compass needle will reverse its direction**.\n\n(d) A freely suspended current-carrying solenoid behaves like a bar magnet because:\n    1.  When current flows through the solenoid, it creates a magnetic field similar to that of a bar magnet.\n    2.  One end of the solenoid acts as a North pole, and the other end acts as a South pole.\n    3.  When freely suspended, it aligns itself in the North-South direction, just like a bar magnet, demonstrating its magnetic properties.",
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2020_q39",
+                        "question_text": "Mendeleev's Periodic Table was a significant step in the classification of elements. He arranged elements in the order of increasing atomic masses and observed periodicity in their properties. However, there were some limitations. The Modern Periodic Table, proposed by Henry Moseley, addresses these limitations by arranging elements based on their atomic number.\n\n(a) State Mendeleev's Periodic Law.\n(b) Name any two elements whose positions were a challenge in Mendeleev's Periodic Table due to isotopes.\n(c) How did the Modern Periodic Table resolve the problem of isotopes?\n(d) What is the fundamental property of elements used for classification in the Modern Periodic Table?",
+                        "question_type": "case_based",
+                        "marks": 4,
+                        "model_answer": "(a) **Mendeleev's Periodic Law** states that the properties of elements are a periodic function of their atomic masses.\n\n(b) Two elements whose positions were a challenge due to isotopes in Mendeleev's Periodic Table are **chlorine (Cl) and hydrogen (H)** (or any other element with isotopes, like carbon).\n\n(c) The Modern Periodic Table resolved the problem of isotopes because it is based on **atomic number** (number of protons), not atomic mass. All isotopes of an element have the same atomic number but different atomic masses. Since the classification is based on atomic number, all isotopes of an element are placed at the same position in the Modern Periodic Table.\n\n(d) The fundamental property of elements used for classification in the Modern Periodic Table is their **atomic number**.",
+                        "topic": "Periodic Classification of Elements"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "year": 2019,
+        "subject": "Science",
+        "grade": "10th Grade",
+        "exam_title": "CBSE Class 10 Science Board Paper 2019",
+        "sections": [
+            {
+                "section_name": "Section A: Multiple Choice Questions",
+                "questions": [
+                    {
+                        "id": "sci_2019_q1",
+                        "question_text": "A ray of light passes from air into a denser medium. Which of the following statements is true?",
+                        "question_type": "mcq",
+                        "options": [
+                            "It bends away from the normal.",
+                            "It bends towards the normal.",
+                            "It passes undeviated.",
+                            "It reflects back into the air."
+                        ],
+                        "correct_option": "It bends towards the normal.",
+                        "marks": 1,
+                        "topic": "Light - Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2019_q2",
+                        "question_text": "Which of the following reactions is an example of a double displacement reaction?",
+                        "question_type": "mcq",
+                        "options": [
+                            "2H₂(g) + O₂(g) → 2H₂O(l)",
+                            "AgNO₃(aq) + NaCl(aq) → AgCl(s) + NaNO₃(aq)",
+                            "CaCO₃(s) → CaO(s) + CO₂(g)",
+                            "Zn(s) + H₂SO₄(aq) → ZnSO₄(aq) + H₂(g)"
+                        ],
+                        "correct_option": "AgNO₃(aq) + NaCl(aq) → AgCl(s) + NaNO₃(aq)",
+                        "marks": 1,
+                        "topic": "Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2019_q3",
+                        "question_text": "The main function of villi in the small intestine is to:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Secrete digestive enzymes.",
+                            "Help in the mixing of food.",
+                            "Increase the surface area for absorption.",
+                            "Store undigested food."
+                        ],
+                        "correct_option": "Increase the surface area for absorption.",
+                        "marks": 1,
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2019_q4",
+                        "question_text": "If the current flowing through a fixed resistor is doubled, the heat produced in it will become:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Half",
+                            "Double",
+                            "Four times",
+                            "One-fourth"
+                        ],
+                        "correct_option": "Four times",
+                        "marks": 1,
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2019_q5",
+                        "question_text": "Plaster of Paris is chemically known as:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Calcium sulphate dihydrate",
+                            "Calcium carbonate",
+                            "Calcium sulphate hemihydrate",
+                            "Sodium bicarbonate"
+                        ],
+                        "correct_option": "Calcium sulphate hemihydrate",
+                        "marks": 1,
+                        "topic": "Acids, Bases and Salts"
+                    },
+                    {
+                        "id": "sci_2019_q6",
+                        "question_text": "Which of the following endocrine glands is present in both males and females?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Testes",
+                            "Ovaries",
+                            "Thyroid",
+                            "Adrenal medulla"
+                        ],
+                        "correct_option": "Thyroid",
+                        "marks": 1,
+                        "topic": "Control and Coordination"
+                    },
+                    {
+                        "id": "sci_2019_q7",
+                        "question_text": "A current-carrying straight conductor is placed in a magnetic field. It experiences a force. The direction of this force is given by:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Right-hand thumb rule",
+                            "Fleming's left-hand rule",
+                            "Fleming's right-hand rule",
+                            "Ohm's law"
+                        ],
+                        "correct_option": "Fleming's left-hand rule",
+                        "marks": 1,
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2019_q8",
+                        "question_text": "Which of the following non-metal is lustrous?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Sulphur",
+                            "Oxygen",
+                            "Nitrogen",
+                            "Iodine"
+                        ],
+                        "correct_option": "Iodine",
+                        "marks": 1,
+                        "topic": "Metals and Non-metals"
+                    },
+                    {
+                        "id": "sci_2019_q9",
+                        "question_text": "The process of fusion of male and female gametes is called:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Pollination",
+                            "Fertilization",
+                            "Germination",
+                            "Budding"
+                        ],
+                        "correct_option": "Fertilization",
+                        "marks": 1,
+                        "topic": "How do Organisms Reproduce?"
+                    },
+                    {
+                        "id": "sci_2019_q10",
+                        "question_text": "The splitting of white light into its component colours when passing through a prism is called:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Refraction",
+                            "Reflection",
+                            "Dispersion",
+                            "Scattering"
+                        ],
+                        "correct_option": "Dispersion",
+                        "marks": 1,
+                        "topic": "Human Eye and Colourful World"
+                    },
+                    {
+                        "id": "sci_2019_q11",
+                        "question_text": "Which of the following is an unsaturated hydrocarbon?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Ethane",
+                            "Methane",
+                            "Propene",
+                            "Butane"
+                        ],
+                        "correct_option": "Propene",
+                        "marks": 1,
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2019_q12",
+                        "question_text": "In a monohybrid cross, if the F₁ generation expresses only one of the parental traits, the trait that is expressed is called:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Recessive",
+                            "Dominant",
+                            "Co-dominant",
+                            "Intermediate"
+                        ],
+                        "correct_option": "Dominant",
+                        "marks": 1,
+                        "topic": "Heredity and Evolution"
+                    },
+                    {
+                        "id": "sci_2019_q13",
+                        "question_text": "Which of the following is a non-renewable source of energy?",
+                        "question_type": "mcq",
+                        "options": [
+                            "Solar energy",
+                            "Wind energy",
+                            "Coal",
+                            "Hydro energy"
+                        ],
+                        "correct_option": "Coal",
+                        "marks": 1,
+                        "topic": "Sources of Energy"
+                    },
+                    {
+                        "id": "sci_2019_q14",
+                        "question_text": "Elements in the same group of the modern periodic table have the same:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Number of shells",
+                            "Valence electrons",
+                            "Atomic mass",
+                            "Number of protons"
+                        ],
+                        "correct_option": "Valence electrons",
+                        "marks": 1,
+                        "topic": "Periodic Classification of Elements"
+                    },
+                    {
+                        "id": "sci_2019_q15",
+                        "question_text": "The ozone layer is found in the:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Troposphere",
+                            "Stratosphere",
+                            "Mesosphere",
+                            "Thermosphere"
+                        ],
+                        "correct_option": "Stratosphere",
+                        "marks": 1,
+                        "topic": "Our Environment"
+                    },
+                    {
+                        "id": "sci_2019_q16",
+                        "question_text": "An electric fuse is used in electrical appliances to:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Increase the current",
+                            "Decrease the current",
+                            "Protect the appliance from excessive current",
+                            "Reduce power consumption"
+                        ],
+                        "correct_option": "Protect the appliance from excessive current",
+                        "marks": 1,
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2019_q17",
+                        "question_text": "When copper powder is heated in a china dish, its surface becomes coated with a black substance. The black substance is:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Copper oxide",
+                            "Copper sulphide",
+                            "Copper carbonate",
+                            "Copper hydroxide"
+                        ],
+                        "correct_option": "Copper oxide",
+                        "marks": 1,
+                        "topic": "Chemical Reactions and Equations"
+                    },
+                    {
+                        "id": "sci_2019_q18",
+                        "question_text": "Xylem in plants is responsible for the transport of:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Food",
+                            "Water",
+                            "Amino acids",
+                            "Oxygen"
+                        ],
+                        "correct_option": "Water",
+                        "marks": 1,
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2019_q19",
+                        "question_text": "A concave mirror produces a real, inverted and magnified image when the object is placed:",
+                        "question_type": "mcq",
+                        "options": [
+                            "At infinity",
+                            "At the centre of curvature",
+                            "Between the principal focus and the centre of curvature",
+                            "Between the pole and the principal focus"
+                        ],
+                        "correct_option": "Between the principal focus and the centre of curvature",
+                        "marks": 1,
+                        "topic": "Light - Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2019_q20",
+                        "question_text": "The chemical formula for washing soda is:",
+                        "question_type": "mcq",
+                        "options": [
+                            "Na₂CO₃",
+                            "NaHCO₃",
+                            "Na₂CO₃.10H₂O",
+                            "NaOH"
+                        ],
+                        "correct_option": "Na₂CO₃.10H₂O",
+                        "marks": 1,
+                        "topic": "Acids, Bases and Salts"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section B: Very Short Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2019_q21",
+                        "question_text": "Why is respiration considered an exothermic reaction?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Respiration is considered an exothermic reaction because energy is released during this process. Glucose combines with oxygen in the cells to produce carbon dioxide and water, along with the release of a significant amount of energy in the form of ATP (adenosine triphosphate) that is used for various life processes.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2019_q22",
+                        "question_text": "Name the process by which Amoeba obtains its food. Explain it in brief.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Amoeba obtains its food by the process of **phagocytosis** (or endocytosis). When Amoeba senses food, it extends finger-like projections called pseudopodia around the food particle, engulfing it completely to form a food vacuole. Inside the food vacuole, digestive enzymes break down the food into simpler, soluble substances, which are then absorbed into the cytoplasm. The undigested waste is expelled.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2019_q23",
+                        "question_text": "An electric lamp of 100 Ω, a toaster of 50 Ω, and a water filter of 500 Ω are connected in parallel to a 220 V source. What is the resistance of an electric iron connected to the same source that takes as much current as all three appliances?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Given resistances: R1 = 100 Ω (lamp), R2 = 50 Ω (toaster), R3 = 500 Ω (water filter).\nWhen connected in parallel, the equivalent resistance (R_eq) is given by:\n1/R_eq = 1/R1 + 1/R2 + 1/R3\n1/R_eq = 1/100 + 1/50 + 1/500\nTo add, find a common denominator (500):\n1/R_eq = (5/500) + (10/500) + (1/500)\n1/R_eq = (5 + 10 + 1) / 500 = 16/500\nR_eq = 500 / 16 = 125 / 4 = 31.25 Ω\nSince the electric iron connected to the same source takes as much current as all three appliances combined, its resistance must be equal to the equivalent resistance of the parallel combination.\nTherefore, the resistance of the electric iron = 31.25 Ω.",
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2019_q24",
+                        "question_text": "What is the role of the acid in our stomach?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "The acid (hydrochloric acid) in our stomach plays two crucial roles:\n1.  **Creates an acidic medium**: It maintains an acidic pH (1.5-3.5) which is essential for the activation of the inactive enzyme pepsinogen into pepsin. Pepsin then acts on proteins to digest them.\n2.  **Kills microorganisms**: It kills bacteria and other harmful microorganisms that may enter the stomach along with food, thus protecting the body from infections.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2019_q25",
+                        "question_text": "What are homologous organs? Give an example.",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "Homologous organs are organs that have a similar basic structural plan and origin, but are adapted to perform different functions in different organisms. They indicate a common ancestry and divergent evolution.\nExample: The forelimbs of a human (for grasping), a bird (for flying), a frog (for leaping), and a lizard (for crawling). All of them have the same basic bone structure (humerus, radius, ulna, carpals, metacarpals, phalanges) but are modified for different purposes.",
+                        "topic": "Heredity and Evolution"
+                    },
+                    {
+                        "id": "sci_2019_q26",
+                        "question_text": "What is the significance of the ozone layer?",
+                        "question_type": "short",
+                        "marks": 2,
+                        "model_answer": "The ozone layer is highly significant because it absorbs most of the harmful ultraviolet (UV) radiation coming from the sun. UV radiation can cause severe damage to living organisms, including:\n1.  **In humans**: Skin cancer, cataracts, and weakening of the immune system.\n2.  **In plants**: Damage to DNA and photosynthetic processes, leading to reduced crop yields.\n3.  **In ecosystems**: Harm to aquatic life (e.g., plankton) which forms the base of marine food webs.\nThus, the ozone layer acts as a protective shield, safeguarding life on Earth from the adverse effects of UV radiation.",
+                        "topic": "Our Environment"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section C: Short Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2019_q27",
+                        "question_text": "Draw the electron dot structure for ethane (C2H6) and ethene (C2H4).",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "1.  **Ethane (C2H6)**:\n    Ethane is an alkane with a single bond between the two carbon atoms and single bonds between carbon and hydrogen atoms. Each carbon atom shares one electron pair with the other carbon atom and one electron pair with each of the three hydrogen atoms.\n    (Diagram representing C-C single bond and C-H single bonds with dots for shared electrons)\n    ```\n        H   H\n        :   :\n      H : C : C : H\n        :   :\n        H   H\n    ```\n2.  **Ethene (C2H4)**:\n    Ethene is an alkene with a double bond between the two carbon atoms and single bonds between carbon and hydrogen atoms. Each carbon atom shares two electron pairs with the other carbon atom and one electron pair with each of the two hydrogen atoms.\n    (Diagram representing C=C double bond and C-H single bonds with dots for shared electrons)\n    ```\n        H   H\n        :   :\n      H : C :: C : H\n        :   :\n    ```\n(In a textual representation, ':' denotes a shared electron pair for single bond, and '::' denotes two shared electron pairs for double bond. Actual drawing would use circles for valence shells and overlapping regions for shared electrons.)",
+                        "topic": "Carbon and its Compounds"
+                    },
+                    {
+                        "id": "sci_2019_q28",
+                        "question_text": "A student places an object 10 cm in front of a convex lens of focal length 15 cm.\n(a) Draw a ray diagram to show the formation of the image.\n(b) Determine the position and nature of the image formed.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "(a) **Ray Diagram:**\n    1.  Draw a principal axis, a convex lens with its optical centre (O), and mark focal points (F1, F2) and 2F (2F1, 2F2) on both sides at appropriate distances (F=15cm).\n    2.  Place the object (AB) 10 cm in front of the lens (between F1 and O).\n    3.  Draw a ray from point B (top of the object) parallel to the principal axis. After refraction, it passes through the principal focus F2 on the other side of the lens.\n    4.  Draw another ray from point B passing through the optical centre (O). This ray goes undeviated.\n    5.  Extend the two refracted rays backward (as they appear to diverge). The point where they appear to intersect will be B', the image of B.\n    6.  Draw A'B' perpendicular to the principal axis from B'. This is the image. The image will be formed on the same side of the lens as the object, beyond F1.\n\n(b) **Position and Nature of the Image:**\n    Given: Object distance, u = -10 cm (by sign convention)\n    Focal length of convex lens, f = +15 cm\n    Using the lens formula: 1/v - 1/u = 1/f\n    1/v - 1/(-10) = 1/15\n    1/v + 1/10 = 1/15\n    1/v = 1/15 - 1/10\n    1/v = (2 - 3)/30 = -1/30\n    v = -30 cm\n    **Position**: The image is formed at 30 cm from the lens on the same side as the object.\n\n    Magnification, m = v/u = (-30 cm) / (-10 cm) = +3\n    **Nature**: Since v is negative, the image is formed on the same side as the object (virtual). Since m is positive, the image is erect. Since |m| > 1, the image is magnified.\n    Therefore, the image is **Virtual, Erect, and Magnified**.",
+                        "topic": "Light - Reflection and Refraction"
+                    },
+                    {
+                        "id": "sci_2019_q29",
+                        "question_text": "Differentiate between asexual and sexual reproduction.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Differences between Asexual and Sexual Reproduction:\n\n| Feature            | Asexual Reproduction                          | Sexual Reproduction                               |\n| :----------------- | :-------------------------------------------- | :------------------------------------------------ |\n| **Number of Parents** | Single parent involved.                       | Generally two parents (male and female) are involved. |\n| **Gametes**        | No gamete formation or fusion occurs.         | Gametes (sperm and egg) are formed and fuse during fertilization. |\n| **Offspring**      | Genetically identical to the parent (clones) with very little variation. | Genetically different from both parents and from each other, showing significant variation. |\n| **Cell Division**  | Primarily involves mitotic cell division.     | Involves meiosis for gamete formation and then mitosis for growth and development of the zygote. |\n| **Evolutionary Role**| Less variation, leading to slower adaptation to changing environments. | Provides significant variation, enabling faster adaptation and evolution of the species. |\n| **Examples**       | Budding (Hydra, yeast), Binary Fission (Amoeba, bacteria), Fragmentation (Spirogyra), Spore formation (Rhizopus), Vegetative propagation (plants). | Humans, most animals, flowering plants.           |",
+                        "topic": "How Do Organisms Reproduce?"
+                    },
+                    {
+                        "id": "sci_2019_q30",
+                        "question_text": "Describe how metals react with non-metals. Give an example.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "Metals react with non-metals by the **transfer of electrons** from the metal atoms to the non-metal atoms, leading to the formation of ionic bonds and ionic compounds.\n\n**Process:**\n1.  **Metals lose electrons**: Metal atoms typically have 1, 2, or 3 valence electrons. To achieve a stable electron configuration (like that of a noble gas), they tend to lose these valence electrons, forming positively charged ions called **cations**.\n2.  **Non-metals gain electrons**: Non-metal atoms usually have 5, 6, or 7 valence electrons. To achieve a stable electron configuration, they tend to gain electrons (lost by metal atoms), forming negatively charged ions called **anions**.\n3.  **Ionic bond formation**: The oppositely charged cations and anions are held together by strong electrostatic forces of attraction, which constitute the **ionic bond**. This results in the formation of an ionic compound.\n\n**Example: Formation of Sodium Chloride (NaCl)**\nSodium (Na) is a metal (atomic number 11, electronic configuration 2, 8, 1). It readily loses one electron to form a stable sodium cation:\nNa → Na⁺ + e⁻\nChlorine (Cl) is a non-metal (atomic number 17, electronic configuration 2, 8, 7). It readily gains one electron to form a stable chloride anion:\nCl + e⁻ → Cl⁻\nThe Na⁺ and Cl⁻ ions then combine due to electrostatic attraction to form sodium chloride:\nNa⁺ + Cl⁻ → NaCl",
+                        "topic": "Metals and Non-metals"
+                    },
+                    {
+                        "id": "sci_2019_q31",
+                        "question_text": "(a) Why are household circuits connected in parallel?\n(b) An electric heater of 2 kW is used for 2 hours daily. Calculate the cost of using it for 30 days if the rate is ₹ 3 per unit.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "(a) **Reasons for parallel connection in household circuits:**\n    1.  **Independent Operation**: Each appliance can be switched on or off independently without affecting the operation of other appliances in the circuit.\n    2.  **Same Voltage**: All appliances receive the full supply voltage (e.g., 220 V in India) across their terminals. If connected in series, the voltage would divide among the appliances, causing them to operate below their rated power or not function at all.\n    3.  **Optimal Current**: Each appliance draws the required amount of current as per its power rating, allowing it to function optimally. In a series circuit, the current would be the same through all appliances, which is generally not suitable for different appliances.\n\n(b) **Calculation of electricity cost:**\n    Power of electric heater (P) = 2 kW\n    Time used daily (t_daily) = 2 hours\n    Energy consumed daily = P × t_daily = 2 kW × 2 h = 4 kWh\n    Number of days = 30 days\n    Total energy consumed in 30 days = Energy consumed daily × Number of days\n    Total energy consumed = 4 kWh/day × 30 days = 120 kWh\n    (Note: 1 kWh is 1 unit of electricity)\n    Rate per unit = ₹ 3\n    Total cost = Total energy consumed × Rate per unit\n    Total cost = 120 units × ₹ 3/unit = ₹ 360.\n    The cost of using the electric heater for 30 days is ₹ 360.",
+                        "topic": "Electricity"
+                    },
+                    {
+                        "id": "sci_2019_q32",
+                        "question_text": "What is variation? Explain with an example how variations occur in sexually reproducing organisms.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "**Variation**: Variation refers to the differences in traits or characteristics among individuals of the same species. These differences can be morphological, physiological, or behavioral. Variation is fundamental for the process of evolution.\n\n**How variations occur in sexually reproducing organisms**:\nIn sexually reproducing organisms, variation primarily arises from the following processes:\n1.  **Crossing Over during Meiosis**: During the formation of gametes (sperm and egg cells) in sexual reproduction, a process called meiosis occurs. In meiosis, homologous chromosomes exchange segments of genetic material (crossing over). This recombination shuffles alleles between homologous chromosomes, creating new combinations of genes on the chromatids that are different from those present in the parents. This leads to genetically unique gametes.\n2.  **Independent Assortment of Chromosomes**: During meiosis, the homologous chromosomes align and assort independently into the gametes. The paternal and maternal chromosomes are randomly distributed to the daughter cells. This random segregation of chromosomes leads to a vast number of possible combinations of chromosomes in the gametes, further increasing genetic diversity.\n3.  **Random Fertilization**: The fusion of two genetically unique gametes (one from each parent) during fertilization is a random event. Any sperm can fertilize any egg. This random combination of two distinct sets of genetic material from two different parents results in offspring that are genetically distinct from both parents and from their siblings.\n\n**Example**: Consider human siblings. While they share the same parents, they are not identical. They might have different hair color, eye color, height, skin tone, or susceptibility to certain diseases. These differences are a result of the unique combination of genes inherited from both parents due to the processes of meiosis (crossing over and independent assortment) and the random chance of which sperm fertilizes which egg.",
+                        "topic": "Heredity and Evolution"
+                    },
+                    {
+                        "id": "sci_2019_q33",
+                        "question_text": "What are enzymes? Name two enzymes present in the human digestive system and write their functions.",
+                        "question_type": "short",
+                        "marks": 3,
+                        "model_answer": "**Enzymes** are biological catalysts, primarily protein molecules, produced by living organisms. They speed up the rate of specific biochemical reactions without being consumed in the process. They are highly specific in their action, meaning each enzyme typically catalyzes only one or a few types of reactions.\n\n**Two enzymes in the human digestive system and their functions:**\n1.  **Salivary Amylase (Ptyalin)**:\n    *   **Location**: Secreted by salivary glands in the mouth.\n    *   **Function**: Begins the digestion of complex carbohydrates (starch) into simpler sugars (maltose).\n2.  **Pepsin**:\n    *   **Location**: Secreted by the stomach lining (as inactive pepsinogen, activated by HCl).\n    *   **Function**: Acts in the acidic environment of the stomach to break down proteins into smaller peptides.\n3.  **Pancreatic Lipase**:\n    *   **Location**: Secreted by the pancreas into the small intestine.\n    *   **Function**: Digests fats (lipids) into fatty acids and glycerol.\n4.  **Trypsin**:\n    *   **Location**: Secreted by the pancreas (as inactive trypsinogen, activated in the small intestine).\n    *   **Function**: Further digests proteins and peptides into smaller peptides in the alkaline environment of the small intestine.\n(Any two of the above enzymes with their correct functions are acceptable.)",
+                        "topic": "Life Processes"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section D: Long Answer Questions",
+                "questions": [
+                    {
+                        "id": "sci_2019_q34",
+                        "question_text": "(a) Draw a neat labelled diagram of the human excretory system.\n(b) Describe the formation of urine in the human kidney.",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "(a) **Neat labelled diagram of the human excretory system:**\n    (Self-correction: Cannot draw a diagram in text, but will describe the essential labels for a 5-mark question.)\n    A well-labelled diagram would include:\n    *   **Kidneys**: Pair of bean-shaped organs (left and right).\n    *   **Renal Artery**: Brings oxygenated blood to the kidneys.\n    *   **Renal Vein**: Carries deoxygenated and filtered blood away from the kidneys.\n    *   **Ureters**: Tubes carrying urine from the kidneys to the urinary bladder.\n    *   **Urinary Bladder**: Muscular sac storing urine.\n    *   **Urethra**: Tube for expelling urine from the body.\n    *   **Aorta**: Major artery from which renal arteries branch.\n    *   **Vena Cava**: Major vein into which renal veins drain.\n\n(b) **Formation of Urine in the Human Kidney:**\n    Urine formation occurs in the nephrons, the functional units of the kidney, and involves three main processes:\n\n    1.  **Glomerular Filtration (Ultrafiltration)**:\n        *   Blood enters the glomerulus (a capillary network within Bowman's capsule) under high pressure. This high pressure is created by the afferent arteriole being wider than the efferent arteriole.\n        *   Due to this pressure, water, salts, glucose, amino acids, urea, and other small solute molecules are filtered from the blood into the Bowman's capsule. This fluid is called the **glomerular filtrate**.\n        *   Larger molecules like proteins and blood cells are not filtered and remain in the blood.\n\n    2.  **Tubular Reabsorption (Selective Reabsorption)**:\n        *   As the glomerular filtrate flows through the renal tubule (Proximal Convoluted Tubule, Henle's Loop, Distal Convoluted Tubule), many useful substances that the body needs (like all glucose, all amino acids, most salts, and a large amount of water) are selectively reabsorbed back into the blood capillaries surrounding the tubule (peritubular capillaries).\n        *   This reabsorption can be active (e.g., glucose, amino acids, some salts) or passive (e.g., water, some ions). The amount of water reabsorbed depends on the body's hydration needs, regulated by hormones like ADH.\n\n    3.  **Tubular Secretion**: \n        *   During this process, additional waste products, excess ions (like K⁺ and H⁺), and certain drugs (e.g., creatinine) are actively secreted from the blood capillaries surrounding the tubule into the filtrate in the renal tubule.\n        *   This step is crucial for maintaining the body's acid-base balance and eliminating substances that were not adequately filtered or reabsorbed.\n\n    The fluid remaining in the collecting duct after these three processes is urine, which contains excess water, salts, urea, and other metabolic wastes. This urine then flows into the ureters, to the urinary bladder for storage, and is finally expelled through the urethra.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2019_q35",
+                        "question_text": "(a) Explain the principle of an electric motor.\n(b) List any three uses of an electric motor.\n(c) What is the function of the split-ring commutator in an electric motor?",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "(a) **Principle of an Electric Motor:**\n    An electric motor works on the principle that when a current-carrying conductor (or a coil) is placed in a magnetic field, it experiences a force. The direction of this force is given by Fleming's Left-Hand Rule. If the direction of the current is perpendicular to the direction of the magnetic field, the force experienced by the conductor is maximum. In an electric motor, a rectangular coil carrying electric current is placed between the poles of a strong magnet. The forces acting on the two opposite sides of the coil (which are perpendicular to the magnetic field) are equal in magnitude and opposite in direction. These forces constitute a couple, which causes the coil to rotate continuously.\n\n(b) **Three uses of an electric motor:**\n    1.  Electric fans (ceiling fans, table fans)\n    2.  Washing machines\n    3.  Refrigerators\n    4.  Mixers and grinders\n    5.  Electric cars and locomotives\n    (Any three are acceptable)\n\n(c) **Function of the split-ring commutator in an electric motor:**\n    The split-ring commutator (also known as a mechanical rectifier or current reverser) is a crucial component of a DC electric motor. Its primary function is to **reverse the direction of the current flowing through the coil after every half rotation**. This reversal ensures that the direction of the force acting on the two sides of the coil, which creates the turning effect, always remains the same relative to the coil's motion. As a result, the coil continues to rotate in the same direction (unidirectionally), providing continuous rotation. Without the commutator, the coil would merely oscillate back and forth or stop after completing half a rotation.",
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2019_q36",
+                        "question_text": "(a) Define oxidation and reduction in terms of gain or loss of oxygen and hydrogen.\n(b) Identify the substances oxidized and reduced in the following reactions:\n    (i) CuO + H2 → Cu + H2O\n    (ii) ZnO + C → Zn + CO\n(c) Why do we apply paint on iron articles?",
+                        "question_type": "long",
+                        "marks": 5,
+                        "model_answer": "(a) **Definitions of Oxidation and Reduction:**\n    *   **Oxidation**: A chemical process that involves the:\n        *   **Gain of oxygen** by a substance.\n        *   **Loss of hydrogen** by a substance.\n    *   **Reduction**: A chemical process that involves the:\n        *   **Loss of oxygen** by a substance.\n        *   **Gain of hydrogen** by a substance.\n\n(b) **Identifying oxidized and reduced substances:**\n    (i) CuO + H2 → Cu + H2O\n        *   **Substance oxidized**: H2 (Hydrogen gains oxygen to form H2O).\n        *   **Substance reduced**: CuO (Copper oxide loses oxygen to form Cu).\n    (ii) ZnO + C → Zn + CO\n        *   **Substance oxidized**: C (Carbon gains oxygen to form CO).\n        *   **Substance reduced**: ZnO (Zinc oxide loses oxygen to form Zn).\n\n(c) **Reason for applying paint on iron articles:**\n    We apply paint on iron articles primarily to prevent them from **rusting**. Rusting is the common term for the corrosion of iron and its alloys, which occurs when iron reacts with oxygen and moisture (water) present in the atmosphere to form hydrated iron (III) oxide (rust).\n    Paint acts as a protective layer or barrier on the surface of the iron article, preventing direct contact between the iron metal and the atmospheric oxygen and moisture. By cutting off this exposure, paint effectively slows down or completely stops the electrochemical process of rusting, thereby protecting the iron article from damage and increasing its lifespan.",
+                        "topic": "Chemical Reactions and Equations"
+                    }
+                ]
+            },
+            {
+                "section_name": "Section E: Case-Based Questions",
+                "questions": [
+                    {
+                        "id": "sci_2019_q37",
+                        "question_text": "Case Study: The Human Circulatory System\nThe human circulatory system is a complex network of blood vessels, heart, and blood that circulates blood throughout the body. It is responsible for transporting oxygen, nutrients, hormones, and waste products to and from various cells and tissues. The heart acts as a pumping organ, ensuring continuous flow of blood. Blood flows through two main circuits: the pulmonary circuit (to and from the lungs) and the systemic circuit (to and from the rest of the body). The heart has four chambers: two atria and two ventricles, which are separated by a septum to prevent the mixing of oxygenated and deoxygenated blood. Valves are present to ensure unidirectional flow of blood.\n\nBased on the above information, answer the following questions:\n\n(a) Why is the separation of oxygenated and deoxygenated blood necessary in birds and mammals? (1 mark)\n(b) Name the blood vessels that carry blood from the heart to the lungs and from the lungs back to the heart. (1 mark)\n(c) Describe the path of blood through the human heart, starting from the superior/inferior vena cava until it leaves for the systemic circulation. (2 marks)",
+                        "question_type": "case-based",
+                        "marks": 4,
+                        "model_answer": "(a) The separation of oxygenated and deoxygenated blood is necessary in birds and mammals because they are warm-blooded animals and have high energy requirements to maintain their constant body temperature. This separation ensures an efficient supply of oxygen to the body tissues, which is crucial for maximizing cellular respiration and producing the large amount of energy needed for their metabolic activities and thermoregulation.\n\n(b) \n*   The blood vessel that carries blood from the heart to the lungs is the **Pulmonary Artery**.\n*   The blood vessel that carries blood from the lungs back to the heart is the **Pulmonary Vein**.\n\n(c) **Path of blood through the human heart:**\n1.  **Deoxygenated blood** from the body (collected by the superior and inferior vena cava) enters the **right atrium**.\n2.  From the right atrium, the blood passes into the **right ventricle**.\n3.  The right ventricle pumps this deoxygenated blood into the **pulmonary artery**, which carries it to the lungs for oxygenation.\n4.  **Oxygenated blood** returns from the lungs via the **pulmonary veins** and enters the **left atrium**.\n5.  From the left atrium, the blood passes into the **left ventricle**.\n6.  The left ventricle then pumps this oxygenated blood into the **aorta**, which distributes it to various parts of the body for systemic circulation.",
+                        "topic": "Life Processes"
+                    },
+                    {
+                        "id": "sci_2019_q38",
+                        "question_text": "Case Study: Magnetic Fields and Electric Currents\nHans Christian Ørsted, in 1820, made a groundbreaking discovery that an electric current flowing through a wire can deflect a compass needle. This demonstrated a fundamental relationship between electricity and magnetism. Later, scientists like Ampere and Faraday built upon this knowledge, leading to the development of electromagnets and electric generators. The magnetic field produced by a current-carrying conductor depends on factors such as the amount of current and the distance from the conductor. The direction of the magnetic field lines can be determined using the Right-Hand Thumb Rule. Furthermore, a force is exerted on a current-carrying conductor placed in a magnetic field, which is the basis for electric motors.\n\nBased on the above information, answer the following questions:\n\n(a) State the Right-Hand Thumb Rule for the direction of the magnetic field around a current-carrying straight conductor. (1 mark)\n(b) Why does a current-carrying conductor experience a force when placed in a magnetic field? (1 mark)\n(c) Consider a current flowing in a circular loop. Draw the magnetic field lines around it and explain why the field is stronger at the center of the loop. (2 marks)",
+                        "question_type": "case-based",
+                        "marks": 4,
+                        "model_answer": "(a) **Right-Hand Thumb Rule**: If you hold a current-carrying straight conductor in your right hand such that your thumb points in the direction of the current, then your curled fingers will indicate the direction of the magnetic field lines (concentric circles) around the conductor.\n\n(b) A current-carrying conductor experiences a force when placed in an external magnetic field because the magnetic field produced by the current in the conductor interacts with the external magnetic field. This interaction results in a net force on the conductor. Essentially, the moving charges (current) within the conductor experience a Lorentz force due to the external magnetic field.\n\n(c) **Magnetic field lines around a current-carrying circular loop:**\n    (Self-correction: Cannot draw in text, but will describe how it should be drawn and why the field is stronger.)\n    *   **Drawing Description**: For a circular loop, the magnetic field lines emerge from one face of the loop and enter the other, behaving like a bar magnet. Near the wire segments, the field lines are concentric circles as per the Right-Hand Thumb Rule. As we move towards the center of the loop, the field lines become progressively straighter and more parallel to each other, forming a nearly uniform field at the exact center.\n    *   **Explanation for stronger field at the center**: Every segment of the current-carrying circular loop contributes to the magnetic field in the same direction at the centre of the loop. The individual magnetic fields produced by each small segment of the current-carrying wire add up constructively at the center. Consequently, the magnetic field intensity is concentrated and thus stronger at the center of the loop compared to points away from the center or outside the loop. The close and parallel nature of field lines at the center also indicates a strong and uniform magnetic field.",
+                        "topic": "Magnetic Effects of Electric Current"
+                    },
+                    {
+                        "id": "sci_2019_q39",
+                        "question_text": "Case Study: pH in Everyday Life\npH is a measure of the acidity or alkalinity of a solution. It is defined as the negative logarithm of the hydrogen ion concentration. A pH scale typically ranges from 0 to 14. A pH of 7 indicates a neutral solution, a pH less than 7 indicates an acidic solution, and a pH greater than 7 indicates an alkaline (basic) solution. The pH value plays a crucial role in various biological processes and industrial applications. For instance, our stomach produces hydrochloric acid which helps in digestion, and soil pH significantly affects plant growth. Tooth decay is also related to pH changes in the mouth.\n\nBased on the above information, answer the following questions:\n\n(a) What is the pH range of a healthy human body (blood)? (1 mark)\n(b) How does the pH change in the mouth lead to tooth decay? What is a common remedy? (2 marks)\n(c) A farmer observes that the yield of crops in his field is low. He suspects that the soil of his field is either too acidic or too basic. How can he determine the nature of the soil? (1 mark)",
+                        "question_type": "case-based",
+                        "marks": 4,
+                        "model_answer": "(a) The pH range of healthy human blood is slightly alkaline, specifically maintained between **7.35 and 7.45**.\n\n(b) Tooth decay is caused when the pH of the mouth falls below **5.5**. Bacteria present in the mouth feed on sugar and food particles remaining after eating. These bacteria produce acids as by-products, which lower the pH of the mouth. These acids then slowly corrode and demineralize the tooth enamel (which is made of calcium phosphate), leading to cavities and tooth decay.\nA common remedy to prevent tooth decay is to use **toothpaste**, which is generally basic (alkaline). Toothpastes neutralize the excess acid produced by bacteria in the mouth, thereby bringing the pH back to a safe level and protecting the tooth enamel. Regularly rinsing the mouth after meals also helps remove food particles and reduces bacterial activity.\n\n(c) To determine the nature of the soil (whether it is too acidic or too basic), the farmer can perform a simple pH test. He can take a small sample of the soil, mix it with distilled water to make a paste or a suspension, and then either:\n    *   Dip a strip of **universal indicator paper** into the soil paste/suspension. The color change on the paper can be compared to a standard pH chart to ascertain the pH value.\n    *   Use a **pH meter**, which provides a more precise numerical pH reading when its electrode is inserted into the soil suspension.\nBased on the pH reading, the farmer can determine if the soil is acidic (pH < 7), neutral (pH ≈ 7), or basic (pH > 7).",
+                        "topic": "Acids, Bases, and Salts"
+                    }
+                ]
+            }
+        ]
+    }
+]

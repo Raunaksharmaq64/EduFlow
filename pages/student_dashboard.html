@@ -56,6 +56,10 @@
                     <i class='bx bx-slideshow'></i>
                     <span>3D Flashcards</span>
                 </div>
+                <div class="menu-item" data-panel="pyq-panel">
+                    <i class='bx bx-history'></i>
+                    <span>PYQ Exam Simulator</span>
+                </div>
                 <div class="menu-item" data-panel="assignments-panel">
                     <i class='bx bx-task'></i>
                     <span>Assignments</span>
@@ -568,6 +572,10 @@
                                 <option value="3">3</option>
                                 <option value="5" selected>5</option>
                                 <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="25">25</option>
+                                <option value="30">30</option>
                             </select>
                         </div>
                     </div>
@@ -731,6 +739,11 @@
                             <option value="3">3 Cards</option>
                             <option value="5" selected>5 Cards</option>
                             <option value="8">8 Cards</option>
+                            <option value="12">12 Cards</option>
+                            <option value="15">15 Cards</option>
+                            <option value="20">20 Cards</option>
+                            <option value="25">25 Cards</option>
+                            <option value="30">30 Cards</option>
                         </select>
                     </div>
 
@@ -794,6 +807,328 @@
                 <div class="quiz-summary-score" id="fc-summary-score" style="color: var(--secondary);">5 / 5</div>
                 <p style="font-weight: 500; color: var(--text-primary); margin-bottom: 2rem;">Keep up the active recall practice for maximum exam scores!</p>
                 <button class="btn btn-primary" id="fc-restart-btn">Review Another Deck</button>
+            </div>
+        </section>
+
+        </section>
+
+        <!-- PANEL: PYQ EXAM SIMULATOR -->
+        <section id="pyq-panel" class="dashboard-panel">
+            <!-- Setup & Hub Hub -->
+            <div id="pyq-setup-box">
+                <!-- Navigation Tabs inside the Hub -->
+                <div class="db-tabs">
+                    <button class="db-tab-btn active" onclick="switchPYQTab('board-papers-tab')" id="tab-board-papers-btn">
+                        <i class='bx bx-award'></i> CBSE Board Papers (Last 5 Years)
+                    </button>
+                    <button class="db-tab-btn" onclick="switchPYQTab('ai-simulator-tab')" id="tab-ai-simulator-btn">
+                        <i class='bx bx-magic-wand'></i> AI Custom Simulator
+                    </button>
+                    <button class="db-tab-btn" onclick="switchPYQTab('analytics-tab')" id="tab-analytics-btn">
+                        <i class='bx bx-trending-up'></i> AI Agent Analytics & Progress
+                    </button>
+                </div>
+
+                <!-- TAB: CBSE BOARD PAPERS LIST -->
+                <div id="board-papers-tab" class="pyq-tab-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h3 style="color: var(--primary); font-weight: 700; font-size: 1.3rem;">Official CBSE Previous Year Papers</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.88rem;">Solve real board papers from the past 5 years under exam conditions.</p>
+                        </div>
+                        <!-- Subject filter -->
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary btn-sm active" onclick="filterBoardPapers('All')" id="btn-filter-all">All Subjects</button>
+                            <button class="btn btn-secondary btn-sm" onclick="filterBoardPapers('Science')" id="btn-filter-science">Science</button>
+                            <button class="btn btn-secondary btn-sm" onclick="filterBoardPapers('Mathematics')" id="btn-filter-math">Mathematics</button>
+                        </div>
+                    </div>
+                    
+                    <div id="board-papers-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                        <!-- JS renders papers cards here -->
+                    </div>
+                </div>
+
+                <!-- TAB: AI SIMULATOR FORM -->
+                <div id="ai-simulator-tab" class="pyq-tab-content" style="display: none;">
+                    <div class="card" style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+                        <h3 class="card-title" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;"><i class='bx bx-network-chart'></i> Configure AI Mock Exam Pattern</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.5rem;">
+                            AI will analyze your selected pattern description, counts, or uploaded previous year question paper image, and construct a brand new mock test with matching structure.
+                        </p>
+
+                        <form id="pyq-generator-form" onsubmit="generateMockExam(event)">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
+                                <div class="form-group-db">
+                                    <label for="pyq-grade">Class / Grade</label>
+                                    <select id="pyq-grade" class="form-select-db" required>
+                                        <option value="10th Grade" selected>10th Grade</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-db">
+                                    <label for="pyq-subject">Subject</label>
+                                    <select id="pyq-subject" class="form-select-db" required>
+                                        <option value="Science" selected>Science</option>
+                                        <option value="Mathematics">Mathematics</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group-db" style="margin-bottom: 1.2rem;">
+                                <label for="pyq-pattern-type">Select Input Pattern Format</label>
+                                <select id="pyq-pattern-type" class="form-select-db" onchange="togglePatternFields()" required>
+                                    <option value="cbse_curriculum" selected>Official Latest CBSE Pattern (Full 80-Mark Board Paper)</option>
+                                    <option value="manual">Manual Count Specification (MCQ, Short, Long)</option>
+                                    <option value="text">Paste Paper Text/Description</option>
+                                    <option value="upload">Upload Paper Photo/Image</option>
+                                </select>
+                            </div>
+
+                            <!-- Manual specifications -->
+                            <div id="pyq-manual-fields" style="display: none; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.2rem;">
+                                <div class="form-group-db">
+                                    <label for="pyq-num-mcq">No. of MCQs (1 Mark)</label>
+                                    <input type="number" id="pyq-num-mcq" class="form-input-db" min="0" max="40" value="15" required>
+                                </div>
+                                <div class="form-group-db">
+                                    <label for="pyq-num-short">No. of Short (3 Marks)</label>
+                                    <input type="number" id="pyq-num-short" class="form-input-db" min="0" max="25" value="10" required>
+                                </div>
+                                <div class="form-group-db">
+                                    <label for="pyq-num-long">No. of Long (5 Marks)</label>
+                                    <input type="number" id="pyq-num-long" class="form-input-db" min="0" max="15" value="5" required>
+                                </div>
+                            </div>
+
+                            <!-- Text specifications -->
+                            <div id="pyq-text-fields" class="form-group-db" style="display: none; margin-bottom: 1.2rem;">
+                                <label for="pyq-pattern-text">Paste Previous Year Paper Text or Structure</label>
+                                <textarea id="pyq-pattern-text" class="form-input-db" rows="4" placeholder="Example: Section A: 10 MCQs on Chemical reactions. Section B: 5 short answer on Life Processes. Or paste the actual questions..."></textarea>
+                            </div>
+
+                            <!-- Upload specifications -->
+                            <div id="pyq-upload-fields" class="form-group-db" style="display: none; margin-bottom: 1.2rem;">
+                                <label for="pyq-file">Upload Image of Previous Year Paper (JPG, PNG)</label>
+                                <input type="file" id="pyq-file" class="form-input-db" accept="image/*">
+                            </div>
+
+                            <!-- Practice Duration -->
+                            <div class="form-group-db" style="margin-bottom: 1.5rem;">
+                                <label for="pyq-duration">Exam Duration</label>
+                                <select id="pyq-duration" class="form-select-db" required>
+                                    <option value="180" selected>3 Hours (Standard Exam Limit)</option>
+                                    <option value="60">1 Hour (Quick Practice)</option>
+                                    <option value="120">2 Hours</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class='bx bx-play-circle'></i> Generate & Start Exam Practice
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TAB: ANALYTICS & HISTORY -->
+                <div id="analytics-tab" class="pyq-tab-content" style="display: none;">
+                    <!-- Filter subject for analytics -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 style="color: var(--primary); font-weight: 700;">Subject-wise Progress & Accuracy</h3>
+                        <select id="analytics-subject-select" class="form-select-db" style="width: 200px;" onchange="loadPYQAnalytics()">
+                            <option value="Science" selected>Science</option>
+                            <option value="Mathematics">Mathematics</option>
+                        </select>
+                    </div>
+
+                    <!-- Analytics dashboard widgets -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                        <div class="card" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                            <div style="background: rgba(42,157,143,0.1); color: var(--secondary); padding: 12px; border-radius: 50%; font-size: 1.5rem;">
+                                <i class='bx bx-checkbox-checked'></i>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary); display: block;">Papers Solved</span>
+                                <span id="pyq-stat-solved" style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary);">0</span>
+                            </div>
+                        </div>
+
+                        <div class="card" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                            <div style="background: rgba(231,111,81,0.1); color: var(--parent); padding: 12px; border-radius: 50%; font-size: 1.5rem;">
+                                <i class='bx bx-target-lock'></i>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary); display: block;">Overall Accuracy</span>
+                                <span id="pyq-stat-accuracy" style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary);">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI agent recommendation feedback -->
+                    <div class="card" style="padding: 1.5rem; border-left: 5px solid var(--ai-accent); background: rgba(144, 224, 239, 0.08); margin-bottom: 2rem;">
+                        <h4 style="color: var(--primary); font-weight: 700; margin-bottom: 6px;"><i class='bx bx-bot'></i> Smart AI Agent Learning Feedback</h4>
+                        <p id="pyq-ai-report" style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.5; font-style: italic;">
+                            Complete a CBSE previous year board paper to generate a personalized learning roadmap.
+                        </p>
+                    </div>
+
+                    <!-- Weak and strong chapters -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                        <div class="card" style="padding: 1.5rem;">
+                            <h4 style="font-weight: 700; color: var(--secondary); margin-bottom: 1rem;"><i class='bx bx-check-double'></i> Strong Sections (Mastered)</h4>
+                            <div id="pyq-strong-topics" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <p style="font-size: 0.85rem; color: var(--text-secondary);">No topics analyzed yet.</p>
+                            </div>
+                        </div>
+                        <div class="card" style="padding: 1.5rem;">
+                            <h4 style="font-weight: 700; color: var(--parent); margin-bottom: 1rem;"><i class='bx bx-error-alt'></i> Weak Sections (Needs Focus)</h4>
+                            <div id="pyq-weak-topics" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <p style="font-size: 0.85rem; color: var(--text-secondary);">No topics analyzed yet.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline history -->
+                    <div class="card" style="padding: 1.5rem;">
+                        <h4 style="font-weight: 700; color: var(--primary); margin-bottom: 1rem;"><i class='bx bx-history'></i> Past Attempts Timeline</h4>
+                        <div style="overflow-x: auto;">
+                            <table class="db-table" style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid rgba(0,0,0,0.05); text-align: left;">
+                                        <th style="padding: 10px; font-size: 0.85rem; color: var(--text-secondary);">Exam Title</th>
+                                        <th style="padding: 10px; font-size: 0.85rem; color: var(--text-secondary);">Time Taken</th>
+                                        <th style="padding: 10px; font-size: 0.85rem; color: var(--text-secondary);">Percentage</th>
+                                        <th style="padding: 10px; font-size: 0.85rem; color: var(--text-secondary);">Score Obtained</th>
+                                        <th style="padding: 10px; font-size: 0.85rem; color: var(--text-secondary);">Attempted Date</th>
+                                        <th style="padding: 10px; font-size: 0.85rem; color: var(--text-secondary);">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pyq-history-rows">
+                                    <!-- Rendered dynamically -->
+                                    <tr>
+                                        <td colspan="6" style="padding: 15px; text-align: center; color: var(--text-secondary);">No past attempts found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Exam Simulator Panel -->
+            <div id="pyq-exam-box" style="display: none;">
+                <!-- Fixed/Sticky Exam Workspace Header -->
+                <div class="card" style="position: sticky; top: 0; z-index: 100; padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h3 id="exam-title-display" style="font-weight: 700; color: var(--primary); margin: 0;">CBSE Science Practice Board Exam</h3>
+                        <p id="exam-subtitle-display" style="font-size: 0.82rem; color: var(--text-secondary); margin: 3px 0 0 0;">Practice Session</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 1.25rem; font-weight: 700; color: var(--parent); background: rgba(231,111,81,0.1); padding: 8px 16px; border-radius: 50px;" id="exam-timer-wrapper">
+                            <i class='bx bx-time-five' style="font-size: 1.4rem;"></i>
+                            <span id="exam-timer-display">03:00:00</span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="confirmSubmitExam()" style="background: var(--secondary); color: #fff; border: none;">
+                            <i class='bx bx-check-square'></i> Submit Exam Sheet
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 280px; gap: 1.5rem; align-items: start; flex-wrap: wrap;">
+                    <!-- Question sheet list -->
+                    <div id="exam-questions-sheet" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Renders questions dynamically -->
+                    </div>
+
+                    <!-- Question status navigation index panel -->
+                    <div class="card" style="position: sticky; top: 120px; padding: 1.2rem; display: flex; flex-direction: column; gap: 1rem;">
+                        <h4 style="font-weight: 700; color: var(--primary); margin-bottom: 0.3rem;"><i class='bx bx-grid-horizontal'></i> Question Map</h4>
+                        <p style="font-size: 0.78rem; color: var(--text-secondary);">Click any number to scroll directly to the question.</p>
+                        
+                        <div id="exam-nav-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; justify-items: center;">
+                            <!-- Nav items dynamically created e.g. <div class="exam-nav-dot">1</div> -->
+                        </div>
+                        
+                        <div style="border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+                            <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--text-secondary);"></div>
+                                <span>Unanswered</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: var(--secondary);"></div>
+                                <span>Answered</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading evaluation/generation -->
+            <div class="spinner-wrapper" id="pyq-loader" style="display: none; height: 400px; justify-content: center; align-items: center; flex-direction: column; gap: 1.2rem;">
+                <div class="db-spinner"></div>
+                <p class="spinner-text" id="pyq-loader-text">AI Agent is generating exam paper...</p>
+            </div>
+
+            <!-- Graded Paper Result Report Sheet -->
+            <div id="pyq-result-box" style="display: none;">
+                <!-- Summary Card -->
+                <div class="card" id="pyq-result-pdf-root" style="padding: 2rem; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h3 id="result-exam-title" style="font-weight: 800; color: var(--primary); font-size: 1.4rem;">CBSE Science 2023 Mock Exam</h3>
+                            <p id="result-exam-meta" style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 3px;">Class 10 | Duration: 2 hr 15 mins</p>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="downloadGradedPYQPDF()" style="border: 1px solid var(--primary); font-weight: 600;">
+                            <i class='bx bx-download'></i> Download Graded Sheet
+                        </button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 2rem; align-items: center; background: var(--bg-light); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 1.5rem; flex-wrap: wrap;">
+                        <!-- Score dial -->
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <div style="width: 110px; height: 110px; border-radius: 50%; border: 8px solid var(--secondary); display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fff;">
+                                <span id="result-score-percent" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">80%</span>
+                                <span style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Accuracy</span>
+                            </div>
+                            <span id="result-score-fraction" style="font-weight: 700; color: var(--secondary); margin-top: 8px; font-size: 1.1rem;">64 / 80 Marks</span>
+                        </div>
+                        
+                        <!-- Overall review -->
+                        <div>
+                            <h4 style="font-weight: 700; color: var(--primary); margin-bottom: 6px;"><i class='bx bx-comment-detail'></i> Evaluator overall comments</h4>
+                            <p id="result-overall-comment" style="color: var(--text-primary); font-size: 0.92rem; line-height: 1.5; font-style: italic;">
+                                Excellent response paper. You displayed high mastery in Physics and Chemistry chapters, but need to explain steps better in Long answers.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Strengths and Weaknesses tags in results -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--secondary); text-transform: uppercase; display: block; margin-bottom: 6px;">Strong Topics</span>
+                            <div id="result-strengths-tags" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                <!-- Strengths -->
+                            </div>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--parent); text-transform: uppercase; display: block; margin-bottom: 6px;">Weak Topics</span>
+                            <div id="result-weaknesses-tags" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                <!-- Weaknesses -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed question feedback -->
+                    <div style="border-top: 1px solid rgba(0,0,0,0.08); padding-top: 1.5rem; margin-top: 1.5rem;">
+                        <h4 style="font-weight: 700; color: var(--primary); margin-bottom: 1.5rem;"><i class='bx bx-list-check'></i> Detailed Graded Question Sheet</h4>
+                        <div id="result-questions-feedback-list" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="closeExamResult()" style="width: 100%;">
+                    <i class='bx bx-home-alt'></i> Close Sheet and Back to PYQ Hub
+                </button>
             </div>
         </section>
 

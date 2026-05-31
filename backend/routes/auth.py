@@ -465,68 +465,59 @@ async def join_classroom(
             detail="Invalid class code. Classroom not found."
         )
         
-    student_exists = any(s["student_email"] == current_user["email"] for s in classroom.get("students", []))
-    
-    if not student_exists:
-        student_obj = {
-            "student_id": current_user["id"],
-            "student_name": current_user["name"],
-            "student_email": current_user["email"]
+    student_exists = any(s["student_email"].lower() == current_user["email"].lower() for s in classroom.get("students", []))
+    if student_exists:
+        return {
+            "status": "already_member",
+            "message": f"You are already a member of classroom '{classroom['class_name']}'.",
+            "class_name": classroom["class_name"],
+            "teacher_name": classroom["teacher_name"]
         }
-        await db["classrooms"].update_one(
-            {"_id": classroom["_id"]},
-            {"$push": {"students": student_obj}}
-        )
         
-        class_codes = current_user.get("class_codes", [])
-        if class_codes is None:
-            class_codes = []
-        if code not in class_codes:
-            class_codes.append(code)
-            await db["users"].update_one(
-                {"_id": current_user["_id"]},
-                {"$set": {"class_codes": class_codes}}
+    pending_students = classroom.get("pending_students", [])
+    pending_exists = any(s["student_email"].lower() == current_user["email"].lower() for s in pending_students)
+    
+    if pending_exists:
+        return {
+            "status": "pending",
+            "message": f"Your request to join '{classroom['class_name']}' is already pending teacher approval.",
+            "class_name": classroom["class_name"],
+            "teacher_name": classroom["teacher_name"]
+        }
+        
+    student_obj = {
+        "student_id": current_user["id"],
+        "student_name": current_user["name"],
+        "student_email": current_user["email"].lower()
+    }
+    
+    await db["classrooms"].update_one(
+        {"_id": classroom["_id"]},
+        {"$push": {"pending_students": student_obj}}
+    )
+    
+    # Trigger notifications for Teacher on request submission
+    try:
+        from routes.classrooms import create_notification
+        
+        # Notify Teacher
+        teacher_id = classroom.get("teacher_id")
+        if teacher_id:
+            await create_notification(
+                db,
+                user_id=teacher_id,
+                recipient_role="teacher",
+                title="Classroom Join Request",
+                content=f"Student {current_user['name']} requested to join '{classroom['class_name']}'.",
+                notif_type="join_request",
+                metadata={"class_code": code}
             )
-            
-        # Trigger notifications for Teacher and Parent on successful join
-        try:
-            from routes.classrooms import create_notification
-            
-            # 1. Notify Teacher
-            teacher_id = classroom.get("teacher_id")
-            if teacher_id:
-                await create_notification(
-                    db,
-                    user_id=teacher_id,
-                    recipient_role="teacher",
-                    title="New Student Joined",
-                    content=f"Student {current_user['name']} has joined your classroom '{classroom['class_name']}'.",
-                    notif_type="student_joined",
-                    metadata={"class_code": code}
-                )
-            
-            # 2. Notify Parent of Student if linked
-            parent = await db["users"].find_one({
-                "linked_student_emails": current_user["email"].lower(),
-                "role": "parent"
-            })
-            if parent:
-                parent_id = str(parent["_id"])
-                await create_notification(
-                    db,
-                    user_id=parent_id,
-                    recipient_role="parent",
-                    title="Classroom Joined Alert",
-                    content=f"Your child {current_user['name']} has joined classroom '{classroom['class_name']}' by {classroom['teacher_name']}.",
-                    notif_type="child_joined_class",
-                    metadata={"class_code": code}
-                )
-        except Exception as e:
-            print(f"Failed to generate class join notifications: {e}")
+    except Exception as e:
+        print(f"Failed to generate class join request notification: {e}")
             
     return {
-        "status": "success",
-        "message": f"Successfully joined classroom '{classroom['class_name']}' by {classroom['teacher_name']}.",
+        "status": "pending",
+        "message": f"Join request sent! Waiting for Teacher {classroom['teacher_name']}'s approval.",
         "class_name": classroom["class_name"],
         "teacher_name": classroom["teacher_name"]
     }

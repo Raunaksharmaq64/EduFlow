@@ -239,6 +239,7 @@ const panelTitles = {
     'flashcards-panel': { title: '3D Flashcards', sub: 'Review key terms and practice active recall concepts.' },
     'assignments-panel': { title: 'Assignments Hub', sub: 'Solve homework worksheets, check Google Drive resources, and track performance grades.' },
     'chat-panel': { title: 'Direct Messages', sub: 'Communicate with teachers of your classrooms.' },
+    'pyq-panel': { title: 'PYQ Board Paper Simulator', sub: 'Solve CBSE previous year papers and track your weak/strong sections with AI coaching.' },
     'profile-panel': { title: 'My Profile', sub: 'Manage your settings, update details, and view linked connections.' }
 };
 
@@ -266,6 +267,10 @@ function switchPanel(panelId) {
 
     if (panelId === 'profile-panel') {
         initProfilePanel();
+    }
+
+    if (panelId === 'pyq-panel') {
+        initPYQPanel();
     }
 }
 
@@ -1972,7 +1977,13 @@ async function loadClassroomsAndParent() {
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    showToast(`🎉 Joined classroom '${data.class_name}'!`, 'success');
+                    if (data.status === 'pending') {
+                        showToast(`✉️ ${data.message}`, 'info');
+                    } else if (data.status === 'already_member') {
+                        showToast(`ℹ️ ${data.message}`, 'warning');
+                    } else {
+                        showToast(`🎉 Joined classroom '${data.class_name}'!`, 'success');
+                    }
                     codeInput.value = '';
                     await loadClassroomsAndParent();
                     await syncUserStats();
@@ -2930,3 +2941,768 @@ async function loadClassroomsAndParent() {
     window.clearStudentNotifications = clearStudentNotifications;
     window.deleteStudentNotificationItem = deleteStudentNotificationItem;
     window.initProfilePanel = initProfilePanel;
+
+
+    // ========================================================
+    // PYQ SIMULATOR CLIENT LOGIC
+    // ========================================================
+    let pyqAvailablePapers = [];
+    let pyqCurrentExam = null;
+    let pyqExamTimer = null;
+    let pyqExamSecondsLeft = 0;
+    let pyqExamTotalSeconds = 0;
+    let pyqStudentAnswers = {};
+    let pyqCurrentTab = 'board-papers-tab';
+
+    async function initPYQPanel() {
+        switchPYQTab('board-papers-tab');
+        await loadAvailableBoardPapers();
+        filterBoardPapers('All');
+        await loadPYQAnalytics();
+    }
+
+    async function loadAvailableBoardPapers() {
+        try {
+            const res = await fetch(`${API_BASE}/ai/pyq-exams/available`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            if (!res.ok) throw new Error('Failed to load board papers');
+            pyqAvailablePapers = await res.json();
+            renderBoardPapersList(pyqAvailablePapers);
+        } catch (err) {
+            console.error(err);
+            showToast('Error loading board papers.', 'error');
+        }
+    }
+
+    function renderBoardPapersList(papers) {
+        const container = document.getElementById('board-papers-grid');
+        if (!container) return;
+        
+        if (papers.length === 0) {
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-secondary);">No CBSE board papers seeded yet.</div>`;
+            return;
+        }
+        
+        container.innerHTML = papers.map(p => {
+            const breakdownHtml = p.sections.map(s => {
+                const sectionLabel = s.section_name.split(':')[0].trim();
+                return `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span>${sectionLabel}:</span> <strong>${s.question_count} Qs</strong>
+                    </div>
+                `;
+            }).join('');
+            
+            return `
+                <div class="card board-paper-card" data-subject="${p.subject}" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06); transition: all 0.3s ease;">
+                    <div>
+                        <span class="status-badge" style="background: ${p.subject === 'Science' ? 'rgba(42,157,143,0.1)' : 'rgba(231,111,81,0.1)'}; color: ${p.subject === 'Science' ? 'var(--secondary)' : 'var(--parent)'}; font-size: 0.75rem; margin-bottom: 8px; display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+                            ${p.subject} | CBSE ${p.year}
+                        </span>
+                        <h4 style="font-weight: 700; color: var(--primary); font-size: 1.1rem; margin-bottom: 0.5rem; line-height: 1.4;">${p.exam_title}</h4>
+                        
+                        <div style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                            ${breakdownHtml}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary" onclick="startPYQPractice('${p.id}')" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; font-size: 0.85rem;">
+                            <i class='bx bx-stopwatch'></i> Practice (3h)
+                        </button>
+                        <button class="btn btn-outline" onclick="downloadBoardPaperPDF('${p.id}')" style="display: flex; align-items: center; justify-content: center; padding: 10px; font-size: 1.1rem; border-color: var(--secondary); color: var(--secondary); background: transparent; cursor: pointer;" title="Download Question Paper PDF">
+                            <i class='bx bx-download'></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterBoardPapers(subject) {
+        document.getElementById('btn-filter-all').classList.remove('active');
+        document.getElementById('btn-filter-science').classList.remove('active');
+        document.getElementById('btn-filter-math').classList.remove('active');
+        
+        if (subject === 'All') document.getElementById('btn-filter-all').classList.add('active');
+        else if (subject === 'Science') document.getElementById('btn-filter-science').classList.add('active');
+        else if (subject === 'Mathematics') document.getElementById('btn-filter-math').classList.add('active');
+        
+        const cards = document.querySelectorAll('.board-paper-card');
+        cards.forEach(card => {
+            const sub = card.getAttribute('data-subject');
+            if (subject === 'All' || sub === subject) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function switchPYQTab(tabId) {
+        document.getElementById('tab-board-papers-btn').classList.remove('active');
+        document.getElementById('tab-ai-simulator-btn').classList.remove('active');
+        document.getElementById('tab-analytics-btn').classList.remove('active');
+        
+        document.getElementById('board-papers-tab').style.display = 'none';
+        document.getElementById('ai-simulator-tab').style.display = 'none';
+        document.getElementById('analytics-tab').style.display = 'none';
+        
+        document.getElementById(tabId).style.display = 'block';
+        
+        if (tabId === 'board-papers-tab') document.getElementById('tab-board-papers-btn').classList.add('active');
+        else if (tabId === 'ai-simulator-tab') document.getElementById('tab-ai-simulator-btn').classList.add('active');
+        else if (tabId === 'analytics-tab') {
+            document.getElementById('tab-analytics-btn').classList.add('active');
+            loadPYQAnalytics();
+        }
+    }
+
+    function togglePatternFields() {
+        const type = document.getElementById('pyq-pattern-type').value;
+        document.getElementById('pyq-manual-fields').style.display = type === 'manual' ? 'grid' : 'none';
+        document.getElementById('pyq-text-fields').style.display = type === 'text' ? 'block' : 'none';
+        document.getElementById('pyq-upload-fields').style.display = type === 'upload' ? 'block' : 'none';
+    }
+
+    async function startPYQPractice(examId) {
+        document.getElementById('pyq-setup-box').style.display = 'none';
+        const loader = document.getElementById('pyq-loader');
+        loader.style.display = 'flex';
+        document.getElementById('pyq-loader-text').textContent = 'AI is loading exam paper details...';
+        
+        try {
+            const res = await fetch(`${API_BASE}/ai/pyq-exams/${examId}`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Failed to load paper');
+            
+            pyqCurrentExam = data;
+            setupActiveExam(data, 180);
+        } catch (err) {
+            showToast(err.message, 'error');
+            document.getElementById('pyq-setup-box').style.display = 'block';
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    async function generateMockExam(e) {
+        if (e) e.preventDefault();
+        
+        const grade = document.getElementById('pyq-grade').value;
+        const subject = document.getElementById('pyq-subject').value;
+        const patternType = document.getElementById('pyq-pattern-type').value;
+        const numMCQ = document.getElementById('pyq-num-mcq').value;
+        const numShort = document.getElementById('pyq-num-short').value;
+        const numLong = document.getElementById('pyq-num-long').value;
+        const patternText = document.getElementById('pyq-pattern-text').value;
+        const fileInput = document.getElementById('pyq-file');
+        const duration = parseInt(document.getElementById('pyq-duration').value);
+        
+        const formData = new FormData();
+        formData.append('grade', grade);
+        formData.append('subject', subject);
+        formData.append('pattern_type', patternType);
+        formData.append('num_mcq', numMCQ);
+        formData.append('num_short', numShort);
+        formData.append('num_long', numLong);
+        formData.append('pattern_text', patternText);
+        if (fileInput.files.length > 0) {
+            formData.append('file', fileInput.files[0]);
+        }
+        
+        document.getElementById('pyq-setup-box').style.display = 'none';
+        const loader = document.getElementById('pyq-loader');
+        loader.style.display = 'flex';
+        document.getElementById('pyq-loader-text').textContent = 'AI is analyzing pattern and drafting questions...';
+        
+        try {
+            const res = await fetch(`${API_BASE}/ai/generate-pyq-exam`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            });
+            
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Failed to generate mock exam');
+            
+            pyqCurrentExam = data;
+            pyqCurrentExam.id = 'generated';
+            setupActiveExam(data, duration);
+        } catch (err) {
+            showToast(err.message, 'error');
+            document.getElementById('pyq-setup-box').style.display = 'block';
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    function setupActiveExam(exam, durationMinutes) {
+        document.getElementById('exam-title-display').textContent = exam.exam_title;
+        document.getElementById('exam-subtitle-display').textContent = `${exam.grade} | Subject: ${exam.subject}`;
+        
+        pyqExamTotalSeconds = durationMinutes * 60;
+        pyqExamSecondsLeft = pyqExamTotalSeconds;
+        pyqStudentAnswers = {};
+        
+        updateExamTimerUI();
+        
+        clearInterval(pyqExamTimer);
+        pyqExamTimer = setInterval(() => {
+            pyqExamSecondsLeft--;
+            updateExamTimerUI();
+            
+            if (pyqExamSecondsLeft <= 0) {
+                clearInterval(pyqExamTimer);
+                showToast('⏳ Time is up! Automatically submitting your answers...', 'warning');
+                submitExamSheet(true);
+            } else if (pyqExamSecondsLeft === 30 * 60) {
+                showToast('⚠️ 30 minutes remaining in the exam!', 'warning');
+            } else if (pyqExamSecondsLeft === 5 * 60) {
+                showToast('🚨 Critical: Only 5 minutes remaining!', 'error');
+            }
+        }, 1000);
+        
+        renderExamQuestions(exam);
+        
+        document.getElementById('pyq-setup-box').style.display = 'none';
+        document.getElementById('pyq-exam-box').style.display = 'block';
+        document.getElementById('pyq-result-box').style.display = 'none';
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateExamTimerUI() {
+        const hours = Math.floor(pyqExamSecondsLeft / 3600);
+        const minutes = Math.floor((pyqExamSecondsLeft % 3600) / 60);
+        const seconds = pyqExamSecondsLeft % 60;
+        
+        const formatted = [
+            hours.toString().padStart(2, '0'),
+            minutes.toString().padStart(2, '0'),
+            seconds.toString().padStart(2, '0')
+        ].join(':');
+        
+        const timerDisplay = document.getElementById('exam-timer-display');
+        const timerWrapper = document.getElementById('exam-timer-wrapper');
+        if (timerDisplay) {
+            timerDisplay.textContent = formatted;
+        }
+        
+        if (timerWrapper) {
+            if (pyqExamSecondsLeft <= 5 * 60) {
+                timerWrapper.style.background = 'rgba(231,111,81,0.2)';
+                timerWrapper.style.color = '#e74c3c';
+            } else if (pyqExamSecondsLeft <= 30 * 60) {
+                timerWrapper.style.background = 'rgba(241,196,15,0.15)';
+                timerWrapper.style.color = '#f39c12';
+            } else {
+                timerWrapper.style.background = 'rgba(42,157,143,0.1)';
+                timerWrapper.style.color = 'var(--secondary)';
+            }
+        }
+    }
+
+    function renderExamQuestions(exam) {
+        const sheet = document.getElementById('exam-questions-sheet');
+        const navGrid = document.getElementById('exam-nav-grid');
+        if (!sheet || !navGrid) return;
+        
+        sheet.innerHTML = '';
+        navGrid.innerHTML = '';
+        
+        let globalIndex = 1;
+        
+        exam.sections.forEach(sec => {
+            const secHeader = document.createElement('h3');
+            secHeader.style.cssText = 'font-weight: 700; color: var(--primary); margin-top: 1rem; border-bottom: 2px solid rgba(0,0,0,0.04); padding-bottom: 6px; font-size: 1.15rem;';
+            secHeader.textContent = sec.section_name;
+            sheet.appendChild(secHeader);
+            
+            sec.questions.forEach(q => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'card';
+                questionDiv.id = `exam-q-wrapper-${q.id}`;
+                questionDiv.style.cssText = 'padding: 1.5rem; display: flex; flex-direction: column; gap: 10px; border-left: 4px solid rgba(0,0,0,0.06); transition: border 0.3s;';
+                
+                const labelSpan = `<span style="font-size: 0.78rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Question ${globalIndex} (${q.marks} Marks)</span>`;
+                const textP = `<p style="font-weight: 600; color: var(--text-primary); font-size: 1rem;">${q.question_text}</p>`;
+                
+                let answersInputHtml = '';
+                if (q.question_type === 'mcq') {
+                    answersInputHtml = `
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                            ${q.options.map((opt, i) => `
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.92rem; color: var(--text-primary); cursor: pointer; padding: 6px 12px; border: 1px solid rgba(0,0,0,0.06); border-radius: 6px; background: var(--bg-light); transition: background 0.2s;">
+                                    <input type="radio" name="answer_input_${q.id}" value="${opt}" onchange="savePYQAnswer('${q.id}', '${opt}', ${globalIndex})">
+                                    <span>[${['A','B','C','D'][i]}] ${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    answersInputHtml = `
+                        <textarea class="form-input-db" rows="6" style="margin-top: 5px;" placeholder="Write your complete solution/explanation here..." oninput="savePYQAnswer('${q.id}', this.value, ${globalIndex})"></textarea>
+                        <div style="text-align: right; font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
+                            <span id="char-count-${q.id}">0</span> characters
+                        </div>
+                    `;
+                }
+                
+                questionDiv.innerHTML = `
+                    ${labelSpan}
+                    ${textP}
+                    ${answersInputHtml}
+                `;
+                sheet.appendChild(questionDiv);
+                
+                const navDot = document.createElement('div');
+                navDot.className = 'exam-nav-dot';
+                navDot.id = `exam-nav-dot-${q.id}`;
+                navDot.textContent = globalIndex;
+                navDot.style.cssText = 'width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--text-secondary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; cursor: pointer; color: var(--text-secondary); transition: all 0.2s;';
+                navDot.onclick = () => {
+                    const element = document.getElementById(`exam-q-wrapper-${q.id}`);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        element.style.borderLeftColor = 'var(--secondary)';
+                        setTimeout(() => {
+                            element.style.borderLeftColor = 'rgba(0,0,0,0.06)';
+                        }, 1500);
+                    }
+                };
+                
+                navGrid.appendChild(navDot);
+                globalIndex++;
+            });
+        });
+    }
+
+    function savePYQAnswer(questionId, value, index) {
+        pyqStudentAnswers[questionId] = value;
+        
+        const charCounter = document.getElementById(`char-count-${questionId}`);
+        if (charCounter) {
+            charCounter.textContent = value.length;
+        }
+        
+        const navDot = document.getElementById(`exam-nav-dot-${questionId}`);
+        if (navDot) {
+            if (value && value.trim() !== '') {
+                navDot.style.background = 'var(--secondary)';
+                navDot.style.color = '#fff';
+                navDot.style.borderColor = 'var(--secondary)';
+            } else {
+                navDot.style.background = 'transparent';
+                navDot.style.color = 'var(--text-secondary)';
+                navDot.style.borderColor = 'var(--text-secondary)';
+            }
+        }
+    }
+
+    function confirmSubmitExam() {
+        const totalQ = Object.keys(pyqCurrentExam.sections.reduce((acc, s) => {
+            s.questions.forEach(q => acc[q.id] = true);
+            return acc;
+        }, {})).length;
+        
+        const answeredCount = Object.keys(pyqStudentAnswers).filter(k => pyqStudentAnswers[k].trim() !== '').length;
+        const unansweredCount = totalQ - answeredCount;
+        
+        let confirmMsg = 'Are you sure you want to submit your exam sheet?';
+        if (unansweredCount > 0) {
+            confirmMsg = `⚠️ You have ${unansweredCount} unanswered questions left. Do you still want to submit your exam sheet?`;
+        }
+        
+        if (confirm(confirmMsg)) {
+            submitExamSheet(false);
+        }
+    }
+
+    async function submitExamSheet(isAutoSubmit = false) {
+        clearInterval(pyqExamTimer);
+        
+        const examBox = document.getElementById('pyq-exam-box');
+        examBox.style.display = 'none';
+        
+        const loader = document.getElementById('pyq-loader');
+        loader.style.display = 'flex';
+        document.getElementById('pyq-loader-text').textContent = 'AI Agent is evaluating your responses & grading the sheet... Please wait.';
+        
+        const secondsSpent = pyqExamTotalSeconds - pyqExamSecondsLeft;
+        const hours = Math.floor(secondsSpent / 3600);
+        const minutes = Math.floor((secondsSpent % 3600) / 60);
+        const timeTakenStr = `${hours > 0 ? hours + ' hr ' : ''}${minutes} mins`;
+        
+        try {
+            const payload = {
+                exam_id: pyqCurrentExam.id,
+                subject: pyqCurrentExam.subject,
+                grade: pyqCurrentExam.grade,
+                exam_title: pyqCurrentExam.exam_title,
+                sections: pyqCurrentExam.sections,
+                student_answers: pyqStudentAnswers,
+                time_taken: timeTakenStr
+            };
+            
+            const res = await fetch(`${API_BASE}/ai/evaluate-pyq-exam`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Failed to evaluate exam');
+            
+            renderExamResult(data);
+        } catch (err) {
+            showToast(err.message, 'error');
+            examBox.style.display = 'block';
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    function renderExamResult(evalData) {
+        document.getElementById('pyq-exam-box').style.display = 'none';
+        document.getElementById('pyq-setup-box').style.display = 'none';
+        document.getElementById('pyq-result-box').style.display = 'block';
+        
+        document.getElementById('result-exam-title').textContent = pyqCurrentExam.exam_title;
+        document.getElementById('result-exam-meta').textContent = `${pyqCurrentExam.grade} | Subject: ${pyqCurrentExam.subject} | Time Taken: ${evalData.time_taken || 'N/A'}`;
+        
+        document.getElementById('result-score-percent').textContent = `${Math.round(evalData.percentage)}%`;
+        document.getElementById('result-score-fraction').textContent = `${evalData.total_score} / ${evalData.max_score} Marks`;
+        document.getElementById('result-overall-comment').textContent = evalData.feedback;
+        
+        const strengthsContainer = document.getElementById('result-strengths-tags');
+        if (evalData.strengths && evalData.strengths.length > 0) {
+            strengthsContainer.innerHTML = evalData.strengths.map(s => `
+                <span class="status-badge" style="background: rgba(42,157,143,0.1); color: var(--secondary); font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+                    ${s}
+                </span>
+            `).join('');
+        } else {
+            strengthsContainer.innerHTML = `<span style="font-size: 0.8rem; color: var(--text-secondary);">No strengths highlighted yet.</span>`;
+        }
+        
+        const weaknessesContainer = document.getElementById('result-weaknesses-tags');
+        if (evalData.weaknesses && evalData.weaknesses.length > 0) {
+            weaknessesContainer.innerHTML = evalData.weaknesses.map(w => `
+                <span class="status-badge" style="background: rgba(231,111,81,0.1); color: var(--parent); font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+                    ${w}
+                </span>
+            `).join('');
+        } else {
+            weaknessesContainer.innerHTML = `<span style="font-size: 0.8rem; color: var(--text-secondary);">No weak topics identified!</span>`;
+        }
+        
+        const questionsFeedbackList = document.getElementById('result-questions-feedback-list');
+        questionsFeedbackList.innerHTML = '';
+        
+        evalData.results.forEach((res, i) => {
+            const div = document.createElement('div');
+            div.style.cssText = 'padding: 1.2rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem;';
+            
+            const isCorrect = res.is_correct;
+            const color = isCorrect ? 'var(--secondary)' : 'var(--parent)';
+            const bg = isCorrect ? 'rgba(42,157,143,0.04)' : 'rgba(231,111,81,0.04)';
+            const leftBorder = `4px solid ${color}`;
+            
+            div.style.borderLeft = leftBorder;
+            div.style.background = bg;
+            
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <span style="font-weight: 700; color: var(--primary); font-size: 0.95rem;">Question ${i + 1}</span>
+                    <span style="font-weight: 700; color: ${color}; font-size: 0.9rem;">
+                        Score: ${res.score} / ${res.max_score} Marks
+                    </span>
+                </div>
+                
+                <p style="font-weight: 600; color: var(--text-primary); font-size: 0.92rem; margin: 4px 0;">${res.question_text}</p>
+                
+                <div style="font-size: 0.85rem; color: var(--text-primary); margin-top: 4px;">
+                    <strong>Your Answer:</strong> <span style="font-style: italic;">${res.student_answer || '(Empty Response)'}</span>
+                </div>
+                
+                <div style="font-size: 0.85rem; color: var(--text-primary); margin-top: 4px;">
+                    <strong>Model Answer / Solution:</strong> <span style="color: var(--text-secondary);">${res.correct_answer}</span>
+                </div>
+                
+                <div style="font-size: 0.85rem; color: var(--text-primary); border-top: 1px dashed rgba(0,0,0,0.06); padding-top: 6px; margin-top: 4px; font-style: italic;">
+                    <strong>AI Rubric Review:</strong> ${res.feedback}
+                </div>
+            `;
+            questionsFeedbackList.appendChild(div);
+        });
+        
+        addXP(100, 'pyq_paper');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function downloadGradedPYQPDF() {
+        const element = document.getElementById('pyq-result-pdf-root');
+        if (!element) return;
+        
+        const opt = {
+            margin: 10,
+            filename: `${pyqCurrentExam.exam_title}_Graded_Sheet.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        showToast('📄 Generating PDF download. Please wait...', 'info');
+        html2pdf().from(element).set(opt).save().then(() => {
+            showToast('🎉 PDF downloaded successfully!', 'success');
+        }).catch(err => {
+            console.error(err);
+            showToast('Error exporting PDF.', 'error');
+        });
+    }
+
+    async function downloadBoardPaperPDF(examId) {
+        showToast('📄 Fetching paper details...', 'info');
+        try {
+            const res = await fetch(`${API_BASE}/ai/pyq-exams/${examId}`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            const p = await res.json();
+            if (!res.ok) throw new Error(p.detail || 'Failed to fetch exam paper');
+            
+            // Create a clean printed container
+            const printRoot = document.createElement('div');
+            printRoot.style.padding = '30px';
+            printRoot.style.color = '#1A1A2E';
+            printRoot.style.fontFamily = "'Inter', sans-serif";
+            printRoot.style.backgroundColor = '#FFFFFF';
+            
+            // Layout header
+            let content = `
+                <div style="text-align: center; border-bottom: 3px double #1B2A4A; padding-bottom: 12px; margin-bottom: 20px;">
+                    <h2 style="font-size: 1.6rem; font-weight: 800; color: #1B2A4A; margin-bottom: 4px; text-transform: uppercase;">EduFlow AI — Exam Simulator</h2>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #2A9D8F; margin-bottom: 8px;">${p.exam_title}</h3>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; color: #636E72; padding: 0 10px;">
+                        <span>Subject: ${p.subject}</span>
+                        <span>Year: ${p.year}</span>
+                        <span>Time Allowed: 3 Hours</span>
+                    </div>
+                </div>
+                
+                <div style="border: 1px solid #E8ECEF; padding: 15px; border-radius: 8px; margin-bottom: 25px; background-color: #F8F9FA; font-size: 0.85rem; line-height: 1.5;">
+                    <strong style="color: #1B2A4A; display: block; margin-bottom: 6px;">General Instructions:</strong>
+                    <ol style="margin-left: 1.2rem; padding-left: 0;">
+                        <li>This question paper contains multiple sections. All questions are compulsory.</li>
+                        <li>Section A contains Multiple Choice Questions (MCQs) carrying 1 mark each.</li>
+                        <li>Section B contains Short Answer Type Questions carrying 3 marks each.</li>
+                        <li>Section C contains Long Answer Type Questions carrying 5 marks each.</li>
+                        <li>Write down the answers clearly in your answer sheets. Try to manage your time efficiently.</li>
+                    </ol>
+                </div>
+            `;
+            
+            p.sections.forEach((sec, sIdx) => {
+                content += `
+                    <div style="margin-bottom: 20px; page-break-inside: avoid;">
+                        <h4 style="font-size: 1.1rem; font-weight: 700; color: #1B2A4A; border-bottom: 1px solid #2A9D8F; padding-bottom: 4px; margin-bottom: 12px; text-transform: uppercase;">
+                            ${sec.section_name}
+                        </h4>
+                `;
+                
+                sec.questions.forEach((q, qIdx) => {
+                    content += `
+                        <div style="margin-bottom: 16px; page-break-inside: avoid;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 6px;">
+                                <span style="font-weight: 600; color: #2D3436;">Q${qIdx + 1}. ${q.question_text}</span>
+                                <span style="font-size: 0.8rem; font-weight: 700; color: #2A9D8F; white-space: nowrap;">[${q.marks} Mark${q.marks > 1 ? 's' : ''}]</span>
+                            </div>
+                    `;
+                    
+                    if (q.question_type === 'mcq' && q.options && q.options.length > 0) {
+                        content += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-left: 20px; font-size: 0.88rem;">`;
+                        q.options.forEach((opt, oIdx) => {
+                            const label = String.fromCharCode(65 + oIdx); // A, B, C, D
+                            content += `<div><strong>(${label})</strong> ${opt}</div>`;
+                        });
+                        content += `</div>`;
+                    }
+                    
+                    content += `</div>`;
+                });
+                
+                content += `</div>`;
+            });
+            
+            printRoot.innerHTML = content;
+            document.body.appendChild(printRoot);
+            
+            const opt = {
+                margin: 15,
+                filename: `${p.exam_title.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            showToast('📄 Generating your PDF file...', 'info');
+            html2pdf().from(printRoot).set(opt).save().then(() => {
+                document.body.removeChild(printRoot);
+                showToast('🎉 Question paper downloaded successfully!', 'success');
+            }).catch(err => {
+                console.error(err);
+                if (printRoot.parentNode) {
+                    document.body.removeChild(printRoot);
+                }
+                showToast('Failed to download PDF.', 'error');
+            });
+            
+        } catch (err) {
+            console.error(err);
+            showToast(err.message || 'Error downloading board paper.', 'error');
+        }
+    }
+
+    function closeExamResult() {
+        document.getElementById('pyq-result-box').style.display = 'none';
+        document.getElementById('pyq-setup-box').style.display = 'block';
+        switchPYQTab('analytics-tab');
+    }
+
+    async function loadPYQAnalytics() {
+        const subject = document.getElementById('analytics-subject-select').value;
+        try {
+            const res = await fetch(`${API_BASE}/ai/pyq-exams/analytics?subject=${encodeURIComponent(subject)}`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error();
+            
+            document.getElementById('pyq-stat-solved').textContent = data.total_papers_solved;
+            document.getElementById('pyq-stat-accuracy').textContent = `${Math.round(data.overall_accuracy)}%`;
+            document.getElementById('pyq-ai-report').textContent = data.report;
+            
+            const strongContainer = document.getElementById('pyq-strong-topics');
+            if (data.strong_sections && data.strong_sections.length > 0) {
+                strongContainer.innerHTML = data.strong_sections.map(s => `
+                    <span class="status-badge" style="background: rgba(42,157,143,0.1); color: var(--secondary); font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 5px;">
+                        ${s}
+                    </span>
+                `).join('');
+            } else {
+                strongContainer.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);">No mastered topics found yet.</p>`;
+            }
+            
+            const weakContainer = document.getElementById('pyq-weak-topics');
+            if (data.weak_sections && data.weak_sections.length > 0) {
+                weakContainer.innerHTML = data.weak_sections.map(w => `
+                    <span class="status-badge" style="background: rgba(231,111,81,0.1); color: var(--parent); font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 5px;">
+                        ${w}
+                    </span>
+                `).join('');
+            } else {
+                weakContainer.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary);">No struggling topics found yet!</p>`;
+            }
+            
+            await loadPYQHistoryTable();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function loadPYQHistoryTable() {
+        try {
+            const res = await fetch(`${API_BASE}/ai/pyq-exams/history`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error();
+            
+            const container = document.getElementById('pyq-history-rows');
+            if (data.length === 0) {
+                container.innerHTML = `<tr><td colspan="6" style="padding: 15px; text-align: center; color: var(--text-secondary);">No past attempts found.</td></tr>`;
+                return;
+            }
+            
+            container.innerHTML = data.map(h => {
+                const dateStr = h.created_at ? new Date(h.created_at).toLocaleDateString('en-IN', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                }) : 'Unknown';
+                
+                return `
+                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.03);">
+                        <td style="padding: 10px; font-weight: 600; color: var(--primary);">${h.exam_title}</td>
+                        <td style="padding: 10px; font-size: 0.85rem; color: var(--text-primary);">${h.time_taken || 'N/A'}</td>
+                        <td style="padding: 10px;">
+                            <span class="status-badge" style="background: ${h.percentage >= 75 ? 'rgba(42,157,143,0.1)' : 'rgba(231,111,81,0.1)'}; color: ${h.percentage >= 75 ? 'var(--secondary)' : 'var(--parent)'}; font-size: 0.8rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;">
+                                ${Math.round(h.percentage)}%
+                            </span>
+                        </td>
+                        <td style="padding: 10px; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">${h.total_score} / ${h.max_score}</td>
+                        <td style="padding: 10px; font-size: 0.85rem; color: var(--text-secondary);">${dateStr}</td>
+                        <td style="padding: 10px;">
+                            <button class="btn btn-secondary btn-sm" onclick="viewHistoricalPYQReport('${h.id}')" style="padding: 4px 8px; font-size: 0.78rem;">
+                                <i class='bx bx-file-find'></i> View Report
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function viewHistoricalPYQReport(attemptId) {
+        document.getElementById('pyq-setup-box').style.display = 'none';
+        const loader = document.getElementById('pyq-loader');
+        loader.style.display = 'flex';
+        document.getElementById('pyq-loader-text').textContent = 'AI is fetching attempt report...';
+        
+        try {
+            const res = await fetch(`${API_BASE}/ai/pyq-exams/history/${attemptId}`, {
+                method: 'GET',
+                headers: authHeaders()
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Failed to fetch report');
+            
+            pyqCurrentExam = {
+                id: attemptId,
+                exam_title: data.exam_title,
+                subject: data.subject,
+                grade: data.grade,
+                sections: data.sections
+            };
+            renderExamResult(data.evaluation);
+        } catch (err) {
+            showToast(err.message, 'error');
+            document.getElementById('pyq-setup-box').style.display = 'block';
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    // Expose functions globally
+    window.initPYQPanel = initPYQPanel;
+    window.switchPYQTab = switchPYQTab;
+    window.filterBoardPapers = filterBoardPapers;
+    window.togglePatternFields = togglePatternFields;
+    window.startPYQPractice = startPYQPractice;
+    window.generateMockExam = generateMockExam;
+    window.savePYQAnswer = savePYQAnswer;
+    window.confirmSubmitExam = confirmSubmitExam;
+    window.downloadGradedPYQPDF = downloadGradedPYQPDF;
+    window.downloadBoardPaperPDF = downloadBoardPaperPDF;
+    window.closeExamResult = closeExamResult;
+    window.loadPYQAnalytics = loadPYQAnalytics;
+    window.viewHistoricalPYQReport = viewHistoricalPYQReport;
+

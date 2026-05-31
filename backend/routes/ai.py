@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form, Query
 from typing import Optional, List
 from datetime import datetime, timezone
 from models.ai import (
@@ -14,8 +14,13 @@ from controllers.ai_controller import (
     generate_flashcards_ai,
     generate_study_kanban_ai,
     generate_lesson_plan_ai,
-    generate_parent_revision_guide_ai
+    generate_parent_revision_guide_ai,
+    generate_pyq_exam_ai,
+    evaluate_pyq_exam_ai
 )
+from models.pyq import PYQEvaluationRequest
+from bson import ObjectId
+
 from config.db import get_database
 from models.user import SaveQuizScoreRequest
 
@@ -679,4 +684,359 @@ async def get_child_revision_guide(
         "target_topic_average": round(target_topic_average, 1),
         "revision_guide": revision_guide
     }
+
+
+# ========================================================
+# PYQ BOARD PAPER SIMULATOR ENDPOINTS
+# ========================================================
+
+@router.get("/pyq-exams/available")
+async def get_available_pyq_exams(current_user: dict = Depends(get_current_user)):
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+    
+    cursor = db["cbse_pyq_papers"].find({})
+    papers = []
+    async for doc in cursor:
+        papers.append({
+            "id": str(doc["_id"]),
+            "year": doc.get("year"),
+            "subject": doc.get("subject"),
+            "grade": doc.get("grade"),
+            "exam_title": doc.get("exam_title"),
+            "sections": [
+                {
+                    "section_name": s.get("section_name"),
+                    "question_count": len(s.get("questions", []))
+                } for s in doc.get("sections", [])
+            ]
+        })
+    return papers
+
+
+@router.get("/pyq-exams/{exam_id}")
+async def get_pyq_exam_details(exam_id: str, current_user: dict = Depends(get_current_user)):
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+    
+    try:
+        doc = await db["cbse_pyq_papers"].find_one({"_id": ObjectId(exam_id)})
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid exam ID format"
+        )
+        
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Exam paper not found"
+        )
+    
+    # Strip correct options and model answers before serving to client
+    clean_sections = []
+    for sec in doc.get("sections", []):
+        clean_questions = []
+        for q in sec.get("questions", []):
+            q_copy = dict(q)
+            q_copy.pop("correct_option", None)
+            q_copy.pop("model_answer", None)
+            clean_questions.append(q_copy)
+        
+        clean_sections.append({
+            "section_name": sec.get("section_name"),
+            "questions": clean_questions
+        })
+        
+    return {
+        "id": str(doc["_id"]),
+        "year": doc.get("year"),
+        "subject": doc.get("subject"),
+        "grade": doc.get("grade"),
+        "exam_title": doc.get("exam_title"),
+        "sections": clean_sections
+    }
+
+
+@router.post("/generate-pyq-exam")
+async def generate_pyq_exam(
+    grade: str = Form(...),
+    subject: str = Form(...),
+    pattern_type: str = Form(...),
+    num_mcq: Optional[int] = Form(None),
+    num_short: Optional[int] = Form(None),
+    num_long: Optional[int] = Form(None),
+    pattern_text: Optional[str] = Form(None),
+    file: Optional[UploadFile] = File(None),
+    current_user: dict = Depends(get_current_user)
+):
+    image_bytes = None
+    if file:
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Uploaded file must be an image."
+            )
+        image_bytes = await file.read()
+        
+    exam_data = await generate_pyq_exam_ai(
+        grade=grade,
+        subject=subject,
+        pattern_type=pattern_type,
+        num_mcq=num_mcq or 0,
+        num_short=num_short or 0,
+        num_long=num_long or 0,
+        pattern_text=pattern_text,
+        image_bytes=image_bytes
+    )
+    return exam_data
+
+
+@router.post("/evaluate-pyq-exam")
+async def evaluate_pyq_exam(
+    request: PYQEvaluationRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    # Evaluate answers using Gemini 2.5 Flash
+    evaluation = await evaluate_pyq_exam_ai(
+        sections=request.sections,
+        student_answers=request.student_answers
+    )
+    
+    # Save attempt in database
+    attempt_doc = {
+        "user_id": current_user["id"],
+        "student_name": current_user["name"],
+        "student_email": current_user["email"].lower(),
+        "exam_id": request.exam_id,
+        "subject": request.subject,
+        "grade": request.grade,
+        "exam_title": request.exam_title,
+        "sections": request.sections,
+        "student_answers": request.student_answers,
+        "evaluation": evaluation,
+        "time_taken": request.time_taken,
+        "created_at": datetime.now(timezone.utc)
+    }
+    
+    result = await db["pyq_exam_history"].insert_one(attempt_doc)
+    evaluation["attempt_id"] = str(result.inserted_id)
+    
+    return evaluation
+
+
+@router.get("/pyq-exams/history")
+async def get_pyq_exams_history(current_user: dict = Depends(get_current_user)):
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    cursor = db["pyq_exam_history"].find({"user_id": current_user["id"]}).sort("created_at", -1)
+    history = []
+    async for doc in cursor:
+        history.append({
+            "id": str(doc["_id"]),
+            "exam_title": doc.get("exam_title"),
+            "subject": doc.get("subject"),
+            "grade": doc.get("grade"),
+            "time_taken": doc.get("time_taken"),
+            "total_score": doc.get("evaluation", {}).get("total_score"),
+            "max_score": doc.get("evaluation", {}).get("max_score"),
+            "percentage": doc.get("evaluation", {}).get("percentage"),
+            "created_at": doc.get("created_at").isoformat() if doc.get("created_at") else None
+        })
+    return history
+
+
+@router.get("/pyq-exams/history/{attempt_id}")
+async def get_pyq_exam_attempt_detail(attempt_id: str, current_user: dict = Depends(get_current_user)):
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+    
+    try:
+        doc = await db["pyq_exam_history"].find_one({
+            "_id": ObjectId(attempt_id),
+            "user_id": current_user["id"]
+        })
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid attempt ID format"
+        )
+        
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Attempt not found"
+        )
+        
+    return {
+        "exam_title": doc.get("exam_title"),
+        "subject": doc.get("subject"),
+        "grade": doc.get("grade"),
+        "time_taken": doc.get("time_taken"),
+        "student_answers": doc.get("student_answers"),
+        "evaluation": doc.get("evaluation"),
+        "sections": doc.get("sections", []),
+        "created_at": doc.get("created_at").isoformat() if doc.get("created_at") else None
+    }
+
+
+@router.get("/pyq-exams/analytics")
+async def get_pyq_exams_analytics(
+    subject: str = Query(..., description="The subject to run analytics on"),
+    current_user: dict = Depends(get_current_user)
+):
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    # Get all attempts for this subject
+    cursor = db["pyq_exam_history"].find({
+        "user_id": current_user["id"],
+        "subject": {"$regex": f"^{subject}$", "$options": "i"}
+    }).sort("created_at", -1)
+    
+    attempts = []
+    async for doc in cursor:
+        attempts.append(doc)
+        
+    if not attempts:
+        return {
+            "total_papers_solved": 0,
+            "overall_accuracy": 0,
+            "strong_sections": [],
+            "weak_sections": [],
+            "report": "No exam papers solved for this subject yet. Complete your first practice board paper to unlock learning analytics from your AI Coach!"
+        }
+        
+    # Aggregate topic scores
+    # We want to check accuracy per topic
+    topic_scores = {}  # topic -> { earned: float, total: float }
+    total_earned = 0.0
+    total_possible = 0.0
+    
+    for att in attempts:
+        eval_data = att.get("evaluation", {})
+        results = eval_data.get("results", [])
+        
+        # Since topic tags are stored inside the questions of the original paper, we should map question topic tags.
+        # However, to be extremely reliable, we can inspect each result.
+        # Let's map matching questions in attempt or use results if they contain topic or map back to database paper
+        # To avoid extra DB queries, let's look up if evaluation results contain topic or if we stored original sections.
+        # Let's see: results list has question_id, score, max_score.
+        # We can map question_id to topic by loading the paper or parsing sections if saved.
+        # But wait! We saved request.sections in evaluate endpoint? No, in evaluate endpoint request.sections is passed.
+        # Let's check how we can retrieve the topic. We can match the question_id by looking in database, OR we can let evaluate endpoint save topics, OR we can inspect the database.
+        # Let's inspect the database!
+        # If request.sections is passed, let's load all questions from it to get their topic.
+        # Let's see: we can lookup the question topic from either the seeded paper or the generated sections saved.
+        # Wait, did we save request.sections in attempt_doc? No, we didn't save request.sections in attempt_doc, we only saved request.student_answers and evaluation.
+        # Ah! Let's modify evaluate_pyq_exam so it saves `sections` too, or extracts topics and saves them in evaluate_pyq_exam!
+        # Saving `sections` in attempt_doc is extremely simple and useful because we can reconstruct the exam exactly.
+        # Let's modify the evaluate endpoint slightly to save `"sections": request.sections`.
+        # Then, we can map question_id -> topic.
+        # Let's check:
+        # We can do this in get_pyq_exams_analytics:
+        pass
+        
+    # Re-reading attempt documents that include sections
+    for att in attempts:
+        sections = att.get("sections", [])
+        student_answers = att.get("student_answers", {})
+        results = att.get("evaluation", {}).get("results", [])
+        
+        # Build question_id to topic map
+        q_topics = {}
+        q_max_scores = {}
+        for sec in sections:
+            for q in sec.get("questions", []):
+                q_topics[q.get("id")] = q.get("topic", "General")
+                q_max_scores[q.get("id")] = q.get("marks", 1)
+                
+        for r in results:
+            q_id = r.get("question_id")
+            score = r.get("score", 0)
+            max_s = r.get("max_score", q_max_scores.get(q_id, 1))
+            topic = q_topics.get(q_id, "General")
+            
+            if topic not in topic_scores:
+                topic_scores[topic] = {"earned": 0.0, "total": 0.0}
+            topic_scores[topic]["earned"] += score
+            topic_scores[topic]["total"] += max_s
+            
+            total_earned += score
+            total_possible += max_s
+
+    # Compute accuracy per topic
+    strong_sections = []
+    weak_sections = []
+    for topic, stats in topic_scores.items():
+        if stats["total"] > 0:
+            accuracy = (stats["earned"] / stats["total"]) * 100
+            if accuracy >= 75.0:
+                strong_sections.append(topic)
+            elif accuracy < 60.0:
+                weak_sections.append(topic)
+                
+    overall_accuracy = (total_earned / total_possible * 100) if total_possible > 0 else 0
+    
+    # Generate AI Coach advice via Gemini
+    import google.generativeai as genai
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    
+    weak_str = ", ".join(weak_sections) if weak_sections else "None"
+    strong_str = ", ".join(strong_sections) if strong_sections else "None"
+    
+    prompt = f"""
+    You are a smart AI Coach for students. Analyze this student's exam metrics:
+    - Subject: {subject}
+    - Total papers solved: {len(attempts)}
+    - Overall accuracy: {round(overall_accuracy, 1)}%
+    - Strong Topics: {strong_str}
+    - Struggling/Weak Topics: {weak_str}
+    
+    Write a highly encouraging, direct, and practical study recommendation for this student.
+    Limit it to exactly 3 sentences. Be concise and supportive.
+    """
+    
+    try:
+        response = model.generate_content(prompt)
+        report_text = response.text.strip()
+    except Exception as e:
+        report_text = f"Keep practicing! Your main areas of improvement are: {weak_str}. Leverage active recall and chapter quizzes."
+        
+    return {
+        "total_papers_solved": len(attempts),
+        "overall_accuracy": round(overall_accuracy, 1),
+        "strong_sections": strong_sections,
+        "weak_sections": weak_sections,
+        "report": report_text
+    }
+
 

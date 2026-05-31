@@ -12,7 +12,7 @@ class StudyPlanRequest(BaseModel):
 class QuizRequest(BaseModel):
     topic: str = Field(..., example="Photosynthesis")
     grade: str = Field(..., example="8th Grade")
-    num_questions: int = Field(5, ge=1, le=10, description="Number of questions to generate (1 to 10)")
+    num_questions: int = Field(5, ge=1, le=30, description="Number of questions to generate (1 to 30)")
     difficulty: str = Field("medium", example="medium", description="easy, medium, or hard")
     question_type: Optional[str] = Field("mixed", example="mixed", description="mcq, tf, fill, or mixed")
 
@@ -33,7 +33,7 @@ class QuizResponse(BaseModel):
 class FlashcardRequest(BaseModel):
     topic: str = Field(..., example="Photosynthesis")
     grade: str = Field(..., example="8th Grade")
-    num_cards: Optional[int] = Field(5, ge=1, le=12)
+    num_cards: Optional[int] = Field(5, ge=1, le=30)
 
 class FlashcardItem(BaseModel):
     front: str = Field(..., description="Front of the card (question or key concept)")

@@ -36,9 +36,10 @@
                     <i class='bx bx-brain'></i>
                     <span>Create Quiz</span>
                 </div>
-                <div class="menu-item" data-panel="students-panel">
+                <div class="menu-item" data-panel="students-panel" style="position: relative;">
                     <i class='bx bx-user'></i>
                     <span>Students</span>
+                    <span class="menu-badge" id="sidebar-pending-badge" style="display: none; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: #e76f51; color: #fff; padding: 2px 7px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; line-height: 1; box-shadow: var(--shadow-sm);">0</span>
                 </div>
                 <div class="menu-item" data-panel="assignments-panel">
                     <i class='bx bx-task'></i>
@@ -242,6 +243,10 @@
                                 <option value="3">3</option>
                                 <option value="5" selected>5</option>
                                 <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="25">25</option>
+                                <option value="30">30</option>
                             </select>
                         </div>
                     </div>
@@ -299,6 +304,18 @@
                             <button class="btn btn-sm" id="btn-delete-classroom" style="padding: 4px 10px; font-size: 0.75rem; background: transparent; border: 1px solid rgba(230,57,70,0.3); color: #e63946; display: flex; align-items: center; gap: 4px;" onclick="deleteTeacherClassroom()">
                                 <i class='bx bx-trash'></i> Delete Class
                             </button>
+                        </div>
+                        
+                        <!-- Pending Join Requests Block -->
+                        <div id="pending-requests-card" style="display: none; margin-bottom: 1.5rem; background: rgba(42, 157, 143, 0.03); border: 1px solid rgba(42, 157, 143, 0.15); padding: 1.25rem; border-radius: 8px;">
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--secondary); margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                                <i class='bx bx-user-plus' style="font-size: 1.25rem;"></i> Pending Classroom Join Requests
+                                <span class="badge" id="pending-requests-badge-count" style="background: var(--secondary); color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; margin-left: 4px;">0</span>
+                            </h4>
+                            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 1rem;">Verify and approve students to allow them to join this classroom.</p>
+                            <div id="pending-requests-list" style="display: flex; flex-direction: column; gap: 10px;">
+                                <!-- Dynamic request items -->
+                            </div>
                         </div>
                         
                         <!-- Search & Sort Row -->
@@ -633,6 +650,11 @@
                                         <select id="asg-ai-count" class="form-select-db">
                                             <option value="3" selected>3 Questions</option>
                                             <option value="5">5 Questions</option>
+                                            <option value="10">10 Questions</option>
+                                            <option value="15">15 Questions</option>
+                                            <option value="20">20 Questions</option>
+                                            <option value="25">25 Questions</option>
+                                            <option value="30">30 Questions</option>
                                         </select>
                                     </div>
                                 </div>

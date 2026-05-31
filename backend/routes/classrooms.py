@@ -639,3 +639,256 @@ async def delete_classroom(
     await db["classrooms"].delete_one({"_id": classroom["_id"]})
     
     return {"status": "success", "message": f"Classroom {class_code_upper} deleted successfully."}
+
+
+@router.get("/teacher/pending-requests")
+async def get_teacher_all_pending_requests(
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Retrieve all pending join requests across all classrooms of this teacher.
+    """
+    if current_user.get("role") != "teacher":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only teachers can inspect pending requests."
+        )
+        
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    cursor = db["classrooms"].find({"teacher_id": current_user["id"]})
+    all_pending = []
+    async for cl in cursor:
+        pending_students = cl.get("pending_students", []) or []
+        for s in pending_students:
+            all_pending.append({
+                "class_code": cl["class_code"],
+                "class_name": cl["class_name"],
+                "student_id": s["student_id"],
+                "student_name": s["student_name"],
+                "student_email": s["student_email"]
+            })
+            
+    return all_pending
+
+
+@router.get("/{class_code}/join-requests")
+async def get_join_requests(
+    class_code: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Retrieve pending join requests for a specific classroom.
+    """
+    if current_user.get("role") != "teacher":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only teachers can inspect classroom join requests."
+        )
+        
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    class_code_upper = class_code.upper()
+    classroom = await db["classrooms"].find_one({
+        "class_code": class_code_upper,
+        "teacher_id": current_user["id"]
+    })
+    
+    if not classroom:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Classroom not found or you are not authorized."
+        )
+        
+    return classroom.get("pending_students", []) or []
+
+
+@router.post("/{class_code}/join-requests/{student_id}/approve")
+async def approve_join_request(
+    class_code: str,
+    student_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Approve a student's request to join a specific classroom.
+    """
+    if current_user.get("role") != "teacher":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only teachers can approve join requests."
+        )
+        
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    class_code_upper = class_code.upper()
+    classroom = await db["classrooms"].find_one({
+        "class_code": class_code_upper,
+        "teacher_id": current_user["id"]
+    })
+    
+    if not classroom:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Classroom not found or you are not authorized."
+        )
+        
+    pending_students = classroom.get("pending_students", []) or []
+    student_match = [s for s in pending_students if s["student_id"] == student_id]
+    
+    if not student_match:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Pending student request not found."
+        )
+        
+    student_obj = student_match[0]
+    
+    # 1. Pull student from pending_students
+    await db["classrooms"].update_one(
+        {"_id": classroom["_id"]},
+        {"$pull": {"pending_students": {"student_id": student_id}}}
+    )
+    
+    # 2. Add student to classroom students list (if not already enrolled)
+    student_exists = any(s["student_id"] == student_id for s in classroom.get("students", []) or [])
+    if not student_exists:
+        enrollment_obj = {
+            "student_id": student_id,
+            "student_name": student_obj["student_name"],
+            "student_email": student_obj["student_email"]
+        }
+        await db["classrooms"].update_one(
+            {"_id": classroom["_id"]},
+            {"$push": {"students": enrollment_obj}}
+        )
+        
+        # 3. Add classroom code to student's class_codes list in users collection
+        from bson import ObjectId
+        student_user = await db["users"].find_one({"_id": ObjectId(student_id)})
+        if student_user:
+            class_codes = student_user.get("class_codes", []) or []
+            if class_code_upper not in class_codes:
+                class_codes.append(class_code_upper)
+                await db["users"].update_one(
+                    {"_id": ObjectId(student_id)},
+                    {"$set": {"class_codes": class_codes}}
+                )
+                
+            # 4. Trigger notifications for student and linked parents
+            try:
+                # 4a. Notify Student
+                await create_notification(
+                    db,
+                    user_id=student_id,
+                    recipient_role="student",
+                    title="Classroom Request Approved",
+                    content=f"Teacher {current_user['name']} approved your request to join '{classroom['class_name']}'.",
+                    notif_type="student_joined",
+                    metadata={"class_code": class_code_upper}
+                )
+                
+                # 4b. Notify Parent of Student if linked
+                student_email = student_obj["student_email"].lower()
+                parent = await db["users"].find_one({
+                    "linked_student_emails": student_email,
+                    "role": "parent"
+                })
+                if parent:
+                    parent_id = str(parent["_id"])
+                    await create_notification(
+                        db,
+                        user_id=parent_id,
+                        recipient_role="parent",
+                        title="Classroom Joined Alert",
+                        content=f"Your child {student_obj['student_name']} joined classroom '{classroom['class_name']}' by {classroom['teacher_name']}.",
+                        notif_type="child_joined_class",
+                        metadata={"class_code": class_code_upper}
+                    )
+            except Exception as e:
+                print(f"Failed to generate request approval notifications: {e}")
+                
+    return {"status": "success", "message": f"Approved join request for {student_obj['student_name']}."}
+
+
+@router.post("/{class_code}/join-requests/{student_id}/reject")
+async def reject_join_request(
+    class_code: str,
+    student_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Decline/reject a student's request to join a specific classroom.
+    """
+    if current_user.get("role") != "teacher":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only teachers can reject join requests."
+        )
+        
+    db = get_database()
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database connection not initialized"
+        )
+        
+    class_code_upper = class_code.upper()
+    classroom = await db["classrooms"].find_one({
+        "class_code": class_code_upper,
+        "teacher_id": current_user["id"]
+    })
+    
+    if not classroom:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Classroom not found or you are not authorized."
+        )
+        
+    pending_students = classroom.get("pending_students", []) or []
+    student_match = [s for s in pending_students if s["student_id"] == student_id]
+    
+    if not student_match:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Pending student request not found."
+        )
+        
+    student_obj = student_match[0]
+    
+    # 1. Pull student from pending_students
+    await db["classrooms"].update_one(
+        {"_id": classroom["_id"]},
+        {"$pull": {"pending_students": {"student_id": student_id}}}
+    )
+    
+    # 2. Trigger notifications for student (declined request)
+    try:
+        await create_notification(
+            db,
+            user_id=student_id,
+            recipient_role="student",
+            title="Classroom Request Declined",
+            content=f"Your request to join '{classroom['class_name']}' was declined by the teacher.",
+            notif_type="request_rejected",
+            metadata={"class_code": class_code_upper}
+        )
+    except Exception as e:
+        print(f"Failed to generate request rejection notification: {e}")
+        
+    return {"status": "success", "message": f"Declined join request for {student_obj['student_name']}."}
+

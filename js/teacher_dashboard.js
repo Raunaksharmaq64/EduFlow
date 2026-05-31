@@ -436,6 +436,9 @@ async function loadTeacherClassrooms() {
                 `).join('');
             }
         }
+        
+        // Update global pending requests badge in sidebar
+        await updateGlobalPendingBadge();
     } catch (err) {
         console.error('Failed to load teacher classrooms:', err);
     }
@@ -556,6 +559,9 @@ async function selectClassroomForStudents(classCode, className) {
     document.getElementById('student-detail-card').style.display = 'none';
 
     try {
+        // Load pending join requests for this class
+        await loadPendingJoinRequests(classCode);
+
         const res = await fetch(`${API_BASE}/auth/teacher/classroom/${classCode}/students`, {
             method: 'GET',
             headers: authHeaders()
@@ -2482,3 +2488,127 @@ async function loadConnections() {
 }
 
 window.initProfilePanel = initProfilePanel;
+
+/* ========================================
+   TEACHER APPROVAL WORKFLOW FOR JOIN REQUESTS
+   ======================================== */
+async function loadPendingJoinRequests(classCode) {
+    const card = document.getElementById('pending-requests-card');
+    const badge = document.getElementById('pending-requests-badge-count');
+    const list = document.getElementById('pending-requests-list');
+    if (!card || !badge || !list) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${classCode}/join-requests`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (!res.ok) throw new Error();
+        const requests = await res.json();
+
+        badge.textContent = requests.length;
+
+        if (requests.length === 0) {
+            card.style.display = 'none';
+            list.innerHTML = '';
+        } else {
+            card.style.display = 'block';
+            list.innerHTML = requests.map(r => `
+                <div class="pending-request-item" style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 8px; transition: all 0.2s; box-shadow: var(--shadow-sm);" id="request-row-${r.student_id}">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary);">${r.student_name}</span>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);"><i class='bx bx-envelope'></i> ${r.student_email}</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary btn-sm" style="padding: 5px 12px; font-size: 0.75rem; background: var(--secondary); border: none; display: flex; align-items: center; gap: 4px;" onclick="approveJoinRequest('${r.student_id}', '${r.student_name.replace(/'/g, "\\'")}')">
+                            <i class='bx bx-check' style="font-size: 0.9rem;"></i> Approve
+                        </button>
+                        <button class="btn btn-secondary btn-sm" style="padding: 5px 12px; font-size: 0.75rem; background: #e63946; color: #fff; border: none; display: flex; align-items: center; gap: 4px;" onclick="rejectJoinRequest('${r.student_id}', '${r.student_name.replace(/'/g, "\\'")}')">
+                            <i class='bx bx-x' style="font-size: 0.9rem;"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Also refresh global sidebar notification badge count
+        await updateGlobalPendingBadge();
+    } catch (err) {
+        console.error('Failed to load pending join requests:', err);
+    }
+}
+
+async function approveJoinRequest(studentId, studentName) {
+    if (!selectedClassCode) return;
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${selectedClassCode}/join-requests/${studentId}/approve`, {
+            method: 'POST',
+            headers: authHeaders()
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast(`🎉 Approved request for ${studentName}!`, 'success');
+            // Refresh table and pending list
+            await selectClassroomForStudents(selectedClassCode, document.getElementById('selected-class-title').textContent.replace(' Students in ', ''));
+            // Refresh classrooms to update counts
+            await loadTeacherClassrooms();
+        } else {
+            showToast(data.detail || 'Failed to approve request.', 'error');
+        }
+    } catch (err) {
+        console.error('Error approving request:', err);
+        showToast('Error approving request.', 'error');
+    }
+}
+
+async function rejectJoinRequest(studentId, studentName) {
+    if (!selectedClassCode) return;
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/${selectedClassCode}/join-requests/${studentId}/reject`, {
+            method: 'POST',
+            headers: authHeaders()
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast(`Declined request for ${studentName}.`, 'info');
+            // Reload pending requests
+            await loadPendingJoinRequests(selectedClassCode);
+        } else {
+            showToast(data.detail || 'Failed to decline request.', 'error');
+        }
+    } catch (err) {
+        console.error('Error declining request:', err);
+        showToast('Error declining request.', 'error');
+    }
+}
+
+async function updateGlobalPendingBadge() {
+    const badge = document.getElementById('sidebar-pending-badge');
+    if (!badge) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/classrooms/teacher/pending-requests`, {
+            method: 'GET',
+            headers: authHeaders()
+        });
+        if (res.ok) {
+            const pending = await res.json();
+            const count = pending.length;
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    } catch (err) {
+        console.error('Error updating global pending badge:', err);
+    }
+}
+
+// Expose to window object for inline onclick triggers
+window.approveJoinRequest = approveJoinRequest;
+window.rejectJoinRequest = rejectJoinRequest;
+window.loadPendingJoinRequests = loadPendingJoinRequests;
+window.updateGlobalPendingBadge = updateGlobalPendingBadge;
+

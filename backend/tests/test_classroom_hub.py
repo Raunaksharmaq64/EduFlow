@@ -293,6 +293,81 @@ async def run_automated_tests():
         assert await db["classrooms"].count_documents({"class_code": test_class_code}) == 0, "Classroom document deletion failed!"
         print("[PASS] Test 7 Passed: Classroom delete cascade (student profile, notices, assignments, submissions, notifications) verified.")
         
+        # 8. TEST: Classroom Join Approval Flow (Request -> Pending -> Approve/Reject)
+        print("[TEST 8] Testing Classroom Join Approval workflow...")
+        test_student_email_2 = "test_student_2@example.com"
+        test_student_id_2 = str(ObjectId())
+        
+        # Setup student user
+        await db["users"].delete_many({"email": test_student_email_2})
+        await db["users"].insert_one({
+            "_id": ObjectId(test_student_id_2),
+            "name": "Test Student 2",
+            "email": test_student_email_2,
+            "role": "student",
+            "class_codes": []
+        })
+        
+        # Re-insert classroom
+        await db["classrooms"].delete_many({"class_code": test_class_code})
+        await db["classrooms"].insert_one({
+            "class_code": test_class_code,
+            "class_name": "Test Science Class",
+            "teacher_id": test_teacher_id,
+            "teacher_name": "Test Teacher",
+            "students": [],
+            "pending_students": [],
+            "created_at": datetime.now(timezone.utc)
+        })
+        
+        # Simulate joining (pending request submission)
+        student_obj = {
+            "student_id": test_student_id_2,
+            "student_name": "Test Student 2",
+            "student_email": test_student_email_2
+        }
+        await db["classrooms"].update_one(
+            {"class_code": test_class_code},
+            {"$push": {"pending_students": student_obj}}
+        )
+        
+        # Verify it is in pending list
+        classroom = await db["classrooms"].find_one({"class_code": test_class_code})
+        pending_ids = [s["student_id"] for s in classroom.get("pending_students", [])]
+        assert test_student_id_2 in pending_ids, "Failed: Student not found in pending join requests!"
+        
+        # Simulate Approval
+        # Pull from pending_students
+        await db["classrooms"].update_one(
+            {"class_code": test_class_code},
+            {"$pull": {"pending_students": {"student_id": test_student_id_2}}}
+        )
+        # Push to students
+        await db["classrooms"].update_one(
+            {"class_code": test_class_code},
+            {"$push": {"students": student_obj}}
+        )
+        # Push to student user class codes list
+        await db["users"].update_one(
+            {"_id": ObjectId(test_student_id_2)},
+            {"$push": {"class_codes": test_class_code}}
+        )
+        
+        # Verify enrollment
+        classroom_after_approve = await db["classrooms"].find_one({"class_code": test_class_code})
+        student_ids = [s["student_id"] for s in classroom_after_approve.get("students", [])]
+        pending_ids_after = [s["student_id"] for s in classroom_after_approve.get("pending_students", [])]
+        
+        assert test_student_id_2 in student_ids, "Failed: Student not moved to enrolled list after approval!"
+        assert test_student_id_2 not in pending_ids_after, "Failed: Student still in pending list after approval!"
+        
+        student_user_after = await db["users"].find_one({"_id": ObjectId(test_student_id_2)})
+        assert test_class_code in student_user_after.get("class_codes", []), "Failed: Class code not added to student profile!"
+        
+        # Clean up student 2
+        await db["users"].delete_many({"_id": ObjectId(test_student_id_2)})
+        print("[PASS] Test 8 Passed: Classroom Join Approval workflow verified.")
+        
         # 9. Startup Purge Test
         # Create an old read notification
         old_read_notif = {
